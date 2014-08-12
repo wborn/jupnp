@@ -47,6 +47,7 @@ import java.net.DatagramPacket;
  * @param <C> The type of the service's configuration.
  *
  * @author Christian Bauer
+ * @author Kai Kreuzer - added multicast response port
  */
 public interface DatagramIO<C extends DatagramIOConfiguration> extends Runnable {
 
@@ -54,11 +55,12 @@ public interface DatagramIO<C extends DatagramIOConfiguration> extends Runnable 
      * Configures the service and starts any listening sockets.
      *
      * @param bindAddress The address to bind any sockets on.
+     * @param bindAddress The port to bind any sockets on. 0 means choosing an ephemeral port
      * @param router The router which handles received {@link org.fourthline.cling.model.message.IncomingDatagramMessage}s.
      * @param datagramProcessor Reads and writes datagrams.
      * @throws InitializationException If the service could not be initialized or started.
      */
-    public void init(InetAddress bindAddress, Router router, DatagramProcessor datagramProcessor) throws InitializationException;
+    public void init(InetAddress bindAddress, int bindPort, Router router, DatagramProcessor datagramProcessor) throws InitializationException;
 
     /**
      * Stops the service, closes any listening sockets.

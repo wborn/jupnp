@@ -87,6 +87,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
     private static Logger log = Logger.getLogger(DefaultUpnpServiceConfiguration.class.getName());
 
     final private int streamListenPort;
+    final private int multicastResponsePort;
 
     final private ExecutorService defaultExecutorService;
 
@@ -107,20 +108,25 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
     }
 
     public DefaultUpnpServiceConfiguration(int streamListenPort) {
-        this(streamListenPort, true);
+        this(streamListenPort, NetworkAddressFactoryImpl.DEFAULT_MULTICAST_RESPONSE_LISTEN_PORT, true);
+    }
+
+    public DefaultUpnpServiceConfiguration(int streamListenPort, int multicastResponsePort) {
+        this(streamListenPort, multicastResponsePort, true);
     }
 
     protected DefaultUpnpServiceConfiguration(boolean checkRuntime) {
-        this(NetworkAddressFactoryImpl.DEFAULT_TCP_HTTP_LISTEN_PORT, checkRuntime);
+        this(NetworkAddressFactoryImpl.DEFAULT_TCP_HTTP_LISTEN_PORT, NetworkAddressFactoryImpl.DEFAULT_MULTICAST_RESPONSE_LISTEN_PORT, checkRuntime);
     }
 
-    protected DefaultUpnpServiceConfiguration(int streamListenPort, boolean checkRuntime) {
+    protected DefaultUpnpServiceConfiguration(int streamListenPort, int multicastResponsePort, boolean checkRuntime) {
         if (checkRuntime && ModelUtil.ANDROID_RUNTIME) {
             throw new Error("Unsupported runtime environment, use org.fourthline.cling.android.AndroidUpnpServiceConfiguration");
         }
 
         this.streamListenPort = streamListenPort;
-
+        this.multicastResponsePort = multicastResponsePort;
+        
         defaultExecutorService = createDefaultExecutorService();
 
         datagramProcessor = createDatagramProcessor();
@@ -252,7 +258,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
     }
 
     public NetworkAddressFactory createNetworkAddressFactory() {
-        return createNetworkAddressFactory(streamListenPort);
+        return createNetworkAddressFactory(streamListenPort, multicastResponsePort);
     }
 
     public void shutdown() {
@@ -260,8 +266,8 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
         getDefaultExecutorService().shutdownNow();
     }
 
-    protected NetworkAddressFactory createNetworkAddressFactory(int streamListenPort) {
-        return new NetworkAddressFactoryImpl(streamListenPort);
+    protected NetworkAddressFactory createNetworkAddressFactory(int streamListenPort, int multicastResponsePort) {
+        return new NetworkAddressFactoryImpl(streamListenPort, multicastResponsePort);
     }
 
     protected DatagramProcessor createDatagramProcessor() {

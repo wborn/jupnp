@@ -59,6 +59,7 @@ import org.seamless.util.Exceptions;
  * </p>
  *
  * @author Christian Bauer
+ * @author Kai Kreuzer - added multicast response port
  */
 public class RouterImpl implements Router {
 
@@ -453,7 +454,7 @@ public class RouterImpl implements Router {
                 try {
                     if (log.isLoggable(Level.FINE))
                         log.fine("Init datagram I/O on address: " + address);
-                    datagramIO.init(address, this, getConfiguration().getDatagramProcessor());
+                    datagramIO.init(address, networkAddressFactory.getMulticastResponsePort(), this, getConfiguration().getDatagramProcessor());
                     datagramIOs.put(address, datagramIO);
                 } catch (InitializationException ex) {
                     /* TODO: What are some recoverable exceptions for this?

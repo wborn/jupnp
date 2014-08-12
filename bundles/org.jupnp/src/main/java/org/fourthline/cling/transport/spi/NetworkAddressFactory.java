@@ -26,6 +26,7 @@ import java.util.Iterator;
  * </p>
  *
  * @author Christian Bauer
+ * @author Kai Kreuzer - added multicast response port
  */
 public interface NetworkAddressFactory {
 
@@ -43,6 +44,11 @@ public interface NetworkAddressFactory {
      * @return The UDP multicast port to listen on.
      */
     public int getMulticastPort();
+
+    /**
+     * @return The UDP port to listen on for search responses.
+     */
+    public int getMulticastResponsePort();
 
     /**
      * @return The TCP (HTTP) stream request port to listen on.

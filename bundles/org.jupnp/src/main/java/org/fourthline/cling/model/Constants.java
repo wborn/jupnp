@@ -26,6 +26,9 @@ public interface Constants {
 
     public static final int UPNP_MULTICAST_PORT = 1900;
 
+    // this is the port to which search responses should be sent; 0 means an ephemeral port is used
+    public static final int UPNP_MULTICAST_RESPONSE_PORT = 0;
+
     public static final String IPV4_UPNP_MULTICAST_GROUP = "239.255.255.250";
 
     public static final String IPV6_UPNP_LINK_LOCAL_ADDRESS = "FF02::C";

@@ -48,11 +48,15 @@ import java.util.logging.Logger;
  * </p>
  *
  * @author Christian Bauer
+ * @author Kai Kreuzer - added multicast response port
  */
 public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
 
     // Ephemeral port is the default
     public static final int DEFAULT_TCP_HTTP_LISTEN_PORT = 0;
+
+    // Ephemeral port is the default
+	public static final int DEFAULT_MULTICAST_RESPONSE_LISTEN_PORT = 0;
 
     private static Logger log = Logger.getLogger(NetworkAddressFactoryImpl.class.getName());
 
@@ -63,15 +67,16 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
     final protected List<InetAddress> bindAddresses = new ArrayList<InetAddress>();
 
     protected int streamListenPort;
+    protected int multicastResponsePort;
 
     /**
      * Defaults to an ephemeral port.
      */
     public NetworkAddressFactoryImpl() throws InitializationException {
-        this(DEFAULT_TCP_HTTP_LISTEN_PORT);
+        this(DEFAULT_TCP_HTTP_LISTEN_PORT, DEFAULT_MULTICAST_RESPONSE_LISTEN_PORT);
     }
 
-    public NetworkAddressFactoryImpl(int streamListenPort) throws InitializationException {
+    public NetworkAddressFactoryImpl(int streamListenPort, int multicastResponsePort) throws InitializationException {
     	
     	System.setProperty("java.net.preferIPv4Stack", "true");
 
@@ -100,6 +105,7 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
         }
 
         this.streamListenPort = streamListenPort;
+        this.multicastResponsePort = multicastResponsePort;
     }
 
     /**
@@ -135,6 +141,10 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
 
     public int getMulticastPort() {
         return Constants.UPNP_MULTICAST_PORT;
+    }
+
+    public int getMulticastResponsePort() {
+        return DEFAULT_MULTICAST_RESPONSE_LISTEN_PORT;
     }
 
     public int getStreamListenPort() {

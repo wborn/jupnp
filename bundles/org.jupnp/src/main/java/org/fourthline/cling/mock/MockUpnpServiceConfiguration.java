@@ -30,6 +30,7 @@ import org.fourthline.cling.transport.spi.NetworkAddressFactory;
 
 /**
  * @author Christian Bauer
+ * @author Kai Kreuzer - added configurable multicast response port
  */
 public class MockUpnpServiceConfiguration extends DefaultUpnpServiceConfiguration {
 
@@ -65,9 +66,9 @@ public class MockUpnpServiceConfiguration extends DefaultUpnpServiceConfiguratio
     }
 
     @Override
-    protected NetworkAddressFactory createNetworkAddressFactory(int streamListenPort) {
+    protected NetworkAddressFactory createNetworkAddressFactory(int streamListenPort, int multicastResponsePort) {
         // We are only interested in 127.0.0.1
-        return new NetworkAddressFactoryImpl(streamListenPort) {
+        return new NetworkAddressFactoryImpl(streamListenPort, multicastResponsePort) {
             @Override
             protected boolean isUsableNetworkInterface(NetworkInterface iface) throws Exception {
                 return (iface.isLoopback());
