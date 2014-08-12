@@ -24,199 +24,23 @@
 
     <fileSets>
 
-        <!-- Cling Core -->
+        <!-- jUPnP Bundles -->
         <fileSet>
-            <directory>core/src</directory>
-            <outputDirectory>/core/src</outputDirectory>
-            <includes>
-                <include>main/**</include>
-                <include>test/**</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>core/target</directory>
-            <outputDirectory>/core</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>core/target/site/apidocs</directory>
-            <outputDirectory>/core/apidocs</outputDirectory>
-            <includes>
-                <include>**</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>core/target/manual</directory>
-            <outputDirectory>/core/manual</outputDirectory>
-            <includes>
-                <include>**</include>
-            </includes>
-        </fileSet>
-
-        <!-- Cling Demo Android -->
-        <fileSet>
-            <directory>demo/android</directory>
-            <outputDirectory>/demo/android</outputDirectory>
-            <includes>
-                <include>pom.xml</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>demo/android/browser/target</directory>
-            <outputDirectory>/demo/android/browser</outputDirectory>
-            <includes>
-                <include>*.apk</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>demo/android/browser/src</directory>
-            <outputDirectory>/demo/android/browser/src</outputDirectory>
-            <includes>
-                <include>android/**</include>
-                <include>main/**</include>
-                <include>test/**</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>demo/android/light/target</directory>
-            <outputDirectory>/demo/android/light</outputDirectory>
-            <includes>
-                <include>*.apk</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>demo/android/light/src</directory>
-            <outputDirectory>/demo/android/light/src</outputDirectory>
-            <includes>
-                <include>android/**</include>
-                <include>main/**</include>
-                <include>test/**</include>
-            </includes>
-        </fileSet>
-
-        <!-- Cling Support -->
-        <fileSet>
-            <directory>support/src</directory>
-            <outputDirectory>/support/src</outputDirectory>
-            <includes>
-                <include>main/**</include>
-                <include>test/**</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>support/target</directory>
-            <outputDirectory>/support</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>support/target/site/apidocs</directory>
-            <outputDirectory>/support/apidocs</outputDirectory>
-            <includes>
-                <include>**</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>support/target/manual</directory>
-            <outputDirectory>/support/manual</outputDirectory>
-            <includes>
-                <include>**</include>
-            </includes>
-        </fileSet>
-
-        <!-- Cling Workbench -->
-        <fileSet>
-            <directory>workbench/target</directory>
+            <directory>bundles/org.jupnp/target</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
-                <include>*-standalone.jar</include>
+                <include>*.jar</include>
             </includes>
         </fileSet>
-
-        <!-- Cling MediaRenderer -->
         <fileSet>
-            <directory>mediarenderer/target</directory>
+            <directory>bundles/org.jupnp.osgi/target</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
-                <include>*-standalone.jar</include>
-            </includes>
-        </fileSet>
-
-        <!-- Cling OSGi -->
-        <!--
-        <fileSet>
-            <directory>osgi/basedriver/src</directory>
-            <outputDirectory>/osgi/src</outputDirectory>
-            <includes>
-                <include>main/**</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>osgi/basedriver/target</directory>
-            <outputDirectory>/osgi</outputDirectory>
-            <includes>
                 <include>*.jar</include>
             </includes>
         </fileSet>
-        <fileSet>
-            <directory>osgi/basedriver/target/site/apidocs</directory>
-            <outputDirectory>/osgi/apidocs</outputDirectory>
-            <includes>
-                <include>**</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>osgi/basedriver/target/manual</directory>
-            <outputDirectory>/osgi/manual</outputDirectory>
-            <includes>
-                <include>**</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>osgi/samples/basicdevice/target</directory>
-            <outputDirectory>/osgi/samples/basicdevice</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>osgi/samples/basicdevice/src</directory>
-            <outputDirectory>/osgi/samples/basicdevice/src</outputDirectory>
-            <includes>
-                <include>main/**</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>osgi/samples/lights/target</directory>
-            <outputDirectory>/osgi/samples/lights</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>osgi/samples/lights/src</directory>
-            <outputDirectory>/osgi/samples/lights/src</outputDirectory>
-            <includes>
-                <include>main/**</include>
-            </includes>
-        </fileSet>
-    -->
 
     </fileSets>
 
-    <dependencySets>
-        <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
-            <outputDirectory>/core/</outputDirectory>
-            <includes>
-                <include>org.seamless:seamless-util:jar</include>
-                <include>org.seamless:seamless-http:jar</include>
-                <include>org.seamless:seamless-xml:jar</include>
-            </includes>
-        </dependencySet>
-    </dependencySets>
 
 </assembly>

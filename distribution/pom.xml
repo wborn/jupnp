@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>cling</artifactId>
-        <groupId>org.fourthline.cling</groupId>
-        <version>2.0-SNAPSHOT</version>
+        <groupId>org.jupnp</groupId>
+        <artifactId>jupnp</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <name>Cling Distribution</name>
-    <artifactId>cling-distribution</artifactId>
+    <name>jUPnP Distribution</name>
+    <artifactId>jupnp-distribution</artifactId>
     <packaging>pom</packaging>
 
     <build>
@@ -24,7 +24,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Package a "legacy" distribution ZIP file -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
@@ -50,18 +49,5 @@
 
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.fourthline.cling</groupId>
-            <artifactId>cling-workbench</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.fourthline.cling</groupId>
-            <artifactId>cling-mediarenderer</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 
 </project>

@@ -1,39 +1,40 @@
-Read the README.txt
-=====================
+# Introduction
 
-https://github.com/4thline/cling/blob/master/distribution/src/dist/README.txt
+jUPnP is a Java UPnP library and has been forked from the Cling project (https://github.com/4thline/cling).
 
-Building Cling
----------------------
+# Build Instructions
 
-* Install Maven 3.1.1 or newer.
+Building and running the project is fairly easy if you follow the steps
+detailed below.
 
-* Install the Android SDK and set the ANDROID_HOME environment variable to the SDK install directory.
+1. Prerequisites
+================
 
-* Copy the Android SDK's Maven extras `$ANDROID_HOME/extras/android/m2repository` to your local Maven repository `~/.m2`.
+The build infrastructure is based on Maven in order to make it
+as easy as possible to get up to speed. If you know Maven already then
+there won't be any surprises for you. If you have not worked with Maven
+yet, just follow the instructions and everything will miraculously work ;-)
 
-* Clone the Cling source:
+What you need before you start:
+- Maven3 from http://maven.apache.org/download.html
 
-````
-git clone https://github.com/4thline/cling.git
-````
+Make sure that the "mvn" command is available on your path
 
-* Change into the `cling/` directory.
 
-* Install everything into your local `~/.m2` Maven repository (this will take a few minutes if all dependencies have to be downloaded for the first time).
+2. Checkout
+===========
 
-````
-mvn clean install
-````
-
-* Use Cling in your pom.xml with:
+Checkout the source code from GitHub, e.g. by running
 
 ````
-<dependencies>
-  <dependency>
-    <groupId>org.fourthline.cling</groupId>
-    <artifactId>cling-core</artifactId>
-    <version>2.0-SNAPSHOT</version>
-  </dependency>
-</dependencies>
+git clone https://github.com/openhab/jupnp.git
 ````
+
+3. Building with Maven
+======================
+
+To build jUPnP from the sources, Maven takes care of everything:
+- change into the jupnp directory (`cd jupnp`)
+- run `mvn clean install` to compile and package all sources
+
+The build result will be available in the folder `target`.
