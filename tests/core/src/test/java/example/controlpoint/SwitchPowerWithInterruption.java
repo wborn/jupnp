@@ -14,14 +14,14 @@
  */
 package example.controlpoint;
 
-import org.fourthline.cling.binding.annotations.UpnpAction;
-import org.fourthline.cling.binding.annotations.UpnpInputArgument;
-import org.fourthline.cling.binding.annotations.UpnpOutputArgument;
-import org.fourthline.cling.binding.annotations.UpnpService;
-import org.fourthline.cling.binding.annotations.UpnpServiceId;
-import org.fourthline.cling.binding.annotations.UpnpServiceType;
-import org.fourthline.cling.binding.annotations.UpnpStateVariable;
-import org.fourthline.cling.model.profile.RemoteClientInfo;
+import org.jupnp.binding.annotations.UpnpAction;
+import org.jupnp.binding.annotations.UpnpInputArgument;
+import org.jupnp.binding.annotations.UpnpOutputArgument;
+import org.jupnp.binding.annotations.UpnpService;
+import org.jupnp.binding.annotations.UpnpServiceId;
+import org.jupnp.binding.annotations.UpnpServiceType;
+import org.jupnp.binding.annotations.UpnpStateVariable;
+import org.jupnp.model.profile.RemoteClientInfo;
 
 /**
  * Reacting to cancellation on the server
@@ -56,20 +56,20 @@ import org.fourthline.cling.model.profile.RemoteClientInfo;
  *    style="include: ACTION_METHOD; exclude: ACTUAL_WORK;"/>
  *
  * <p>
- * You abort processing by throwing an <code>InterruptedException</code>, Cling will do the rest. Cling will send
+ * You abort processing by throwing an <code>InterruptedException</code>, jUPnP will do the rest. jUPnP will send
  * a heartbeat to the client whenever you check if the remote request was cancelled with the optional
  * <code>RemoteClientInfo</code>, see <a href="#javadoc.example.localservice.RemoteClientInfoTest">this section</a>.
  * </p>
  * <p>
- * <em>Danger:</em> Not all HTTP clients can deal with Cling's heartbeat signal. Not even all bundled
- * <code>StreamClient</code>'s of Cling can handle such a signal. You should only use this feature if you are sure that
- * all clients of your service will ignore the meaningless heartbeat signal. Cling sends a space character (this is
+ * <em>Danger:</em> Not all HTTP clients can deal with jUPnP's heartbeat signal. Not even all bundled
+ * <code>StreamClient</code>'s of jUPnP can handle such a signal. You should only use this feature if you are sure that
+ * all clients of your service will ignore the meaningless heartbeat signal. jUPnP sends a space character (this is
  * configurable) to the HTTP client to check the connection. Hence, the HTTP client sees a response such as
  * '[space][space][space]HTTP/1.0', with a space character for each alive check. If your HTTP client does not trim those
  * space characters before parsing the response, it will fail processing your otherwise valid response.
  * </p>
  * <p>
- * The following Cling-bundled client transports can deal with a heartbeat signal:
+ * The following jUPnP-bundled client transports can deal with a heartbeat signal:
  * </p>
  * <table class="infotable fullwidth" border="1">
  * <thead>
@@ -81,26 +81,26 @@ import org.fourthline.cling.model.profile.RemoteClientInfo;
  * <tbody>
  * <tr>
  * <td class="nowrap">
- * <code>org.fourthline.cling.transport.impl.StreamClientImpl (default)</code>
+ * <code>org.jupnp.transport.impl.StreamClientImpl (default)</code>
  * </td>
  * <td>NO</td>
  * </tr>
  * <tr>
  * <td class="nowrap">
- * <code>org.fourthline.cling.transport.impl.apache.StreamClientImpl</code>
+ * <code>org.jupnp.transport.impl.apache.StreamClientImpl</code>
  * </td>
  * <td>YES</td>
  * </tr>
  * <tr>
  * <td class="nowrap">
- * <code>org.fourthline.cling.transport.impl.jetty.StreamClientImpl (default on Android)</code>
+ * <code>org.jupnp.transport.impl.jetty.StreamClientImpl (default on Android)</code>
  * </td>
  * <td>YES</td>
  * </tr>
  * </tbody>
  * </table>
  * <p>
- * Equally important, not all server transports in Cling can send heartbeat signals, as low-level socket access is
+ * Equally important, not all server transports in jUPnP can send heartbeat signals, as low-level socket access is
  * required. Some server APIs do not provide this low-level access. If you check the connection state with those
  * transports, the connection is always "alive":
  * </p>
@@ -114,20 +114,20 @@ import org.fourthline.cling.model.profile.RemoteClientInfo;
  * <tbody>
  * <tr>
  * <td class="nowrap">
- * <code>org.fourthline.cling.transport.impl.StreamServerImpl (default)</code>
+ * <code>org.jupnp.transport.impl.StreamServerImpl (default)</code>
  * </td>
  * <td>NO</td>
  * </tr>
  * <tr>
  * <td class="nowrap">
- * <code>org.fourthline.cling.transport.impl.apache.StreamServerImpl</code>
+ * <code>org.jupnp.transport.impl.apache.StreamServerImpl</code>
  * </td>
  * <td>YES</td>
  * </tr>
  * <tr>
  * <td class="nowrap">
- * <code>org.fourthline.cling.transport.impl.AsyncServletStreamServerImpl</code><br/>
- * with <code>org.fourthline.cling.transport.impl.jetty.JettyServletContainer (default on Android)</code>
+ * <code>org.jupnp.transport.impl.AsyncServletStreamServerImpl</code><br/>
+ * with <code>org.jupnp.transport.impl.jetty.JettyServletContainer (default on Android)</code>
  * </td>
  * <td>YES</td>
  * </tr>

@@ -1,6 +1,6 @@
 # Introduction
 
-jUPnP is a Java UPnP library and has been forked from the Cling project (https://github.com/4thline/cling).
+jUPnP is a Java UPnP library and has been forked from the jUPnP project (https://github.com/4thline/cling).
 
 # Build Instructions
 

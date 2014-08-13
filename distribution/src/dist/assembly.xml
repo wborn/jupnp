@@ -12,11 +12,6 @@
 
     <files>
         <file>
-            <source>src/dist/README.txt</source>
-            <outputDirectory>/</outputDirectory>
-            <filtered>true</filtered>
-        </file>
-        <file>
             <source>src/dist/LICENSE.txt</source>
             <outputDirectory>/</outputDirectory>
         </file>

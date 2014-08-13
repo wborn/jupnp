@@ -14,20 +14,21 @@
  */
 package example.localservice;
 
+import org.jupnp.controlpoint.SubscriptionCallback;
+import org.jupnp.mock.MockRouter;
+import org.jupnp.mock.MockUpnpService;
+import org.jupnp.model.gena.CancelReason;
+import org.jupnp.model.gena.GENASubscription;
+import org.jupnp.model.message.StreamResponseMessage;
+import org.jupnp.model.message.UpnpResponse;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.LocalService;
+import org.jupnp.test.data.SampleData;
+import org.jupnp.util.Reflections;
+import org.testng.annotations.Test;
+
 import example.binarylight.BinaryLightSampleData;
 import example.controlpoint.EventSubscriptionTest;
-import org.fourthline.cling.controlpoint.SubscriptionCallback;
-import org.fourthline.cling.mock.MockRouter;
-import org.fourthline.cling.mock.MockUpnpService;
-import org.fourthline.cling.model.gena.CancelReason;
-import org.fourthline.cling.model.gena.GENASubscription;
-import org.fourthline.cling.model.message.StreamResponseMessage;
-import org.fourthline.cling.model.message.UpnpResponse;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.LocalService;
-import org.fourthline.cling.test.data.SampleData;
-import org.seamless.util.Reflections;
-import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ import static org.testng.Assert.*;
  * Providing events on service state changes
  * <p>
  * The standard mechanism in the JDK for eventing is the <code>PropertyChangeListener</code> reacting
- * on a <code>PropertyChangeEvent</code>. Cling utilizes this API for service eventing, thus avoiding
+ * on a <code>PropertyChangeEvent</code>. jUPnP utilizes this API for service eventing, thus avoiding
  * a dependency between your service code and proprietary APIs.
  * </p>
  * <p>
@@ -47,19 +48,19 @@ import static org.testng.Assert.*;
  * </p>
  * <a class="citation" href="javacode://example.localservice.SwitchPowerWithPropertyChangeSupport"/>
  * <p>
- * The only additional dependency is on <code>java.beans.PropertyChangeSupport</code>. Cling
+ * The only additional dependency is on <code>java.beans.PropertyChangeSupport</code>. jUPnP
  * detects the <code>getPropertyChangeSupport()</code> method of your service class and automatically
  * binds the service management on it. You will have to have this method for eventing to work with
- * Cling. You can create the <code>PropertyChangeSupport</code> instance
- * in your service's constructor or any other way, the only thing Cling is interested in are property
+ * jUPnP. You can create the <code>PropertyChangeSupport</code> instance
+ * in your service's constructor or any other way, the only thing jUPnP is interested in are property
  * change events with the "property" name of a UPnP state variable.
  * </p>
  * <p>
- * Consequently, <code>firePropertyChange("NameOfAStateVariable")</code> is how you tell Cling that
+ * Consequently, <code>firePropertyChange("NameOfAStateVariable")</code> is how you tell jUPnP that
  * a state variable value has changed. It doesn't even matter if you call
  * <code>firePropertyChange("Status", null, null)</code> or
  * <code>firePropertyChange("Status", oldValue, newValue)</code>.
- * Cling <em>only</em> cares about the state variable name; it will then check if the state variable is
+ * jUPnP <em>only</em> cares about the state variable name; it will then check if the state variable is
  * evented and pull the data out of your service implementation instance by accessing the appropriate
  * field or a getter. Any "old" or "new" value you pass along is ignored.
  * </p>
@@ -70,7 +71,7 @@ import static org.testng.Assert.*;
  * <p>
  * Most of the time a JavaBean property name is <em>not</em> the same as UPnP state variable
  * name. For example, the JavaBean <code>status</code> property name is lowercase, while the UPnP state
- * variable name is uppercase <code>Status</code>. The Cling eventing system ignores any property
+ * variable name is uppercase <code>Status</code>. The jUPnP eventing system ignores any property
  * change event that doesn't exactly name a service state variable. This allows you to use
  * JavaBean eventing independently from UPnP eventing, e.g. for GUI binding (Swing components also
  * use the JavaBean eventing system).

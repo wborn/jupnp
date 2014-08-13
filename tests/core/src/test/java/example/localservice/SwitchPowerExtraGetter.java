@@ -14,7 +14,7 @@
  */
 package example.localservice;
 
-import org.fourthline.cling.binding.annotations.*;
+import org.jupnp.binding.annotations.*;
 
 /**
  * Getting an output value from another method
@@ -25,7 +25,7 @@ import org.fourthline.cling.binding.annotations.*;
  * <a class="citation" href="javacode://this" style="include:INC1"/>
  * <p>
  * By providing a <code>getterName</code> in the annotation you can instruct
- * Cling to call this getter method when the action method completes, taking
+ * jUPnP to call this getter method when the action method completes, taking
  * the getter method's return value as the output argument value. If there
  * are several output arguments you can map each to a different getter method.
  * </p>

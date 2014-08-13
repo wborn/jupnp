@@ -1,6 +1,6 @@
 package example.binarylight;
 
-import org.fourthline.cling.binding.annotations.*;
+import org.jupnp.binding.annotations.*;
 
 @UpnpService(
         serviceId = @UpnpServiceId("SwitchPower"),

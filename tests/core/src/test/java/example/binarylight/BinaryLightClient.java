@@ -1,14 +1,14 @@
 package example.binarylight;
 
-import org.fourthline.cling.UpnpService;
-import org.fourthline.cling.UpnpServiceImpl;
-import org.fourthline.cling.controlpoint.*;
-import org.fourthline.cling.model.action.*;
-import org.fourthline.cling.model.message.*;
-import org.fourthline.cling.model.message.header.*;
-import org.fourthline.cling.model.meta.*;
-import org.fourthline.cling.model.types.*;
-import org.fourthline.cling.registry.*;
+import org.jupnp.UpnpService;
+import org.jupnp.UpnpServiceImpl;
+import org.jupnp.controlpoint.*;
+import org.jupnp.model.action.*;
+import org.jupnp.model.message.*;
+import org.jupnp.model.message.header.*;
+import org.jupnp.model.meta.*;
+import org.jupnp.model.types.*;
+import org.jupnp.registry.*;
 
 public class BinaryLightClient implements Runnable {
 

@@ -3,8 +3,8 @@
     <div class="content">
 
         <p>
-            Although the binary light is a very simple example, you might run into problems. Cling Core
-            helps you resolve most problems with extensive logging. Internally, Cling Core uses Java JDK logging,
+            Although the binary light is a very simple example, you might run into problems. jUPnP Core
+            helps you resolve most problems with extensive logging. Internally, jUPnP Core uses Java JDK logging,
             also known as <code>java.util.logging</code> or JUL. There are no wrappers, logging frameworks,
             logging services, or other dependencies.
         </p>
@@ -17,15 +17,15 @@
         </p>
 
         <p>
-            Next you want to configure logging levels for different logging categories. Cling Core will
+            Next you want to configure logging levels for different logging categories. jUPnP Core will
             output some INFO level messages on startup and shutdown, but is otherwise silent during runtime
             unless a problem occurs - it will then log messages at WARNING or SEVERE level.
         </p>
 
         <p>
             For debugging, usually more detailed logging levels for various log categories are required.
-            The logging categories in Cling Core are package names, e.g the root logger is available under
-            the name <code>org.fourthline.cling</code>. The following tables show typically used categories and the
+            The logging categories in jUPnP Core are package names, e.g the root logger is available under
+            the name <code>org.jupnp</code>. The following tables show typically used categories and the
             recommended level for debugging:
         </p>
 
@@ -39,40 +39,40 @@
             <tbody>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.transport.spi.DatagramIO (FINE)</code><br/>
-                    <code>org.fourthline.cling.transport.spi.MulticastReceiver (FINE)</code><br/>
+                    <code>org.jupnp.transport.spi.DatagramIO (FINE)</code><br/>
+                    <code>org.jupnp.transport.spi.MulticastReceiver (FINE)</code><br/>
                 </td>
                 <td>UDP communication</td>
             </tr>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.transport.spi.DatagramProcessor (FINER)</code><br/>
+                    <code>org.jupnp.transport.spi.DatagramProcessor (FINER)</code><br/>
                 </td>
                 <td>UDP datagram processing and content</td>
             </tr>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.transport.spi.UpnpStream (FINER)</code><br/>
-                    <code>org.fourthline.cling.transport.spi.StreamServer (FINE)</code><br/>
-                    <code>org.fourthline.cling.transport.spi.StreamClient (FINE)</code><br/>
+                    <code>org.jupnp.transport.spi.UpnpStream (FINER)</code><br/>
+                    <code>org.jupnp.transport.spi.StreamServer (FINE)</code><br/>
+                    <code>org.jupnp.transport.spi.StreamClient (FINE)</code><br/>
                 </td>
                 <td>TCP communication</td>
             </tr>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.transport.spi.SOAPActionProcessor (FINER)</code><br/>
+                    <code>org.jupnp.transport.spi.SOAPActionProcessor (FINER)</code><br/>
                 </td>
                 <td>SOAP action message processing and content</td>
             </tr>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.transport.spi.GENAEventProcessor (FINER)</code><br/>
+                    <code>org.jupnp.transport.spi.GENAEventProcessor (FINER)</code><br/>
                 </td>
                 <td>GENA event message processing and content</td>
             </tr>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.transport.impl.HttpHeaderConverter (FINER)</code><br/>
+                    <code>org.jupnp.transport.impl.HttpHeaderConverter (FINER)</code><br/>
                 </td>
                 <td>HTTP header processing</td>
             </tr>
@@ -91,40 +91,40 @@
             <tbody>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.protocol.ProtocolFactory (FINER)</code><br/>
-                    <code>org.fourthline.cling.protocol.async (FINER)</code><br/>
+                    <code>org.jupnp.protocol.ProtocolFactory (FINER)</code><br/>
+                    <code>org.jupnp.protocol.async (FINER)</code><br/>
                 </td>
                 <td>Discovery (Notification &amp; Search)</td>
             </tr>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.protocol.ProtocolFactory (FINER)</code><br/>
-                    <code>org.fourthline.cling.protocol.RetrieveRemoteDescriptors (FINE)</code><br/>
-                    <code>org.fourthline.cling.protocol.sync.ReceivingRetrieval (FINE)</code><br/>
-                    <code>org.fourthline.cling.binding.xml.DeviceDescriptorBinder (FINE)</code><br/>
-                    <code>org.fourthline.cling.binding.xml.ServiceDescriptorBinder (FINE)</code><br/>
+                    <code>org.jupnp.protocol.ProtocolFactory (FINER)</code><br/>
+                    <code>org.jupnp.protocol.RetrieveRemoteDescriptors (FINE)</code><br/>
+                    <code>org.jupnp.protocol.sync.ReceivingRetrieval (FINE)</code><br/>
+                    <code>org.jupnp.binding.xml.DeviceDescriptorBinder (FINE)</code><br/>
+                    <code>org.jupnp.binding.xml.ServiceDescriptorBinder (FINE)</code><br/>
                 </td>
                 <td>Description</td>
             </tr>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.protocol.ProtocolFactory (FINER)</code><br/>
-                    <code>org.fourthline.cling.protocol.sync.ReceivingAction (FINER)</code><br/>
-                    <code>org.fourthline.cling.protocol.sync.SendingAction (FINER)</code><br/>
+                    <code>org.jupnp.protocol.ProtocolFactory (FINER)</code><br/>
+                    <code>org.jupnp.protocol.sync.ReceivingAction (FINER)</code><br/>
+                    <code>org.jupnp.protocol.sync.SendingAction (FINER)</code><br/>
                 </td>
                 <td>Control</td>
             </tr>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.model.gena (FINER)</code><br/>
-                    <code>org.fourthline.cling.protocol.ProtocolFactory (FINER)</code><br/>
-                    <code>org.fourthline.cling.protocol.sync.ReceivingEvent (FINER)</code><br/>
-                    <code>org.fourthline.cling.protocol.sync.ReceivingSubscribe (FINER)</code><br/>
-                    <code>org.fourthline.cling.protocol.sync.ReceivingUnsubscribe (FINER)</code><br/>
-                    <code>org.fourthline.cling.protocol.sync.SendingEvent (FINER)</code><br/>
-                    <code>org.fourthline.cling.protocol.sync.SendingSubscribe (FINER)</code><br/>
-                    <code>org.fourthline.cling.protocol.sync.SendingUnsubscribe (FINER)</code><br/>
-                    <code>org.fourthline.cling.protocol.sync.SendingRenewal (FINER)</code><br/>
+                    <code>org.jupnp.model.gena (FINER)</code><br/>
+                    <code>org.jupnp.protocol.ProtocolFactory (FINER)</code><br/>
+                    <code>org.jupnp.protocol.sync.ReceivingEvent (FINER)</code><br/>
+                    <code>org.jupnp.protocol.sync.ReceivingSubscribe (FINER)</code><br/>
+                    <code>org.jupnp.protocol.sync.ReceivingUnsubscribe (FINER)</code><br/>
+                    <code>org.jupnp.protocol.sync.SendingEvent (FINER)</code><br/>
+                    <code>org.jupnp.protocol.sync.SendingSubscribe (FINER)</code><br/>
+                    <code>org.jupnp.protocol.sync.SendingUnsubscribe (FINER)</code><br/>
+                    <code>org.jupnp.protocol.sync.SendingRenewal (FINER)</code><br/>
                 </td>
                 <td>GENA</td>
             </tr>
@@ -143,7 +143,7 @@
             <tbody>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.transport.Router (FINER)</code><br/>
+                    <code>org.jupnp.transport.Router (FINER)</code><br/>
                 </td>
                 <td>
                     Message Router
@@ -151,25 +151,25 @@
             </tr>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.registry.Registry (FINER)</code><br/>
-                    <code>org.fourthline.cling.registry.LocalItems (FINER)</code><br/>
-                    <code>org.fourthline.cling.registry.RemoteItems (FINER)</code><br/>
+                    <code>org.jupnp.registry.Registry (FINER)</code><br/>
+                    <code>org.jupnp.registry.LocalItems (FINER)</code><br/>
+                    <code>org.jupnp.registry.RemoteItems (FINER)</code><br/>
                 </td>
                 <td>Registry</td>
             </tr>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.binding.annotations (FINER)</code><br/>
-                    <code>org.fourthline.cling.model.meta.LocalService (FINER)</code><br/>
-                    <code>org.fourthline.cling.model.action (FINER)</code><br/>
-                    <code>org.fourthline.cling.model.state (FINER)</code><br/>
-                    <code>org.fourthline.cling.model.DefaultServiceManager (FINER)</code><br/>
+                    <code>org.jupnp.binding.annotations (FINER)</code><br/>
+                    <code>org.jupnp.model.meta.LocalService (FINER)</code><br/>
+                    <code>org.jupnp.model.action (FINER)</code><br/>
+                    <code>org.jupnp.model.state (FINER)</code><br/>
+                    <code>org.jupnp.model.DefaultServiceManager (FINER)</code><br/>
                 </td>
                 <td>Local service binding &amp; invocation</td>
             </tr>
             <tr>
                 <td class="nowrap">
-                    <code>org.fourthline.cling.controlpoint (FINER)</code><br/>
+                    <code>org.jupnp.controlpoint (FINER)</code><br/>
                 </td>
                 <td>Control Point interaction</td>
             </tr>
@@ -182,27 +182,27 @@
         </p>
 
         <div><pre><![CDATA[# Enables a one-message-per-line handler (shipping in seamless-util.jar)
-handlers=org.seamless.util.logging.SystemOutLoggingHandler
+handlers=org.jupnp.util.logging.SystemOutLoggingHandler
 
 # The default (root) log level
 .level=INFO
 
 # Extra settings for various categories
 
-org.fourthline.cling.level=INFO
+org.jupnp.level=INFO
 
-org.fourthline.cling.protocol.level=FINEST
+org.jupnp.protocol.level=FINEST
 
-org.fourthline.cling.registry.Registry.level=FINER
-org.fourthline.cling.registry.LocalItems.level=FINER
-org.fourthline.cling.registry.RemoteItems.level=FINER ]]></pre></div>
+org.jupnp.registry.Registry.level=FINER
+org.jupnp.registry.LocalItems.level=FINER
+org.jupnp.registry.RemoteItems.level=FINER ]]></pre></div>
 
         <p>
             You can now start your application with a system property that names your logging
             configuration:
         </p>
 
-        <div><pre><![CDATA[$ java -cp /path/to/seamless-jar-files:/path/to/cling-core.jar:classes/ \
+        <div><pre><![CDATA[$ java -cp /path/to/seamless-jar-files:/path/to/jupnp-core.jar:classes/ \
         -Djava.util.logging.config.file=/path/to/mylogging.properties \
         example.binaryLight.BinaryLightServer]]></pre></div>
 

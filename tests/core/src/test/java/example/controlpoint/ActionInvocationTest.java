@@ -14,30 +14,30 @@
  */
 package example.controlpoint;
 
-import example.binarylight.BinaryLightSampleData;
-import org.fourthline.cling.binding.LocalServiceBinder;
-import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
-import org.fourthline.cling.binding.annotations.UpnpAction;
-import org.fourthline.cling.binding.annotations.UpnpInputArgument;
-import org.fourthline.cling.binding.annotations.UpnpOutputArgument;
-import org.fourthline.cling.binding.annotations.UpnpStateVariable;
-import org.fourthline.cling.controlpoint.ActionCallback;
-import org.fourthline.cling.mock.MockUpnpService;
-import org.fourthline.cling.model.DefaultServiceManager;
-import org.fourthline.cling.model.action.ActionArgumentValue;
-import org.fourthline.cling.model.action.ActionInvocation;
-import org.fourthline.cling.model.message.UpnpResponse;
-import org.fourthline.cling.model.meta.Action;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.LocalService;
-import org.fourthline.cling.model.meta.Service;
-import org.fourthline.cling.model.types.BooleanDatatype;
-import org.fourthline.cling.model.types.Datatype;
-import org.fourthline.cling.model.types.UDAServiceId;
-import org.fourthline.cling.model.types.UDAServiceType;
+import org.jupnp.binding.LocalServiceBinder;
+import org.jupnp.binding.annotations.AnnotationLocalServiceBinder;
+import org.jupnp.binding.annotations.UpnpAction;
+import org.jupnp.binding.annotations.UpnpInputArgument;
+import org.jupnp.binding.annotations.UpnpOutputArgument;
+import org.jupnp.binding.annotations.UpnpStateVariable;
+import org.jupnp.controlpoint.ActionCallback;
+import org.jupnp.mock.MockUpnpService;
+import org.jupnp.model.DefaultServiceManager;
+import org.jupnp.model.action.ActionArgumentValue;
+import org.jupnp.model.action.ActionInvocation;
+import org.jupnp.model.message.UpnpResponse;
+import org.jupnp.model.meta.Action;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.LocalService;
+import org.jupnp.model.meta.Service;
+import org.jupnp.model.types.BooleanDatatype;
+import org.jupnp.model.types.Datatype;
+import org.jupnp.model.types.UDAServiceId;
+import org.jupnp.model.types.UDAServiceType;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import example.binarylight.BinaryLightSampleData;
 import static org.testng.Assert.assertEquals;
 
 /**
@@ -57,7 +57,7 @@ import static org.testng.Assert.assertEquals;
  * <a class="citation" href="javacode://this#invokeActions(LocalDevice)" id="ai_findservice" style="include: FINDSERVICE"/>
  * <p>
  * This method will search the device and all its embedded devices for a service with the given
- * identifier and returns either the found <code>Service</code> or <code>null</code>. The Cling
+ * identifier and returns either the found <code>Service</code> or <code>null</code>. The jUPnP
  * metamodel is thread-safe, so you can share an instance of <code>Service</code> or
  * <code>Action</code> and access it concurrently.
  * </p>
@@ -99,8 +99,8 @@ import static org.testng.Assert.assertEquals;
  * an <code>InvalidValueException</code> will be thrown immediately.
  * </p>
  * <div class="note">
- * <div class="title">Empty values and null in Cling</div>
- * There is no difference between empty string <code>""</code> and <code>null</code> in Cling,
+ * <div class="title">Empty values and null in jUPnP</div>
+ * There is no difference between empty string <code>""</code> and <code>null</code> in jUPnP,
  * because the UPnP specification does not address this issue. The SOAP  message of an action call
  * or an event message must contain an element {@code <SomeVar></SomeVar>} for all arguments, even if
  * it is an empty XML element. If you provide  an empty string or a null value when preparing a message,

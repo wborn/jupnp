@@ -14,7 +14,7 @@
     <packaging>bundle</packaging>
 
     <properties>
-        <SymbolicName>org.fourthline.cling.osgi.upnp.test.device.simple</SymbolicName>
+        <SymbolicName>org.jupnp.osgi.upnp.test.device.simple</SymbolicName>
     </properties>
 
 	<build>
@@ -40,13 +40,11 @@
 					<instructions>
 						<Bundle-SymbolicName>${SymbolicName}</Bundle-SymbolicName>
 						<Bundle-Name>${project.name}</Bundle-Name>
-						<Bundle-Activator>org.fourthline.cling.osgi.upnp.test.device.simple.Activator</Bundle-Activator>
-						<Bundle-Vendor>4th Line</Bundle-Vendor>
+						<Bundle-Activator>org.jupnp.osgi.upnp.test.device.simple.Activator</Bundle-Activator>
 						<Bundle-Author>Bruce Green</Bundle-Author>
 						<Bundle-Description>
 							A test device that exposes all the capablities of OSGi UPnP.
 						</Bundle-Description>
-						<Bundle-DocURL>http://4thline.org/projects/cling</Bundle-DocURL>
 						<Import-Package>
 							org.osgi.framework,
 							org.osgi.service.event,

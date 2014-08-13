@@ -1,6 +1,6 @@
 package example.localservice;
 
-import org.fourthline.cling.binding.annotations.*;
+import org.jupnp.binding.annotations.*;
 import java.beans.PropertyChangeSupport;
 
 @UpnpService(

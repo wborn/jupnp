@@ -14,21 +14,22 @@
  */
 package example.controlpoint;
 
-import example.binarylight.BinaryLightSampleData;
-import org.fourthline.cling.binding.LocalServiceBinder;
-import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
-import org.fourthline.cling.controlpoint.ActionCallback;
-import org.fourthline.cling.mock.MockUpnpService;
-import org.fourthline.cling.model.DefaultServiceManager;
-import org.fourthline.cling.model.action.ActionCancelledException;
-import org.fourthline.cling.model.action.ActionInvocation;
-import org.fourthline.cling.model.message.UpnpResponse;
-import org.fourthline.cling.model.meta.Action;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.LocalService;
-import org.fourthline.cling.model.types.UDAServiceId;
+import org.jupnp.binding.LocalServiceBinder;
+import org.jupnp.binding.annotations.AnnotationLocalServiceBinder;
+import org.jupnp.controlpoint.ActionCallback;
+import org.jupnp.mock.MockUpnpService;
+import org.jupnp.model.DefaultServiceManager;
+import org.jupnp.model.action.ActionCancelledException;
+import org.jupnp.model.action.ActionInvocation;
+import org.jupnp.model.message.UpnpResponse;
+import org.jupnp.model.meta.Action;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.LocalService;
+import org.jupnp.model.types.UDAServiceId;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import example.binarylight.BinaryLightSampleData;
 
 import java.util.concurrent.Future;
 
@@ -50,7 +51,7 @@ import static org.testng.Assert.assertEquals;
  * Here we are calling the <code>SetTarget</code> action of a <em>SwitchPower:1</em> service, and after waiting a
  * (short) time period, we cancel the request. What happens now depends on the invocation and what service you are
  * calling. If it's a local service, and no network access is needed, the thread calling the local service (method)
- * will simply be interrupted. If you are calling a remote service, Cling will abort the HTTP request to the server.
+ * will simply be interrupted. If you are calling a remote service, jUPnP will abort the HTTP request to the server.
  * </p>
  * <p>
  * Most likely you want to handle this explicit cancellation of an action call in your action invocation callback, so
@@ -69,12 +70,12 @@ import static org.testng.Assert.assertEquals;
  * <p>
  * There is no guarantee that the server will actually stop processing your request. When the client closes the
  * connection, the server doesn't get notified. The server will complete the action call and only fail when trying to
- * return the response to the client on the closed connection. Cling's server transports offer a special heartbeat
+ * return the response to the client on the closed connection. jUPnP's server transports offer a special heartbeat
  * feature for checking client connections, we'll discuss this feature later in this chapter. Other UPnP servers will
  * most likely not detect a dropped client connection immediately.
  * </p>
  * <p>
- * Not all HTTP client transports in Cling support interruption of requests:
+ * Not all HTTP client transports in jUPnP support interruption of requests:
  * </p>
  * <table class="infotable fullwidth" border="1">
  * <thead>
@@ -86,19 +87,19 @@ import static org.testng.Assert.assertEquals;
  * <tbody>
  * <tr>
  * <td class="nowrap">
- * <code>org.fourthline.cling.transport.impl.StreamClientImpl (default)</code>
+ * <code>org.jupnp.transport.impl.StreamClientImpl (default)</code>
  * </td>
  * <td>NO</td>
  * </tr>
  * <tr>
  * <td class="nowrap">
- * <code>org.fourthline.cling.transport.impl.apache.StreamClientImpl</code>
+ * <code>org.jupnp.transport.impl.apache.StreamClientImpl</code>
  * </td>
  * <td>YES</td>
  * </tr>
  * <tr>
  * <td class="nowrap">
- * <code>org.fourthline.cling.transport.impl.jetty.StreamClientImpl (default on Android)</code>
+ * <code>org.jupnp.transport.impl.jetty.StreamClientImpl (default on Android)</code>
  * </td>
  * <td>YES</td>
  * </tr>

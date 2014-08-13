@@ -15,14 +15,14 @@
 
 package example.localservice;
 
-import org.fourthline.cling.binding.annotations.UpnpAction;
-import org.fourthline.cling.binding.annotations.UpnpInputArgument;
-import org.fourthline.cling.binding.annotations.UpnpOutputArgument;
-import org.fourthline.cling.binding.annotations.UpnpService;
-import org.fourthline.cling.binding.annotations.UpnpServiceId;
-import org.fourthline.cling.binding.annotations.UpnpServiceType;
-import org.fourthline.cling.binding.annotations.UpnpStateVariable;
-import org.fourthline.cling.model.ModelUtil;
+import org.jupnp.binding.annotations.UpnpAction;
+import org.jupnp.binding.annotations.UpnpInputArgument;
+import org.jupnp.binding.annotations.UpnpOutputArgument;
+import org.jupnp.binding.annotations.UpnpService;
+import org.jupnp.binding.annotations.UpnpServiceId;
+import org.jupnp.binding.annotations.UpnpServiceType;
+import org.jupnp.binding.annotations.UpnpStateVariable;
+import org.jupnp.model.ModelUtil;
 
 import java.beans.PropertyChangeSupport;
 

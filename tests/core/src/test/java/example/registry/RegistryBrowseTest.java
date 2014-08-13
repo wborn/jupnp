@@ -14,21 +14,21 @@
  */
 package example.registry;
 
-import org.fourthline.cling.mock.MockUpnpService;
-import org.fourthline.cling.model.resource.DeviceDescriptorResource;
-import org.fourthline.cling.model.resource.Resource;
-import org.fourthline.cling.model.meta.Device;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.RemoteDevice;
-import org.fourthline.cling.model.types.DeviceType;
-import org.fourthline.cling.model.types.ServiceType;
-import org.fourthline.cling.model.types.UDADeviceType;
-import org.fourthline.cling.model.types.UDAServiceType;
-import org.fourthline.cling.model.types.UDN;
-import org.fourthline.cling.registry.Registry;
-import org.fourthline.cling.test.data.SampleData;
-import org.fourthline.cling.test.data.SampleDeviceRoot;
-import org.fourthline.cling.test.data.SampleDeviceRootLocal;
+import org.jupnp.mock.MockUpnpService;
+import org.jupnp.model.resource.DeviceDescriptorResource;
+import org.jupnp.model.resource.Resource;
+import org.jupnp.model.meta.Device;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.RemoteDevice;
+import org.jupnp.model.types.DeviceType;
+import org.jupnp.model.types.ServiceType;
+import org.jupnp.model.types.UDADeviceType;
+import org.jupnp.model.types.UDAServiceType;
+import org.jupnp.model.types.UDN;
+import org.jupnp.registry.Registry;
+import org.jupnp.test.data.SampleData;
+import org.jupnp.test.data.SampleDeviceRoot;
+import org.jupnp.test.data.SampleDeviceRootLocal;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

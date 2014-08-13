@@ -15,15 +15,15 @@
 
 package example.localservice;
 
-import org.fourthline.cling.binding.LocalServiceBinder;
-import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
-import org.fourthline.cling.model.DefaultServiceManager;
-import org.fourthline.cling.model.meta.DeviceDetails;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.LocalService;
-import org.fourthline.cling.model.types.Datatype;
-import org.fourthline.cling.model.types.DeviceType;
-import org.fourthline.cling.test.data.SampleData;
+import org.jupnp.binding.LocalServiceBinder;
+import org.jupnp.binding.annotations.AnnotationLocalServiceBinder;
+import org.jupnp.model.DefaultServiceManager;
+import org.jupnp.model.meta.DeviceDetails;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.LocalService;
+import org.jupnp.model.types.Datatype;
+import org.jupnp.model.types.DeviceType;
+import org.jupnp.test.data.SampleData;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -39,7 +39,7 @@ import static org.testng.Assert.assertEquals;
  * <p>
  * Alternatively, if your allowed values have to be determined dynamically when
  * your service is being bound, you can implement a class with the
- * <code>org.fourthline.cling.binding.AllowedValueProvider</code> interface:
+ * <code>org.jupnp.binding.AllowedValueProvider</code> interface:
  * </p>
  * <a class="citation" href="javacode://example.localservice.MyServiceWithAllowedValueProvider" style="include: PROVIDER"/>
  * <p>
@@ -49,7 +49,7 @@ import static org.testng.Assert.assertEquals;
  * <a class="citation" id="MyServiceWithAllowedValueProvider-VAR" href="javacode://example.localservice.MyServiceWithAllowedValueProvider" style="include: VAR"/>
  * <p>
  * Note that this provider will only be queried when your annotations are being processed,
- * once when your service is bound in Cling.
+ * once when your service is bound in jUPnP.
  * </p>
  */
 public class AllowedValueTest {

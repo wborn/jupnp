@@ -15,21 +15,21 @@
 
 package example.localservice;
 
-import org.fourthline.cling.binding.LocalServiceBinder;
-import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
-import org.fourthline.cling.model.DefaultServiceManager;
-import org.fourthline.cling.model.action.ActionInvocation;
-import org.fourthline.cling.model.action.RemoteActionInvocation;
-import org.fourthline.cling.model.message.Connection;
-import org.fourthline.cling.model.message.UpnpHeaders;
-import org.fourthline.cling.model.message.header.UpnpHeader;
-import org.fourthline.cling.model.message.header.UserAgentHeader;
-import org.fourthline.cling.model.meta.DeviceDetails;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.LocalService;
-import org.fourthline.cling.model.profile.RemoteClientInfo;
-import org.fourthline.cling.model.types.UDADeviceType;
-import org.fourthline.cling.test.data.SampleData;
+import org.jupnp.binding.LocalServiceBinder;
+import org.jupnp.binding.annotations.AnnotationLocalServiceBinder;
+import org.jupnp.model.DefaultServiceManager;
+import org.jupnp.model.action.ActionInvocation;
+import org.jupnp.model.action.RemoteActionInvocation;
+import org.jupnp.model.message.Connection;
+import org.jupnp.model.message.UpnpHeaders;
+import org.jupnp.model.message.header.UpnpHeader;
+import org.jupnp.model.message.header.UserAgentHeader;
+import org.jupnp.model.meta.DeviceDetails;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.LocalService;
+import org.jupnp.model.profile.RemoteClientInfo;
+import org.jupnp.model.types.UDADeviceType;
+import org.jupnp.test.data.SampleData;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -43,12 +43,12 @@ import static org.testng.Assert.assertEquals;
  * <p>
  * Theoretically, your service implementation should work with any client, as UPnP is
  * supposed to provide a compatibility layer. In practice, this never works as no
- * UPnP client and server is fully compatible with the specifications (except Cling, of
+ * UPnP client and server is fully compatible with the specifications (except jUPnP, of
  * course).
  * </p>
  * <p>
  * If your action method has a last (or only parameter) of type <code>RemoteClientInfo</code>,
- * Cling will provide details about the control point calling your service:
+ * jUPnP will provide details about the control point calling your service:
  * </p>
  * <a class="citation" href="javacode://example.localservice.SwitchPowerWithClientInfo" style="include:CLIENT_INFO"/>
  * <p>
@@ -58,7 +58,7 @@ import static org.testng.Assert.assertEquals;
  * argument will be <code>null</code>.
  * </p>
  * <p>
- * A client's remote and local address might be <code>null</code> if the Cling
+ * A client's remote and local address might be <code>null</code> if the jUPnP
  * transport layer was not able to obtain the connection's address.
  * </p>
  * <p>

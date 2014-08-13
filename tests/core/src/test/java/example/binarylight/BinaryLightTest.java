@@ -1,8 +1,8 @@
 package example.binarylight;
 
-import org.fourthline.cling.mock.MockUpnpService;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.LocalService;
+import org.jupnp.mock.MockUpnpService;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.LocalService;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;

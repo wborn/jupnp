@@ -1,12 +1,12 @@
 package example.binarylight;
 
-import org.fourthline.cling.UpnpService;
-import org.fourthline.cling.UpnpServiceImpl;
-import org.fourthline.cling.binding.*;
-import org.fourthline.cling.binding.annotations.*;
-import org.fourthline.cling.model.*;
-import org.fourthline.cling.model.meta.*;
-import org.fourthline.cling.model.types.*;
+import org.jupnp.UpnpService;
+import org.jupnp.UpnpServiceImpl;
+import org.jupnp.binding.*;
+import org.jupnp.binding.annotations.*;
+import org.jupnp.model.*;
+import org.jupnp.model.meta.*;
+import org.jupnp.model.types.*;
 
 import java.io.IOException;
 

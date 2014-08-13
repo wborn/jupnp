@@ -14,8 +14,9 @@
  */
 package example.localservice;
 
+import org.jupnp.binding.annotations.UpnpStateVariable;
+
 import example.binarylight.SwitchPower;
-import org.fourthline.cling.binding.annotations.UpnpStateVariable;
 
 public class SwitchPowerModerated extends SwitchPower {
 

@@ -14,12 +14,12 @@
  */
 package example.localservice;
 
-import org.fourthline.cling.binding.annotations.*;
+import org.jupnp.binding.annotations.*;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
-import org.fourthline.cling.model.types.csv.CSV;        // DOC:INC1
-import org.fourthline.cling.model.types.csv.CSVInteger;
+import org.jupnp.model.types.csv.CSV;        // DOC:INC1
+import org.jupnp.model.types.csv.CSVInteger;
 
 @UpnpService(
         serviceId = @UpnpServiceId("MyService"),

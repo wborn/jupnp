@@ -3,16 +3,16 @@
     <div class="content">
 
         <p>
-            This is how you use Cling:
+            This is how you use jUPnP:
         </p>
 
         <div><pre class="prettyprint"><![CDATA[package ...;
 
-import org.fourthline.cling.model.message.header.STAllHeader;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.RemoteDevice;
-import org.fourthline.cling.registry.Registry;
-import org.fourthline.cling.registry.RegistryListener;
+import org.jupnp.model.message.header.STAllHeader;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.RemoteDevice;
+import org.jupnp.registry.Registry;
+import org.jupnp.registry.RegistryListener;
 
 /**
  * Runs a simple UPnP discovery procedure.
@@ -83,7 +83,7 @@ public class Main {
         };
 
         // This will create necessary network resources for UPnP right away
-        System.out.println("Starting Cling...");
+        System.out.println("Starting jUPnP...");
         UpnpService upnpService = new UpnpServiceImpl(listener);
 
         // Send a search message to all devices and services, they should respond soon
@@ -94,14 +94,14 @@ public class Main {
         Thread.sleep(10000);
 
         // Release all resources and advertise BYEBYE to other UPnP devices
-        System.out.println("Stopping Cling...");
+        System.out.println("Stopping jUPnP...");
         upnpService.shutdown();
     }
 }]]></pre>
         </div>
 
         <p>
-            You need <code>cling-core.jar</code> and its dependencies (<code>seamless-*.jar</code>
+            You need <code>jupnp-core.jar</code> and its dependencies (<code>seamless-*.jar</code>
             files) on your classpath to build and run this code.
         </p>
 

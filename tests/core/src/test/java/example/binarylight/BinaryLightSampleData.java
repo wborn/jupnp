@@ -1,11 +1,11 @@
 package example.binarylight;
 
-import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
-import org.fourthline.cling.model.meta.DeviceDetails;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.LocalService;
-import org.fourthline.cling.model.types.UDADeviceType;
-import org.fourthline.cling.test.data.SampleData;
+import org.jupnp.binding.annotations.AnnotationLocalServiceBinder;
+import org.jupnp.model.meta.DeviceDetails;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.LocalService;
+import org.jupnp.model.types.UDADeviceType;
+import org.jupnp.test.data.SampleData;
 
 /**
  * @author Christian Bauer

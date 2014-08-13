@@ -14,17 +14,17 @@
  */
 package example.localservice;
 
-import org.fourthline.cling.binding.LocalServiceBinder;
-import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
-import org.fourthline.cling.model.DefaultServiceManager;
-import org.fourthline.cling.model.action.ActionInvocation;
-import org.fourthline.cling.model.meta.ActionArgument;
-import org.fourthline.cling.model.meta.DeviceDetails;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.LocalService;
-import org.fourthline.cling.model.types.Datatype;
-import org.fourthline.cling.model.types.DeviceType;
-import org.fourthline.cling.test.data.SampleData;
+import org.jupnp.binding.LocalServiceBinder;
+import org.jupnp.binding.annotations.AnnotationLocalServiceBinder;
+import org.jupnp.model.DefaultServiceManager;
+import org.jupnp.model.action.ActionInvocation;
+import org.jupnp.model.meta.ActionArgument;
+import org.jupnp.model.meta.DeviceDetails;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.LocalService;
+import org.jupnp.model.types.Datatype;
+import org.jupnp.model.types.DeviceType;
+import org.jupnp.test.data.SampleData;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -34,14 +34,14 @@ import static org.testng.Assert.assertEquals;
  * Working with enums
  * <p>
  * Java <code>enum</code>'s are special, unfortunately: You can't instantiate
- * an enum value through reflection. So Cling can convert your enum value
+ * an enum value through reflection. So jUPnP can convert your enum value
  * into a string for transport in UPnP messages, but you have to convert
  * it back manually from a string. This is shown in the following
  * service example:
  * </p>
  * <a class="citation" href="javacode://example.localservice.MyServiceWithEnum" style="include: INC1"/>
  * <p>
- * Cling will automatically assume that the datatype is a UPnP string if the
+ * jUPnP will automatically assume that the datatype is a UPnP string if the
  * field (or getter) or getter Java type is an enum. Furthermore, an
  * <code>&lt;allowedValueList&gt;</code> will be created in your service descriptor
  * XML, so control points know that this state variable has in fact a defined

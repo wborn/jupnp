@@ -14,27 +14,28 @@
  */
 package example.controlpoint;
 
+import org.jupnp.controlpoint.SubscriptionCallback;
+import org.jupnp.mock.MockRouter;
+import org.jupnp.mock.MockUpnpService;
+import org.jupnp.model.UnsupportedDataException;
+import org.jupnp.model.gena.CancelReason;
+import org.jupnp.model.gena.GENASubscription;
+import org.jupnp.model.gena.RemoteGENASubscription;
+import org.jupnp.model.message.StreamResponseMessage;
+import org.jupnp.model.message.UpnpResponse;
+import org.jupnp.model.message.header.SubscriptionIdHeader;
+import org.jupnp.model.message.header.TimeoutHeader;
+import org.jupnp.model.message.header.UpnpHeader;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.LocalService;
+import org.jupnp.model.state.StateVariableValue;
+import org.jupnp.model.types.BooleanDatatype;
+import org.jupnp.model.types.Datatype;
+import org.jupnp.util.Reflections;
+import org.testng.annotations.Test;
+
 import example.binarylight.BinaryLightSampleData;
 import example.binarylight.SwitchPower;
-import org.fourthline.cling.controlpoint.SubscriptionCallback;
-import org.fourthline.cling.mock.MockRouter;
-import org.fourthline.cling.mock.MockUpnpService;
-import org.fourthline.cling.model.UnsupportedDataException;
-import org.fourthline.cling.model.gena.CancelReason;
-import org.fourthline.cling.model.gena.GENASubscription;
-import org.fourthline.cling.model.gena.RemoteGENASubscription;
-import org.fourthline.cling.model.message.StreamResponseMessage;
-import org.fourthline.cling.model.message.UpnpResponse;
-import org.fourthline.cling.model.message.header.SubscriptionIdHeader;
-import org.fourthline.cling.model.message.header.TimeoutHeader;
-import org.fourthline.cling.model.message.header.UpnpHeader;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.LocalService;
-import org.fourthline.cling.model.state.StateVariableValue;
-import org.fourthline.cling.model.types.BooleanDatatype;
-import org.fourthline.cling.model.types.Datatype;
-import org.seamless.util.Reflections;
-import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;

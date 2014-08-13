@@ -14,18 +14,18 @@
  */
 package example.localservice;
 
-import org.fourthline.cling.binding.LocalServiceBinder;
-import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
-import org.fourthline.cling.model.DefaultServiceManager;
-import org.fourthline.cling.model.action.ActionInvocation;
-import org.fourthline.cling.model.meta.ActionArgument;
-import org.fourthline.cling.model.meta.DeviceDetails;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.LocalService;
-import org.fourthline.cling.model.meta.StateVariable;
-import org.fourthline.cling.model.types.Datatype;
-import org.fourthline.cling.model.types.DeviceType;
-import org.fourthline.cling.test.data.SampleData;
+import org.jupnp.binding.LocalServiceBinder;
+import org.jupnp.binding.annotations.AnnotationLocalServiceBinder;
+import org.jupnp.model.DefaultServiceManager;
+import org.jupnp.model.action.ActionInvocation;
+import org.jupnp.model.meta.ActionArgument;
+import org.jupnp.model.meta.DeviceDetails;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.LocalService;
+import org.jupnp.model.meta.StateVariable;
+import org.jupnp.model.types.Datatype;
+import org.jupnp.model.types.DeviceType;
+import org.jupnp.test.data.SampleData;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -41,7 +41,7 @@ import static org.testng.Assert.assertEquals;
  * <a class="citation" href="javacode://example.localservice.MyServiceWithStringConvertibles" style="include: INC1"/>
  * <p>
  * The state variables are all of UPnP datatype <code>string</code> because
- * Cling knows that the Java type of the annotated field is "string convertible".
+ * jUPnP knows that the Java type of the annotated field is "string convertible".
  * This is always the case for <code>java.net.URI</code> and <code>java.net.URL</code>.
  * </p>
  * <p>
@@ -55,11 +55,11 @@ import static org.testng.Assert.assertEquals;
  * The <code>List&lt;Integer></code> is the collection you'd use in your service
  * implementation to group several numbers. Let's assume that for UPnP communication
  * you need a comma-separated representation of the individual values in a string,
- * as is required by many of the UPnP A/V specifications. First, tell Cling that
+ * as is required by many of the UPnP A/V specifications. First, tell jUPnP that
  * the state variable really is a string datatype, it can't infer that
  * from the field type. Then, if an action has this output argument, instead of
  * manually creating the comma-separated string you pick the appropriate converter
- * from the classes in <code>org.fourthline.cling.model.types.csv.*</code> and return
+ * from the classes in <code>org.jupnp.model.types.csv.*</code> and return
  * it from your action method. These are actually <code>java.util.List</code>
  * implementations, so you could use them <em>instead</em> of
  * <code>java.util.List</code> if you don't care about the dependency. Any action

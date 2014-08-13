@@ -14,19 +14,19 @@
  */
 package example.localservice;
 
-import org.fourthline.cling.binding.LocalServiceBinder;
-import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
-import org.fourthline.cling.model.DefaultServiceManager;
-import org.fourthline.cling.model.action.ActionInvocation;
-import org.fourthline.cling.model.meta.ActionArgument;
-import org.fourthline.cling.model.meta.DeviceDetails;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.LocalService;
-import org.fourthline.cling.model.types.Datatype;
-import org.fourthline.cling.model.types.UDADeviceType;
-import org.fourthline.cling.model.types.UDAServiceId;
-import org.fourthline.cling.model.types.UDAServiceType;
-import org.fourthline.cling.test.data.SampleData;
+import org.jupnp.binding.LocalServiceBinder;
+import org.jupnp.binding.annotations.AnnotationLocalServiceBinder;
+import org.jupnp.model.DefaultServiceManager;
+import org.jupnp.model.action.ActionInvocation;
+import org.jupnp.model.meta.ActionArgument;
+import org.jupnp.model.meta.DeviceDetails;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.LocalService;
+import org.jupnp.model.types.Datatype;
+import org.jupnp.model.types.UDADeviceType;
+import org.jupnp.model.types.UDAServiceId;
+import org.jupnp.model.types.UDAServiceType;
+import org.jupnp.test.data.SampleData;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -46,12 +46,12 @@ import static org.testng.Assert.assertEquals;
  * <a class="citation" href="javadoc://example.localservice.SwitchPowerAnnotatedClass"/>
  * </div>
  * <p>
- * Cling tries to provide smart defaults. For example, the previously shown service classes
+ * jUPnP tries to provide smart defaults. For example, the previously shown service classes
  * did not name the related state variable of action output arguments, as required by UPnP.
- * Cling will automatically detect that the <code>getStatus()</code> method is a JavaBean
+ * jUPnP will automatically detect that the <code>getStatus()</code> method is a JavaBean
  * getter method (its name starts with <code>get</code> or <code>is</code>) and use the
  * JavaBean property name to find the related state variable. In this case that would be
- * the JavaBean property <code>status</code> and Cling is also smart enough to know that
+ * the JavaBean property <code>status</code> and jUPnP is also smart enough to know that
  * you really want the uppercase UPnP state variable named <code>Status</code>.
  * </p>
  * <div class="section">
@@ -60,7 +60,7 @@ import static org.testng.Assert.assertEquals;
  * <p>
  * For the next example, let's assume you have a class that was already written, not
  * necessarily  as a service backend for UPnP but for some other purpose. You can't
- * redesign and rewrite your class without interrupting all existing code. Cling offers
+ * redesign and rewrite your class without interrupting all existing code. jUPnP offers
  * some flexibility in the mapping of action methods, especially how the output of
  * an action call is obtained.
  * </p>

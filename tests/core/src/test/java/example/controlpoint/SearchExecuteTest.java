@@ -14,26 +14,26 @@
  */
 package example.controlpoint;
 
-import org.fourthline.cling.mock.MockUpnpService;
-import org.fourthline.cling.model.message.UpnpMessage;
-import org.fourthline.cling.model.message.header.DeviceTypeHeader;
-import org.fourthline.cling.model.message.header.HostHeader;
-import org.fourthline.cling.model.message.header.MANHeader;
-import org.fourthline.cling.model.message.header.MXHeader;
-import org.fourthline.cling.model.message.header.RootDeviceHeader;
-import org.fourthline.cling.model.message.header.STAllHeader;
-import org.fourthline.cling.model.message.header.ServiceTypeHeader;
-import org.fourthline.cling.model.message.header.UDADeviceTypeHeader;
-import org.fourthline.cling.model.message.header.UDAServiceTypeHeader;
-import org.fourthline.cling.model.message.header.UDNHeader;
-import org.fourthline.cling.model.message.header.UpnpHeader;
-import org.fourthline.cling.model.types.DeviceType;
-import org.fourthline.cling.model.types.NotificationSubtype;
-import org.fourthline.cling.model.types.ServiceType;
-import org.fourthline.cling.model.types.UDADeviceType;
-import org.fourthline.cling.model.types.UDAServiceType;
-import org.fourthline.cling.model.types.UDN;
-import org.fourthline.cling.protocol.async.SendingSearch;
+import org.jupnp.mock.MockUpnpService;
+import org.jupnp.model.message.UpnpMessage;
+import org.jupnp.model.message.header.DeviceTypeHeader;
+import org.jupnp.model.message.header.HostHeader;
+import org.jupnp.model.message.header.MANHeader;
+import org.jupnp.model.message.header.MXHeader;
+import org.jupnp.model.message.header.RootDeviceHeader;
+import org.jupnp.model.message.header.STAllHeader;
+import org.jupnp.model.message.header.ServiceTypeHeader;
+import org.jupnp.model.message.header.UDADeviceTypeHeader;
+import org.jupnp.model.message.header.UDAServiceTypeHeader;
+import org.jupnp.model.message.header.UDNHeader;
+import org.jupnp.model.message.header.UpnpHeader;
+import org.jupnp.model.types.DeviceType;
+import org.jupnp.model.types.NotificationSubtype;
+import org.jupnp.model.types.ServiceType;
+import org.jupnp.model.types.UDADeviceType;
+import org.jupnp.model.types.UDAServiceType;
+import org.jupnp.model.types.UDN;
+import org.jupnp.protocol.async.SendingSearch;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
@@ -51,7 +51,7 @@ import static org.testng.Assert.*;
  * </p>
  * <p>
  * Search messages carry a <em>search type</em> header and receivers consider this header when they
- * evaluate a potential response. The Cling <code>ControlPoint</code> API accepts a
+ * evaluate a potential response. The jUPnP <code>ControlPoint</code> API accepts a
  * <code>UpnpHeader</code> argument when creating outgoing search messages.
  * </p>
  * <a class="citation" href="javadoc://this#searchAll" style="read-title: false;"/>
