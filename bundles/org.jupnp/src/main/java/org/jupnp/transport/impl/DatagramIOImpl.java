@@ -15,20 +15,20 @@
 
 package org.jupnp.transport.impl;
 
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.MulticastSocket;
+import java.net.SocketException;
+
 import org.jupnp.model.UnsupportedDataException;
 import org.jupnp.model.message.OutgoingDatagramMessage;
 import org.jupnp.transport.Router;
 import org.jupnp.transport.spi.DatagramIO;
 import org.jupnp.transport.spi.DatagramProcessor;
 import org.jupnp.transport.spi.InitializationException;
-
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.MulticastSocket;
-import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation based on a single shared (receive/send) UDP <code>MulticastSocket</code>.
@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  */
 public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
 
-    private static Logger log = Logger.getLogger(DatagramIO.class.getName());
+    private static Logger log = LoggerFactory.getLogger(DatagramIOImpl.class);
 
     /* Implementation notes for unicast/multicast UDP:
 
@@ -100,7 +100,7 @@ public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
     }
 
     public void run() {
-        log.fine("Entering blocking receiving loop, listening for UDP datagrams on: " + socket.getLocalAddress() + ":" + socket.getPort()); 
+        log.debug("Entering blocking receiving loop, listening for UDP datagrams on: " + socket.getLocalAddress() + ":" + socket.getPort()); 
 
         while (true) {
 
@@ -110,7 +110,7 @@ public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
 
                 socket.receive(datagram);
 
-                log.fine(
+                log.debug(
                         "UDP datagram received from: "
                                 + datagram.getAddress().getHostAddress()
                                 + ":" + datagram.getPort()
@@ -121,7 +121,7 @@ public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
                 router.received(datagramProcessor.read(localAddress.getAddress(), datagram));
 
             } catch (SocketException ex) {
-                log.fine("Socket closed");
+                log.debug("Socket closed");
                 break;
             } catch (UnsupportedDataException ex) {
                 log.info("Could not read datagram: " + ex.getMessage());
@@ -131,7 +131,7 @@ public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
         }
         try {
             if (!socket.isClosed()) {
-                log.fine("Closing unicast socket");
+                log.debug("Closing unicast socket");
                 socket.close();
             }
         } catch (Exception ex) {
@@ -140,31 +140,26 @@ public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
     }
 
     synchronized public void send(OutgoingDatagramMessage message) {
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("Sending message from address: " + localAddress);
-        }
+        log.debug("Sending message from address: " + localAddress);
+
         DatagramPacket packet = datagramProcessor.write(message);
 
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("Sending UDP datagram packet to: " + message.getDestinationAddress() + ":" + message.getDestinationPort());
-        }
+        log.debug("Sending UDP datagram packet to: " + message.getDestinationAddress() + ":" + message.getDestinationPort());
         
         send(packet);
     }
 
     synchronized public void send(DatagramPacket datagram) {
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("Sending message from address: " + localAddress);
-        }
+        log.debug("Sending message from address: " + localAddress);
             
         try {
             socket.send(datagram);
         } catch (SocketException ex) {
-            log.fine("Socket closed, aborting datagram send to: " + datagram.getAddress());
+            log.debug("Socket closed, aborting datagram send to: " + datagram.getAddress());
         } catch (RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
-            log.log(Level.SEVERE, "Exception sending datagram to: " + datagram.getAddress() + ": " + ex, ex);
+            log.error("Exception sending datagram to: " + datagram.getAddress() + ": " + ex, ex);
         }
     }
 }

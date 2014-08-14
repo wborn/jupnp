@@ -23,6 +23,7 @@ public class BinaryLightTest {
         // Well we can't really test the listener easily, but the action invocation should work on a local device
 
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
 
         BinaryLightClient client = new BinaryLightClient();
         LocalDevice binaryLight = new BinaryLightServer().createDevice();

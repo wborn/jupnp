@@ -195,7 +195,7 @@ public class EventSubscriptionTest {
     }
 
     protected MockUpnpService createMockUpnpService() {
-        return new MockUpnpService() {
+        MockUpnpService mock =  new MockUpnpService() {
             @Override
             protected MockRouter createRouter() {
                 return new MockRouter(getConfiguration(), getProtocolFactory()) {
@@ -209,6 +209,8 @@ public class EventSubscriptionTest {
                 };
             }
         };
+        mock.activate();
+        return mock;
     }
 
     protected StreamResponseMessage createSubscribeResponseMessage() {

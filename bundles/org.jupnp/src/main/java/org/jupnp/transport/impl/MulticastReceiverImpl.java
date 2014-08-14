@@ -15,13 +15,6 @@
 
 package org.jupnp.transport.impl;
 
-import org.jupnp.model.UnsupportedDataException;
-import org.jupnp.transport.Router;
-import org.jupnp.transport.spi.DatagramProcessor;
-import org.jupnp.transport.spi.InitializationException;
-import org.jupnp.transport.spi.MulticastReceiver;
-import org.jupnp.transport.spi.NetworkAddressFactory;
-
 import java.net.DatagramPacket;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -29,7 +22,15 @@ import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.logging.Logger;
+
+import org.jupnp.model.UnsupportedDataException;
+import org.jupnp.transport.Router;
+import org.jupnp.transport.spi.DatagramProcessor;
+import org.jupnp.transport.spi.InitializationException;
+import org.jupnp.transport.spi.MulticastReceiver;
+import org.jupnp.transport.spi.NetworkAddressFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation based on a UDP <code>MulticastSocket</code>.
@@ -41,7 +42,7 @@ import java.util.logging.Logger;
  */
 public class MulticastReceiverImpl implements MulticastReceiver<MulticastReceiverConfigurationImpl> {
 
-    private static Logger log = Logger.getLogger(MulticastReceiver.class.getName());
+    private static Logger log = LoggerFactory.getLogger(MulticastReceiver.class.getName());
 
     final protected MulticastReceiverConfigurationImpl configuration;
 
@@ -91,11 +92,11 @@ public class MulticastReceiverImpl implements MulticastReceiver<MulticastReceive
     synchronized public void stop() {
         if (socket != null && !socket.isClosed()) {
             try {
-                log.fine("Leaving multicast group");
+                log.debug("Leaving multicast group");
                 socket.leaveGroup(multicastAddress, multicastInterface);
                 // Well this doesn't work and I have no idea why I get "java.net.SocketException: Can't assign requested address"
             } catch (Exception ex) {
-                log.fine("Could not leave multicast group: " + ex);
+                log.debug("Could not leave multicast group: " + ex);
             }
             // So... just close it and ignore the log messages
             socket.close();
@@ -104,7 +105,7 @@ public class MulticastReceiverImpl implements MulticastReceiver<MulticastReceive
 
     public void run() {
 
-        log.fine("Entering blocking receiving loop, listening for UDP datagrams on: " + socket.getLocalAddress());
+        log.debug("Entering blocking receiving loop, listening for UDP datagrams on: " + socket.getLocalAddress());
         while (true) {
 
             try {
@@ -120,7 +121,7 @@ public class MulticastReceiverImpl implements MulticastReceiver<MulticastReceive
                             datagram.getAddress()
                         );
 
-                log.fine(
+                log.debug(
                         "UDP datagram received from: " + datagram.getAddress().getHostAddress() 
                                 + ":" + datagram.getPort()
                                 + " on local interface: " + multicastInterface.getDisplayName()
@@ -130,7 +131,7 @@ public class MulticastReceiverImpl implements MulticastReceiver<MulticastReceive
                 router.received(datagramProcessor.read(receivedOnLocalAddress, datagram));
 
             } catch (SocketException ex) {
-                log.fine("Socket closed");
+                log.debug("Socket closed");
                 break;
             } catch (UnsupportedDataException ex) {
                 log.info("Could not read datagram: " + ex.getMessage());
@@ -140,7 +141,7 @@ public class MulticastReceiverImpl implements MulticastReceiver<MulticastReceive
         }
         try {
             if (!socket.isClosed()) {
-                log.fine("Closing multicast socket");
+                log.debug("Closing multicast socket");
                 socket.close();
             }
         } catch (Exception ex) {

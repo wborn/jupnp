@@ -43,6 +43,7 @@ public class ServiceDescriptorRetrievalTest {
     public void registerAndRetrieveDescriptor() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
 
         // Register a device
         LocalDevice localDevice = SampleData.createLocalDevice();
@@ -76,6 +77,7 @@ public class ServiceDescriptorRetrievalTest {
     public void retrieveNonExistentDescriptor() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
 
         // Retrieve the descriptor
         LocalDevice localDevice = SampleData.createLocalDevice();

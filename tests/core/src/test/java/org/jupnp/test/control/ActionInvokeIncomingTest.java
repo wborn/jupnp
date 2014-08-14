@@ -102,6 +102,7 @@ public class ActionInvokeIncomingTest {
     public IncomingActionResponseMessage incomingRemoteCallGet(LocalDevice ld) throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
         LocalService service = ld.getServices()[0];
         upnpService.getRegistry().addDevice(ld);
 
@@ -164,6 +165,7 @@ public class ActionInvokeIncomingTest {
 
         // Register local device and its service
         MockUpnpService upnpService = new MockUpnpService(false, false, true);
+        upnpService.activate();
         LocalDevice ld = ActionSampleData.createTestDevice(ActionSampleData.LocalTestServiceThrowsException.class);
         LocalService service = ld.getServices()[0];
         upnpService.getRegistry().addDevice(ld);
@@ -231,6 +233,7 @@ public class ActionInvokeIncomingTest {
 
         // Register local device and its service
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
         LocalDevice ld = ActionSampleData.createTestDevice();
         LocalService service = ld.getServices()[0];
         upnpService.getRegistry().addDevice(ld);
@@ -270,6 +273,7 @@ public class ActionInvokeIncomingTest {
 
         // Register local device and its service
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
         LocalDevice ld = ActionSampleData.createTestDevice();
         LocalService service = ld.getServices()[0];
         upnpService.getRegistry().addDevice(ld);
@@ -295,6 +299,7 @@ public class ActionInvokeIncomingTest {
 
         // Register local device and its service
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
         LocalDevice ld = ActionSampleData.createTestDevice(ActionSampleData.LocalTestServiceThrowsException.class);
         LocalService service = ld.getServices()[0];
         upnpService.getRegistry().addDevice(ld);
@@ -338,6 +343,7 @@ public class ActionInvokeIncomingTest {
 
         // Register local device and its service
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
         LocalDevice ld = ActionSampleData.createTestDevice();
         LocalService service = ld.getServices()[0];
         upnpService.getRegistry().addDevice(ld);
@@ -378,6 +384,7 @@ public class ActionInvokeIncomingTest {
     public void incomingRemoteCallWrongContentType() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
 
         StreamRequestMessage request = new StreamRequestMessage(UpnpRequest.Method.POST, URI.create("/some/random/123/uri"));
         request.getHeaders().add(
@@ -401,6 +408,7 @@ public class ActionInvokeIncomingTest {
 
         // Register local device and its service
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
         LocalDevice ld = ActionSampleData.createTestDevice();
         LocalService service = ld.getServices()[0];
         upnpService.getRegistry().addDevice(ld);

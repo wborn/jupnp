@@ -15,20 +15,20 @@
 
 package org.jupnp;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jupnp.controlpoint.ControlPoint;
 import org.jupnp.controlpoint.ControlPointImpl;
+import org.jupnp.model.message.header.STAllHeader;
 import org.jupnp.protocol.ProtocolFactory;
 import org.jupnp.protocol.ProtocolFactoryImpl;
 import org.jupnp.registry.Registry;
 import org.jupnp.registry.RegistryImpl;
-import org.jupnp.registry.RegistryListener;
 import org.jupnp.transport.Router;
 import org.jupnp.transport.RouterException;
 import org.jupnp.transport.RouterImpl;
 import org.jupnp.util.Exceptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of {@link UpnpService}, starts immediately on construction.
@@ -44,54 +44,35 @@ import org.jupnp.util.Exceptions;
  * </p>
  *
  * @author Christian Bauer
+ * @author Kai Kreuzer - OSGiified the service
  */
 public class UpnpServiceImpl implements UpnpService {
 
-    private static Logger log = Logger.getLogger(UpnpServiceImpl.class.getName());
+    private static Logger log = LoggerFactory.getLogger(UpnpServiceImpl.class);
 
-    protected final UpnpServiceConfiguration configuration;
-    protected final ControlPoint controlPoint;
-    protected final ProtocolFactory protocolFactory;
-    protected final Registry registry;
-    protected final Router router;
+    protected UpnpServiceConfiguration configuration;
+    protected ProtocolFactory protocolFactory;
+    protected Registry registry;
+
+    protected ControlPoint controlPoint;
+    protected Router router;
 
     public UpnpServiceImpl() {
-        this(new DefaultUpnpServiceConfiguration());
+    	this(new DefaultUpnpServiceConfiguration());
     }
 
-    public UpnpServiceImpl(RegistryListener... registryListeners) {
-        this(new DefaultUpnpServiceConfiguration(), registryListeners);
-    }
-
-    public UpnpServiceImpl(UpnpServiceConfiguration configuration, RegistryListener... registryListeners) {
+    public UpnpServiceImpl(UpnpServiceConfiguration configuration) {
         this.configuration = configuration;
-
-        log.info(">>> Starting UPnP service...");
-
-        log.info("Using configuration: " + getConfiguration().getClass().getName());
-
-        // Instantiation order is important: Router needs to start its network services after registry is ready
-
-        this.protocolFactory = createProtocolFactory();
-
-        this.registry = createRegistry(protocolFactory);
-        for (RegistryListener registryListener : registryListeners) {
-            this.registry.addListener(registryListener);
-        }
-
-        this.router = createRouter(protocolFactory, registry);
-
-        try {
-            this.router.enable();
-        } catch (RouterException ex) {
-            throw new RuntimeException("Enabling network router failed: " + ex, ex);
-        }
-
-        this.controlPoint = createControlPoint(protocolFactory, registry);
-
-        log.info("<<< UPnP service started successfully");
     }
 
+    protected void setOSGiUpnpServiceConfiguration(OSGiUpnpServiceConfiguration configuration) {
+    	this.configuration = configuration;
+    }
+
+    protected void unsetOSGiUpnpServiceConfiguration(OSGiUpnpServiceConfiguration configuration) {
+    	this.configuration = null;
+    }
+    
     protected ProtocolFactory createProtocolFactory() {
         return new ProtocolFactoryImpl(this);
     }
@@ -136,11 +117,11 @@ public class UpnpServiceImpl implements UpnpService {
         Runnable shutdown = new Runnable() {
             @Override
             public void run() {
-                log.info(">>> Shutting down UPnP service...");
+                log.info("Shutting down UPnP service...");
                 shutdownRegistry();
                 shutdownRouter();
                 shutdownConfiguration();
-                log.info("<<< UPnP service shutdown completed");
+                log.info("UPnP service shutdown completed");
             }
         };
         if (separateThread) {
@@ -161,7 +142,7 @@ public class UpnpServiceImpl implements UpnpService {
         } catch (RouterException ex) {
             Throwable cause = Exceptions.unwrap(ex);
             if (cause instanceof InterruptedException) {
-                log.log(Level.INFO, "Router shutdown was interrupted: " + ex, cause);
+                log.debug("Router shutdown was interrupted: " + ex, cause);
             } else {
                 throw new RuntimeException("Router error on shutdown: " + ex, ex);
             }
@@ -172,4 +153,34 @@ public class UpnpServiceImpl implements UpnpService {
         getConfiguration().shutdown();
     }
 
+    public void activate() {
+        log.info("Starting UPnP service...");
+
+        // Instantiation order is important: Router needs to start its network services after registry is ready
+
+        this.protocolFactory = createProtocolFactory();
+
+        this.registry = createRegistry(protocolFactory);
+        
+        log.debug("Using configuration: " + getConfiguration().getClass().getName());
+
+        this.router = createRouter(protocolFactory, registry);
+
+        try {
+            this.router.enable();
+        } catch (RouterException ex) {
+            throw new RuntimeException("Enabling network router failed: " + ex, ex);
+        }
+
+        this.controlPoint = createControlPoint(protocolFactory, registry);
+
+        log.debug("UPnP service started successfully");
+        
+        controlPoint.search(new STAllHeader());
+
+    }
+
+    protected void deactivate() {
+    	shutdown();
+    }
 }

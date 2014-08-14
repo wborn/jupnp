@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutorService;
 public abstract class AbstractStreamClientConfiguration implements StreamClientConfiguration {
 
     protected ExecutorService requestExecutorService;
-    protected int timeoutSeconds = 60;
+    protected int timeoutSeconds = 10;
     protected int logWarningSeconds = 5;
 
     protected AbstractStreamClientConfiguration(ExecutorService requestExecutorService) {

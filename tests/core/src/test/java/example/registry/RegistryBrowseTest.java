@@ -66,6 +66,7 @@ public class RegistryBrowseTest {
     @Test
     public void findDevice() throws Exception {
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
         LocalDevice device = SampleData.createLocalDevice();
         upnpService.getRegistry().addDevice(device);
 
@@ -95,6 +96,7 @@ public class RegistryBrowseTest {
     @Test
     public void findDeviceByType() throws Exception {
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
         LocalDevice device = SampleData.createLocalDevice();
         upnpService.getRegistry().addDevice(device);
 
@@ -117,6 +119,7 @@ public class RegistryBrowseTest {
     @Test
     public void findLocalDevice() throws Exception {
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
 
         LocalDevice deviceOne = SampleData.createLocalDevice();
         upnpService.getRegistry().addDevice(deviceOne);
@@ -133,6 +136,7 @@ public class RegistryBrowseTest {
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void findLocalDeviceInvalidRelativePath() throws Exception {
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
 
         LocalDevice deviceOne = SampleData.createLocalDevice();
         upnpService.getRegistry().addDevice(deviceOne);
@@ -161,6 +165,7 @@ public class RegistryBrowseTest {
     @Test
     public void cleanupRemoteDevice() {
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
         RemoteDevice rd = SampleData.createRemoteDevice();
 
         upnpService.getRegistry().addDevice(rd);

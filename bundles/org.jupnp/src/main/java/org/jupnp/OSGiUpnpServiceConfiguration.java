@@ -35,6 +35,8 @@ import org.jupnp.model.message.UpnpHeaders;
 import org.jupnp.model.meta.RemoteDeviceIdentity;
 import org.jupnp.model.meta.RemoteService;
 import org.jupnp.model.types.ServiceType;
+import org.jupnp.transport.impl.AsyncServletStreamServerConfigurationImpl;
+import org.jupnp.transport.impl.AsyncServletStreamServerImpl;
 import org.jupnp.transport.impl.DatagramIOConfigurationImpl;
 import org.jupnp.transport.impl.DatagramIOImpl;
 import org.jupnp.transport.impl.DatagramProcessorImpl;
@@ -45,8 +47,7 @@ import org.jupnp.transport.impl.NetworkAddressFactoryImpl;
 import org.jupnp.transport.impl.SOAPActionProcessorImpl;
 import org.jupnp.transport.impl.apache.StreamClientConfigurationImpl;
 import org.jupnp.transport.impl.apache.StreamClientImpl;
-import org.jupnp.transport.impl.apache.StreamServerConfigurationImpl;
-import org.jupnp.transport.impl.apache.StreamServerImpl;
+import org.jupnp.transport.impl.osgi.HttpServiceServletContainerAdapter;
 import org.jupnp.transport.spi.DatagramIO;
 import org.jupnp.transport.spi.DatagramProcessor;
 import org.jupnp.transport.spi.GENAEventProcessor;
@@ -56,6 +57,7 @@ import org.jupnp.transport.spi.SOAPActionProcessor;
 import org.jupnp.transport.spi.StreamClient;
 import org.jupnp.transport.spi.StreamServer;
 import org.jupnp.util.Exceptions;
+import org.osgi.service.http.HttpService;
 
 /**
  * Default configuration data of a typical UPnP stack.
@@ -81,49 +83,51 @@ import org.jupnp.util.Exceptions;
  * </p>
  *
  * @author Christian Bauer
- * @author Kai Kreuzer - introduced bounded thread pool
+ * @author Kai Kreuzer - introduced bounded thread pool and http service streaming server
  */
-public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration {
+public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
-    private static Logger log = Logger.getLogger(DefaultUpnpServiceConfiguration.class.getName());
+    private static Logger log = Logger.getLogger(OSGiUpnpServiceConfiguration.class.getName());
 
     final private static int THREAD_POOL_SIZE = 20;
     final private static int THREAD_QUEUE_SIZE = 1000;
     
-    final private int streamListenPort;
-    final private int multicastResponsePort;
+    private int streamListenPort;
+    private int multicastResponsePort;
 
-    final private ExecutorService defaultExecutorService;
+    private ExecutorService defaultExecutorService;
 
-    final private DatagramProcessor datagramProcessor;
-    final private SOAPActionProcessor soapActionProcessor;
-    final private GENAEventProcessor genaEventProcessor;
+    private DatagramProcessor datagramProcessor;
+    private SOAPActionProcessor soapActionProcessor;
+    private GENAEventProcessor genaEventProcessor;
 
-    final private DeviceDescriptorBinder deviceDescriptorBinderUDA10;
-    final private ServiceDescriptorBinder serviceDescriptorBinderUDA10;
+    private DeviceDescriptorBinder deviceDescriptorBinderUDA10;
+    private ServiceDescriptorBinder serviceDescriptorBinderUDA10;
 
-    final private Namespace namespace;
+    private Namespace namespace;
+
+	private HttpService httpService;
 
     /**
      * Defaults to port '0', ephemeral.
      */
-    public DefaultUpnpServiceConfiguration() {
+    public OSGiUpnpServiceConfiguration() {
         this(NetworkAddressFactoryImpl.DEFAULT_TCP_HTTP_LISTEN_PORT);
     }
 
-    public DefaultUpnpServiceConfiguration(int streamListenPort) {
+    public OSGiUpnpServiceConfiguration(int streamListenPort) {
         this(streamListenPort, NetworkAddressFactoryImpl.DEFAULT_MULTICAST_RESPONSE_LISTEN_PORT, true);
     }
 
-    public DefaultUpnpServiceConfiguration(int streamListenPort, int multicastResponsePort) {
+    public OSGiUpnpServiceConfiguration(int streamListenPort, int multicastResponsePort) {
         this(streamListenPort, multicastResponsePort, true);
     }
 
-    protected DefaultUpnpServiceConfiguration(boolean checkRuntime) {
+    protected OSGiUpnpServiceConfiguration(boolean checkRuntime) {
         this(NetworkAddressFactoryImpl.DEFAULT_TCP_HTTP_LISTEN_PORT, NetworkAddressFactoryImpl.DEFAULT_MULTICAST_RESPONSE_LISTEN_PORT, checkRuntime);
     }
 
-    protected DefaultUpnpServiceConfiguration(int streamListenPort, int multicastResponsePort, boolean checkRuntime) {
+    protected OSGiUpnpServiceConfiguration(int streamListenPort, int multicastResponsePort, boolean checkRuntime) {
         if (checkRuntime && ModelUtil.ANDROID_RUNTIME) {
             throw new Error("Unsupported runtime environment, use org.jupnp.android.AndroidUpnpServiceConfiguration");
         }
@@ -131,6 +135,9 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
         this.streamListenPort = streamListenPort;
         this.multicastResponsePort = multicastResponsePort;
         
+    }
+
+    protected void activate() {
         defaultExecutorService = createDefaultExecutorService();
 
         datagramProcessor = createDatagramProcessor();
@@ -141,6 +148,14 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
         serviceDescriptorBinderUDA10 = createServiceDescriptorBinderUDA10();
 
         namespace = createNamespace();
+    }
+    
+    protected void setHttpService(HttpService httpService) {
+    	this.httpService = httpService;
+    }
+
+    protected void unsetHttpService(HttpService httpService) {
+    	this.httpService = null;
     }
 
     public DatagramProcessor getDatagramProcessor() {
@@ -177,10 +192,8 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
     }
 
     public StreamServer createStreamServer(NetworkAddressFactory networkAddressFactory) {
-        return new StreamServerImpl(
-                new StreamServerConfigurationImpl(
-                        networkAddressFactory.getStreamListenPort()
-                )
+        return new AsyncServletStreamServerImpl(
+                new AsyncServletStreamServerConfigurationImpl(new HttpServiceServletContainerAdapter(httpService))
         );
     }
 
@@ -295,7 +308,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
     }
 
     protected Namespace createNamespace() {
-        return new Namespace();
+        return new Namespace("http://localhost/upnpcallback");
     }
 
     protected ExecutorService getDefaultExecutorService() {

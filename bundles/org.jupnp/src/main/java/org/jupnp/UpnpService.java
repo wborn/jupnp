@@ -62,4 +62,6 @@ public interface UpnpService {
 
     }
 
+	public void activate();
+
 }

@@ -55,6 +55,7 @@ public class LocalDeviceBindingAdvertisementTest {
     public void registerLocalDevice() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService(true, true);
+        upnpService.activate();
 
         LocalDevice binaryLight = DemoBinaryLight.createTestDevice();
 
@@ -93,6 +94,7 @@ public class LocalDeviceBindingAdvertisementTest {
     public void waitForRefresh() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService(true, true);
+        upnpService.activate();
 
         LocalDevice ld =
             SampleData.createLocalDevice(
@@ -134,6 +136,7 @@ public class LocalDeviceBindingAdvertisementTest {
                     return 2000;
                 }
             });
+        upnpService.activate();
 
         LocalDevice ld =
             SampleData.createLocalDevice(
@@ -162,6 +165,7 @@ public class LocalDeviceBindingAdvertisementTest {
     public void byeByeBeforeAlive() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService(true, true);
+        upnpService.activate();
 
         LocalDevice ld =
             SampleData.createLocalDevice(
@@ -192,6 +196,7 @@ public class LocalDeviceBindingAdvertisementTest {
     @Test
     public void registerNonAdvertisedLocalDevice() throws Exception {
         MockUpnpService upnpService = new MockUpnpService(true, true);
+        upnpService.activate();
 
         LocalDevice binaryLight = DemoBinaryLight.createTestDevice();
 

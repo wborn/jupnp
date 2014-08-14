@@ -49,6 +49,7 @@ public class SearchResponseTest {
     public void receivedValidResponse() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
 
         RemoteDevice rd = SampleData.createRemoteDevice();
 
@@ -66,6 +67,7 @@ public class SearchResponseTest {
     public void receivedInvalidSearchResponses() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
 
         RemoteDevice rd = SampleData.createRemoteDevice();
 
@@ -96,6 +98,7 @@ public class SearchResponseTest {
     public void receivedAlreadyKnownLocalUDN() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
+        upnpService.activate();
 
         LocalDevice localDevice = SampleData.createLocalDevice();
         upnpService.getRegistry().addDevice(localDevice);
@@ -116,6 +119,7 @@ public class SearchResponseTest {
     public void receiveEmbeddedTriggersUpdate() throws Exception {
 
         UpnpService upnpService = new MockUpnpService(false, true);
+        upnpService.activate();
 
         RemoteDevice rd = SampleData.createRemoteDevice();
         RemoteDevice embedded = rd.getEmbeddedDevices()[0];

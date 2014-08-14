@@ -41,13 +41,14 @@ import org.jupnp.transport.spi.NetworkAddressFactory;
  */
 public class MockUpnpService implements UpnpService {
 
-    protected final UpnpServiceConfiguration configuration;
-    protected final ControlPoint controlPoint;
-    protected final ProtocolFactory protocolFactory;
-    protected final Registry registry;
-    protected final MockRouter router;
+    protected UpnpServiceConfiguration configuration;
+    protected ControlPoint controlPoint;
+    protected ProtocolFactory protocolFactory;
+    protected Registry registry;
+    protected MockRouter router;
 
-    protected final NetworkAddressFactory networkAddressFactory;
+    protected NetworkAddressFactory networkAddressFactory;
+	private boolean sendsAlive;
 
     /**
      * Single-thread of execution for the whole UPnP stack, no ALIVE messages or registry maintenance.
@@ -76,22 +77,9 @@ public class MockUpnpService implements UpnpService {
 
     public MockUpnpService(final boolean sendsAlive, final MockUpnpServiceConfiguration configuration) {
 
-        this.configuration = configuration;
+        this.sendsAlive = sendsAlive;
+		this.configuration = configuration;
 
-        this.protocolFactory = createProtocolFactory(this, sendsAlive);
-
-        this.registry = new RegistryImpl(this) {
-            @Override
-            protected RegistryMaintainer createRegistryMaintainer() {
-                return configuration.isMaintainsRegistry() ? super.createRegistryMaintainer() : null;
-            }
-        };
-
-        this.networkAddressFactory = this.configuration.createNetworkAddressFactory();
-
-        this.router = createRouter();
-
-        this.controlPoint = new ControlPointImpl(configuration, protocolFactory, registry);
     }
 
     protected ProtocolFactory createProtocolFactory(UpnpService service, boolean sendsAlive) {
@@ -167,4 +155,22 @@ public class MockUpnpService implements UpnpService {
         getRegistry().shutdown();
         getConfiguration().shutdown();
     }
+
+	@Override
+	public void activate() {
+        this.protocolFactory = createProtocolFactory(this, sendsAlive);
+
+        this.registry = new RegistryImpl(this) {
+            @Override
+            protected RegistryMaintainer createRegistryMaintainer() {
+                return ((MockUpnpServiceConfiguration) configuration).isMaintainsRegistry() ? super.createRegistryMaintainer() : null;
+            }
+        };
+
+        this.networkAddressFactory = this.configuration.createNetworkAddressFactory();
+
+        this.router = createRouter();
+
+        this.controlPoint = new ControlPointImpl(configuration, protocolFactory, registry);
+	}
 }
