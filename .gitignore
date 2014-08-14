@@ -1,8 +1,3 @@
 *.iml
-.idea
-.project
-.settings
-.classpath
 target
-MANIFEST.MF
 out
