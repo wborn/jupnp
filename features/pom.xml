@@ -10,14 +10,13 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <name>jUPnP Bundles</name>
-	<groupId>org.jupnp.bundles</groupId>
+    <name>jUPnP Features</name>
+    <groupId>org.jupnp.features</groupId>
     <artifactId>pom</artifactId>
     <packaging>pom</packaging>
 
     <modules>
-        <module>org.jupnp</module>
-        <module>org.jupnp.osgi</module>
+        <module>org.jupnp.feature</module>
     </modules>
 
   <build>

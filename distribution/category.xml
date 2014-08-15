@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.jupnp.feature_2.0.0.qualifier.jar" id="org.jupnp.feature" version="2.0.0.qualifier">
+      <category name="org.jupnp"/>
+   </feature>
+   <category-def name="org.jupnp" label="jUPnP">
+      <description>
+         This category contains all jUPnP features
+      </description>
+   </category-def>
+</site>
