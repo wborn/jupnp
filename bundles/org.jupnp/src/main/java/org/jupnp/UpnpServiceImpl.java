@@ -50,6 +50,9 @@ public class UpnpServiceImpl implements UpnpService {
 
     private static Logger log = LoggerFactory.getLogger(UpnpServiceImpl.class);
 
+    protected boolean isConfigured = false;    
+    protected Boolean isRunning = false;
+    
     protected UpnpServiceConfiguration configuration;
     protected ProtocolFactory protocolFactory;
     protected Registry registry;
@@ -114,14 +117,19 @@ public class UpnpServiceImpl implements UpnpService {
     }
 
     protected void shutdown(boolean separateThread) {
-        Runnable shutdown = new Runnable() {
+    	Runnable shutdown = new Runnable() {
             @Override
             public void run() {
-                log.info("Shutting down UPnP service...");
-                shutdownRegistry();
-                shutdownRouter();
-                shutdownConfiguration();
-                log.info("UPnP service shutdown completed");
+            	synchronized (isRunning) {
+            		if(isRunning) {
+	                    log.info("Shutting down UPnP service...");
+	                    shutdownRegistry();
+	                    shutdownRouter();
+	                    shutdownConfiguration();
+	                    log.info("UPnP service shutdown completed");
+	                    isRunning = false;
+            		}
+        		}
             }
         };
         if (separateThread) {
@@ -132,6 +140,24 @@ public class UpnpServiceImpl implements UpnpService {
         }
     }
 
+    private void restart(boolean separateThread) {
+        Runnable restart = new Runnable() {
+            @Override
+            public void run() {
+            	shutdown();
+            	startup();
+            }
+        };
+        if (separateThread) {
+            // This is not a daemon thread, it has to complete!
+            new Thread(restart).start();
+        } else {
+        	restart.run();
+        }
+    }
+
+    
+    
     protected void shutdownRegistry() {
         getRegistry().shutdown();
     }
@@ -153,34 +179,44 @@ public class UpnpServiceImpl implements UpnpService {
         getConfiguration().shutdown();
     }
 
-    public void activate() {
-        log.info("Starting UPnP service...");
+    public void startup() {
+    	synchronized (isRunning) {
+    		if(!isRunning) {
+	            log.info("Starting UPnP service...");
+	
+	            // Instantiation order is important: Router needs to start its network services after registry is ready
+	
+	            this.protocolFactory = createProtocolFactory();
+	
+	            this.registry = createRegistry(protocolFactory);
+	            
+	            log.debug("Using configuration: " + getConfiguration().getClass().getName());
+	
+	            this.router = createRouter(protocolFactory, registry);
+	
+	            try {
+	                this.router.enable();
+	            } catch (RouterException ex) {
+	                throw new RuntimeException("Enabling network router failed: " + ex, ex);
+	            }
+	
+	            this.controlPoint = createControlPoint(protocolFactory, registry);
+	
+	            log.debug("UPnP service started successfully");
 
-        // Instantiation order is important: Router needs to start its network services after registry is ready
+	            isRunning = true;
 
-        this.protocolFactory = createProtocolFactory();
+	            controlPoint.search(new STAllHeader());
+    		}
+		}
+    }
 
-        this.registry = createRegistry(protocolFactory);
-        
-        log.debug("Using configuration: " + getConfiguration().getClass().getName());
-
-        this.router = createRouter(protocolFactory, registry);
-
-        try {
-            this.router.enable();
-        } catch (RouterException ex) {
-            throw new RuntimeException("Enabling network router failed: " + ex, ex);
-        }
-
-        this.controlPoint = createControlPoint(protocolFactory, registry);
-
-        log.debug("UPnP service started successfully");
-        
-        controlPoint.search(new STAllHeader());
-
+    protected void activate() {
+    	startup();
     }
 
     protected void deactivate() {
     	shutdown();
     }
+
 }

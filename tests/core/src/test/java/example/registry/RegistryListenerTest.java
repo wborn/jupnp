@@ -130,7 +130,7 @@ public class RegistryListenerTest {
                 };
             }
         };
-        upnpService.activate();
+        upnpService.startup();
 
         QuickstartRegistryListener listener = new QuickstartRegistryListener(); // DOC: INC1
         upnpService.getRegistry().addListener(listener);                        // DOC: INC1
@@ -175,7 +175,7 @@ public class RegistryListenerTest {
                 };
             }
         };
-        upnpService.activate();
+        upnpService.startup();
 
         FailureQuickstartRegistryListener listener = new FailureQuickstartRegistryListener();
         upnpService.getRegistry().addListener(listener);
@@ -269,7 +269,7 @@ public class RegistryListenerTest {
                 };
             }
         };
-        upnpService.activate();
+        upnpService.startup();
 
         MyListener listener = new MyListener();
         upnpService.getRegistry().addListener(listener);

@@ -90,7 +90,6 @@ public class RouterImpl implements Router {
      */
     @Inject
     public RouterImpl(UpnpServiceConfiguration configuration, ProtocolFactory protocolFactory) {
-        log.info("Creating Router: " + getClass().getName());
         this.configuration = configuration;
         this.protocolFactory = protocolFactory;
     }

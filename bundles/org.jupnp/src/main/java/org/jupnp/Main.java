@@ -90,7 +90,7 @@ public class Main {
         System.out.println("Starting jUPnP...");
         UpnpService upnpService = new UpnpServiceImpl();
         upnpService.getRegistry().addListener(listener);
-        upnpService.activate();
+        upnpService.startup();
 
         // Send a search message to all devices and services, they should respond soon
         System.out.println("Sending SEARCH message to all devices...");

@@ -83,7 +83,7 @@ public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
             // TODO: UPNP VIOLATION: The spec does not prohibit using the 1900 port here again, however, the
             // Netgear ReadyNAS miniDLNA implementation will no longer answer if it has to send search response
             // back via UDP unicast to port 1900... so we use an ephemeral port
-            log.info("Creating bound socket (for datagram input/output) on: " + bindAddress + ":" + bindPort);
+            log.debug("Creating bound socket (for datagram input/output) on: " + bindAddress + ":" + bindPort);
             localAddress = new InetSocketAddress(bindAddress, bindPort);
             socket = new MulticastSocket(localAddress);
             socket.setTimeToLive(configuration.getTimeToLive());

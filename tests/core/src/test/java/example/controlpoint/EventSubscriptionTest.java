@@ -209,7 +209,7 @@ public class EventSubscriptionTest {
                 };
             }
         };
-        mock.activate();
+        mock.startup();
         return mock;
     }
 

@@ -76,7 +76,7 @@ public class SearchExecuteTest {
     @Test
     public void searchAll() throws Exception {
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         upnpService.getControlPoint().search(       // DOC: SEARCH
                 new STAllHeader()
@@ -101,7 +101,7 @@ public class SearchExecuteTest {
     @Test
     public void searchUDN() throws Exception {
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         UDN udn = new UDN(UUID.randomUUID());
         upnpService.getControlPoint().search(       // DOC: SEARCH
@@ -125,7 +125,7 @@ public class SearchExecuteTest {
     @Test
     public void searchDeviceType() throws Exception {
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         UDADeviceType udaType = new UDADeviceType("BinaryLight");       // DOC: SEARCH_UDA
         upnpService.getControlPoint().search(
@@ -154,7 +154,7 @@ public class SearchExecuteTest {
     @Test
     public void searchServiceType() throws Exception {
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         UDAServiceType udaType = new UDAServiceType("SwitchPower");      // DOC: SEARCH_UDA
         upnpService.getControlPoint().search(
@@ -177,7 +177,7 @@ public class SearchExecuteTest {
     @Test
     public void searchRoot() throws Exception {
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
         upnpService.getControlPoint().search(new RootDeviceHeader());
         assertMessages(upnpService, new RootDeviceHeader());
     }

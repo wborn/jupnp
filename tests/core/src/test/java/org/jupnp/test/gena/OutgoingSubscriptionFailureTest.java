@@ -77,7 +77,7 @@ public class OutgoingSubscriptionFailureTest {
                 };
             }
         };
-        upnpService.activate();
+        upnpService.startup();
 
         final List<Boolean> testAssertions = new ArrayList();
 
@@ -145,7 +145,7 @@ public class OutgoingSubscriptionFailureTest {
                 };
             }
         };
-        upnpService.activate();
+        upnpService.startup();
 
         final List<Boolean> testAssertions = new ArrayList();
 

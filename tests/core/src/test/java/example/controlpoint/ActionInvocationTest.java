@@ -139,7 +139,7 @@ public class ActionInvocationTest {
     public void invokeActions(LocalDevice device) throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         Service service = device.findService(new UDAServiceId("SwitchPower")); // DOC: FINDSERVICE
         Action getStatusAction = service.getAction("GetStatus");               // DOC: FINDSERVICE
@@ -249,7 +249,7 @@ public class ActionInvocationTest {
     public void invokeActionsWithAlias(LocalDevice device) throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         Service service = device.findService(new UDAServiceId("SwitchPower"));
         Action getStatusAction = service.getAction("GetStatus");

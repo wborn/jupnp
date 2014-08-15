@@ -47,7 +47,7 @@ public class NotifyTest {
     public void receivedByeBye() throws Exception {
 
         UpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         RemoteDevice rd = SampleData.createRemoteDevice();
         upnpService.getRegistry().addDevice(rd);
@@ -67,7 +67,7 @@ public class NotifyTest {
     public void receivedNoUDN() throws Exception {
 
         UpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         RemoteDevice rd = SampleData.createRemoteDevice();
         upnpService.getRegistry().addDevice(rd);
@@ -90,7 +90,7 @@ public class NotifyTest {
     public void receivedNoLocation() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         RemoteDevice rd = SampleData.createRemoteDevice();
 
@@ -112,7 +112,7 @@ public class NotifyTest {
     public void receivedNoMaxAge() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         RemoteDevice rd = SampleData.createRemoteDevice();
 
@@ -134,7 +134,7 @@ public class NotifyTest {
     public void receivedAlreadyKnownLocalUDN() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         LocalDevice localDevice = SampleData.createLocalDevice();
         upnpService.getRegistry().addDevice(localDevice);
@@ -158,7 +158,7 @@ public class NotifyTest {
     public void receiveEmbeddedTriggersUpdate() throws Exception {
 
         UpnpService upnpService = new MockUpnpService(false, true);
-        upnpService.activate();
+        upnpService.startup();
 
         RemoteDevice rd = SampleData.createRemoteDevice(
                 SampleData.createRemoteDeviceIdentity(2)

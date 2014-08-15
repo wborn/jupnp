@@ -38,7 +38,7 @@ public class AdvertisementTest {
     public void sendAliveMessages() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         LocalDevice rootDevice = SampleData.createLocalDevice();
         LocalDevice embeddedDevice = rootDevice.getEmbeddedDevices()[0];
@@ -60,7 +60,7 @@ public class AdvertisementTest {
     public void sendByebyeMessages() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         LocalDevice rootDevice = SampleData.createLocalDevice();
         LocalDevice embeddedDevice = rootDevice.getEmbeddedDevices()[0];

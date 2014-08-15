@@ -59,7 +59,7 @@ public class SearchReceivedTest {
     public void receivedSearchAll() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         LocalDevice localDevice = SampleData.createLocalDevice();
         LocalDevice embeddedDevice = localDevice.getEmbeddedDevices()[0];
@@ -88,7 +88,7 @@ public class SearchReceivedTest {
     public void receivedSearchRoot() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         LocalDevice localDevice = SampleData.createLocalDevice();
         upnpService.getRegistry().addDevice(localDevice);
@@ -123,7 +123,7 @@ public class SearchReceivedTest {
     public void receivedSearchUDN() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         LocalDevice localDevice = SampleData.createLocalDevice();
         upnpService.getRegistry().addDevice(localDevice);
@@ -158,7 +158,7 @@ public class SearchReceivedTest {
     public void receivedSearchDeviceType() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         LocalDevice localDevice = SampleData.createLocalDevice();
         upnpService.getRegistry().addDevice(localDevice);
@@ -193,7 +193,7 @@ public class SearchReceivedTest {
     public void receivedSearchServiceType() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         LocalDevice localDevice = SampleData.createLocalDevice();
         Service service = localDevice.getServices()[0];
@@ -229,7 +229,7 @@ public class SearchReceivedTest {
     public void receivedInvalidST() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         IncomingSearchRequest searchMsg = createRequestMessage();
         searchMsg.getHeaders().add(UpnpHeader.Type.MAN, new MANHeader(NotificationSubtype.DISCOVER.getHeaderString()));
@@ -246,7 +246,7 @@ public class SearchReceivedTest {
     public void receivedInvalidMX() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         IncomingSearchRequest searchMsg = createRequestMessage();
         searchMsg.getHeaders().add(UpnpHeader.Type.MAN, new MANHeader(NotificationSubtype.DISCOVER.getHeaderString()));
@@ -263,7 +263,7 @@ public class SearchReceivedTest {
     public void receivedNonAdvertised() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         LocalDevice localDevice = SampleData.createLocalDevice();
 

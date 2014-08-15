@@ -48,7 +48,7 @@ public class IncomingSubscriptionLifecycleTest {
     public void subscriptionLifecycle() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         // Register local device and its service
         LocalDevice device = GenaSampleData.createTestDevice(GenaSampleData.LocalTestService.class);
@@ -134,7 +134,7 @@ public class IncomingSubscriptionLifecycleTest {
     public void subscriptionLifecycleFailedResponse() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         // Register local device and its service
         LocalDevice device = GenaSampleData.createTestDevice(GenaSampleData.LocalTestService.class);

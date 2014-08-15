@@ -133,7 +133,7 @@ public class ActionCancellationTest {
         final boolean[] tests = new boolean[1];
 
         MockUpnpService upnpService = new MockUpnpService(false, false, true);
-        upnpService.activate();
+        upnpService.startup();
         LocalService service = device.findService(new UDAServiceId("SwitchPower"));
         Action action = service.getAction("SetTarget");
 

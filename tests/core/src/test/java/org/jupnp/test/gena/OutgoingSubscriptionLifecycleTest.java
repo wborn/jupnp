@@ -68,7 +68,7 @@ public class OutgoingSubscriptionLifecycleTest {
                 };
             }
         };
-        upnpService.activate();
+        upnpService.startup();
 
         final List<Boolean> testAssertions = new ArrayList();
 

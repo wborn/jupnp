@@ -57,12 +57,12 @@ public class AsyncServletStreamServerImpl implements StreamServer<AsyncServletSt
 
     synchronized public void init(InetAddress bindAddress, final Router router) throws InitializationException {
         try {
-            log.info("Setting executor service on servlet container adapter");
+            log.debug("Setting executor service on servlet container adapter");
             getConfiguration().getServletContainerAdapter().setExecutorService(
                 router.getConfiguration().getStreamServerExecutorService()
             );
 
-            log.info("Adding connector: " + bindAddress + ":" + getConfiguration().getListenPort());
+            log.debug("Adding connector: " + bindAddress + ":" + getConfiguration().getListenPort());
             localPort = getConfiguration().getServletContainerAdapter().addConnector(
                 bindAddress.getHostAddress(),
                 getConfiguration().getListenPort()
@@ -115,7 +115,7 @@ public class AsyncServletStreamServerImpl implements StreamServer<AsyncServletSt
                     @Override
                     public void onStartAsync(AsyncEvent arg0) throws IOException {
                         // useless
-                        log.info(String.format("AsyncListener.onStartAsync(): id: %3d, request: %s", counter, arg0.getSuppliedRequest()));
+                        log.debug(String.format("AsyncListener.onStartAsync(): id: %3d, request: %s", counter, arg0.getSuppliedRequest()));
                     }
 
 

@@ -34,7 +34,7 @@ public class RegistryExpirationTest {
     public void addAndExpire() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService(false, true);
-        upnpService.activate();
+        upnpService.startup();
 
         RemoteDevice rd = SampleData.createRemoteDevice(
                 SampleData.createRemoteDeviceIdentity(1)
@@ -62,7 +62,7 @@ public class RegistryExpirationTest {
                 }
             }
         );
-        upnpService.activate();
+        upnpService.startup();
 
         RemoteDevice rd = SampleData.createRemoteDevice(
                 SampleData.createRemoteDeviceIdentity(1)
@@ -91,7 +91,7 @@ public class RegistryExpirationTest {
     public void addAndUpdateAndExpire() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService(false, true);
-        upnpService.activate();
+        upnpService.startup();
 
         RemoteDevice rd = SampleData.createRemoteDevice(
                 SampleData.createRemoteDeviceIdentity(2)
@@ -124,7 +124,7 @@ public class RegistryExpirationTest {
     public void addResourceAndExpire() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService(false, true);
-        upnpService.activate();
+        upnpService.startup();
 
         Resource resource = new Resource(URI.create("/this/is/a/test"), "foo");
         upnpService.getRegistry().addResource(resource, 2);
@@ -142,7 +142,7 @@ public class RegistryExpirationTest {
     public void addResourceAndMaintain() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService(false, true);
-        upnpService.activate();
+        upnpService.startup();
 
         final TestRunnable testRunnable = new TestRunnable();
 

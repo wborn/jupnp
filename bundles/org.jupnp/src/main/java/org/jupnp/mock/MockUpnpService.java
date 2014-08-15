@@ -157,7 +157,7 @@ public class MockUpnpService implements UpnpService {
     }
 
 	@Override
-	public void activate() {
+	public void startup() {
         this.protocolFactory = createProtocolFactory(this, sendsAlive);
 
         this.registry = new RegistryImpl(this) {

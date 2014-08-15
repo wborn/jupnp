@@ -42,8 +42,9 @@ public class HttpServiceServletContainerAdapter implements
 
 	@Override
 	public void registerServlet(String contextPath, Servlet servlet) {
-		Dictionary params = new Properties();
+		Dictionary<?, ?> params = new Properties();
 		try {
+			logger.info("Registering UPnP callback servlet as {}", contextPath);
 			httpService.registerServlet(contextPath, servlet, params, httpService.createDefaultHttpContext());
 		} catch (ServletException e) {
 			logger.error("Failed to register UPnP servlet!", e);

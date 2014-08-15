@@ -35,7 +35,7 @@ public class ProtocolFactoryTest {
     @Test(expectedExceptions = org.jupnp.protocol.ProtocolCreationException.class)
     public void noSyncProtocol() throws Exception {
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         ReceivingSync protocol = upnpService.getProtocolFactory().createReceivingSync(
             new StreamRequestMessage(
@@ -49,7 +49,7 @@ public class ProtocolFactoryTest {
     @Test
     public void receivingEvent() throws Exception {
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         StreamRequestMessage message = new StreamRequestMessage(
             UpnpRequest.Method.NOTIFY,

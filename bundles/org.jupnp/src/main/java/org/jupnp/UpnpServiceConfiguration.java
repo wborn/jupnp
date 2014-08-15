@@ -15,6 +15,9 @@
 
 package org.jupnp;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+
 import org.jupnp.binding.xml.DeviceDescriptorBinder;
 import org.jupnp.binding.xml.ServiceDescriptorBinder;
 import org.jupnp.model.Namespace;
@@ -30,9 +33,6 @@ import org.jupnp.transport.spi.NetworkAddressFactory;
 import org.jupnp.transport.spi.SOAPActionProcessor;
 import org.jupnp.transport.spi.StreamClient;
 import org.jupnp.transport.spi.StreamServer;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Shared configuration data of the UPnP stack..

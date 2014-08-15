@@ -74,14 +74,14 @@ public class MulticastReceiverImpl implements MulticastReceiver<MulticastReceive
 
         try {
 
-            log.info("Creating wildcard socket (for receiving multicast datagrams) on port: " + configuration.getPort());
+            log.debug("Creating wildcard socket (for receiving multicast datagrams) on port: " + configuration.getPort());
             multicastAddress = new InetSocketAddress(configuration.getGroup(), configuration.getPort());
 
             socket = new MulticastSocket(configuration.getPort());
             socket.setReuseAddress(true);
             socket.setReceiveBufferSize(32768); // Keep a backlog of incoming datagrams if we are not fast enough
 
-            log.info("Joining multicast group: " + multicastAddress + " on network interface: " + multicastInterface.getDisplayName());
+            log.debug("Joining multicast group: " + multicastAddress + " on network interface: " + multicastInterface.getDisplayName());
             socket.joinGroup(multicastAddress, multicastInterface);
 
         } catch (Exception ex) {

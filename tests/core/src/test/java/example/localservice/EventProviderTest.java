@@ -251,7 +251,7 @@ public class EventProviderTest extends EventSubscriptionTest {
                 };
             }
         };
-        upnpService.activate();
+        upnpService.startup();
 
         final List<Boolean> testAssertions = new ArrayList();
 
@@ -366,7 +366,7 @@ public class EventProviderTest extends EventSubscriptionTest {
                 };
             }
         };
-        upnpService.activate();
+        upnpService.startup();
 
         final List<Boolean> testAssertions = new ArrayList();
 

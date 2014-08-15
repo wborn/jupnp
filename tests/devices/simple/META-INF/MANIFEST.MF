@@ -10,7 +10,7 @@ Bundle-Vendor: openHAB UG (haftungsbeschraenkt)
 Build-Jdk: 1.7.0_21
 Bundle-Version: 2.0.0.SNAPSHOT
 SymbolicName: org.jupnp.osgi.upnp.test.device.simple
-Bnd-LastModified: 1408029453993
+Bnd-LastModified: 1408118665794
 Embed-Transitive: false
 Bundle-Activator: org.jupnp.osgi.upnp.test.device.simple.Activator
 Bundle-ManifestVersion: 2

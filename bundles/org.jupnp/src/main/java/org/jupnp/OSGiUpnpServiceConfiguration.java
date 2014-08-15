@@ -15,6 +15,7 @@
 
 package org.jupnp;
 
+import java.util.Dictionary;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +24,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
 import org.jupnp.binding.xml.DeviceDescriptorBinder;
 import org.jupnp.binding.xml.ServiceDescriptorBinder;
@@ -57,7 +57,13 @@ import org.jupnp.transport.spi.SOAPActionProcessor;
 import org.jupnp.transport.spi.StreamClient;
 import org.jupnp.transport.spi.StreamServer;
 import org.jupnp.util.Exceptions;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 import org.osgi.service.http.HttpService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default configuration data of a typical UPnP stack.
@@ -85,16 +91,16 @@ import org.osgi.service.http.HttpService;
  * @author Christian Bauer
  * @author Kai Kreuzer - introduced bounded thread pool and http service streaming server
  */
-public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
+public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, ManagedService {
 
-    private static Logger log = Logger.getLogger(OSGiUpnpServiceConfiguration.class.getName());
+    private static Logger log = LoggerFactory.getLogger(OSGiUpnpServiceConfiguration.class);
 
-    final private static int THREAD_POOL_SIZE = 20;
-    final private static int THREAD_QUEUE_SIZE = 1000;
-    
-    private int streamListenPort;
+    // configurable properties
+    private int threadPoolSize = 20;
+    private int threadQueueSize = 1000;
     private int multicastResponsePort;
-
+    private Namespace callbackURI = new Namespace("http://localhost/upnpcallback");
+  
     private ExecutorService defaultExecutorService;
 
     private DatagramProcessor datagramProcessor;
@@ -107,6 +113,10 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
     private Namespace namespace;
 
 	private HttpService httpService;
+
+	private BundleContext context;
+
+	private ServiceRegistration<OSGiUpnpServiceConfiguration> serviceReg;
 
     /**
      * Defaults to port '0', ephemeral.
@@ -132,12 +142,14 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
             throw new Error("Unsupported runtime environment, use org.jupnp.android.AndroidUpnpServiceConfiguration");
         }
 
-        this.streamListenPort = streamListenPort;
         this.multicastResponsePort = multicastResponsePort;
         
     }
 
-    protected void activate() {
+    protected void activate(BundleContext context) {
+    	
+    	this.context = context;
+    	
         defaultExecutorService = createDefaultExecutorService();
 
         datagramProcessor = createDatagramProcessor();
@@ -148,6 +160,13 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
         serviceDescriptorBinderUDA10 = createServiceDescriptorBinderUDA10();
 
         namespace = createNamespace();
+    }
+    
+    protected void deactivate() {
+    	if(serviceReg!=null) {
+    		serviceReg.unregister();
+    	}
+    	shutdown();
     }
     
     protected void setHttpService(HttpService httpService) {
@@ -275,12 +294,14 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
     }
 
     public NetworkAddressFactory createNetworkAddressFactory() {
-        return createNetworkAddressFactory(streamListenPort, multicastResponsePort);
+        return createNetworkAddressFactory(0, multicastResponsePort);
     }
 
     public void shutdown() {
-        log.fine("Shutting down default executor service");
-        getDefaultExecutorService().shutdownNow();
+    	if(getDefaultExecutorService()!=null) {
+	    	log.debug("Shutting down default executor service");
+	        getDefaultExecutorService().shutdownNow();
+    	}
     }
 
     protected NetworkAddressFactory createNetworkAddressFactory(int streamListenPort, int multicastResponsePort) {
@@ -308,7 +329,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
     }
 
     protected Namespace createNamespace() {
-        return new Namespace("http://localhost/upnpcallback");
+        return callbackURI;
     }
 
     protected ExecutorService getDefaultExecutorService() {
@@ -319,7 +340,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
         return new JUPnPExecutor();
     }
 
-    public static class JUPnPExecutor extends ThreadPoolExecutor {
+    public class JUPnPExecutor extends ThreadPoolExecutor {
 
         public JUPnPExecutor() {
             this(new JUPnPThreadFactory(),
@@ -328,7 +349,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
                      @Override
                      public void rejectedExecution(Runnable runnable, ThreadPoolExecutor threadPoolExecutor) {
                          // Log and discard
-                         log.warning("Thread pool rejected execution of " + runnable.getClass());
+                         log.warn("Thread pool rejected execution of " + runnable.getClass());
                          super.rejectedExecution(runnable, threadPoolExecutor);
                      }
                  }
@@ -337,11 +358,11 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
         public JUPnPExecutor(ThreadFactory threadFactory, RejectedExecutionHandler rejectedHandler) {
             // This is the same as Executors.newCachedThreadPool
-            super(THREAD_POOL_SIZE,
-            	  THREAD_POOL_SIZE,
+            super(threadPoolSize,
+            	  threadPoolSize,
                   10L,
                   TimeUnit.SECONDS,
-                  new ArrayBlockingQueue<Runnable>(THREAD_QUEUE_SIZE),
+                  new ArrayBlockingQueue<Runnable>(threadQueueSize),
                   threadFactory,
                   rejectedHandler
             );
@@ -360,8 +381,8 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
                     return;
                 }
                 // Log only
-                log.warning("Thread terminated " + runnable + " abruptly with exception: " + throwable);
-                log.warning("Root cause: " + cause);
+                log.warn("Thread terminated " + runnable + " abruptly with exception: " + throwable);
+                log.warn("Root cause: " + cause);
             }
         }
     }
@@ -392,5 +413,58 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
             return t;
         }
     }
+
+	@Override
+	public void updated(Dictionary<String, ?> properties)
+			throws ConfigurationException {
+		if(properties == null)
+			return;
+		
+		String prop = (String) properties.get("threadPoolSize");
+		if(prop!=null) {
+			try {
+				threadPoolSize = Integer.valueOf(prop);
+			} catch(NumberFormatException e) {
+				log.error("Invalid value '{}' for threadPoolSize - using default value '{}'", prop, threadPoolSize);
+			}
+		}
+
+		prop = (String) properties.get("threadQueueSize");
+		if(prop!=null) {
+			try {
+				threadQueueSize = Integer.valueOf(prop);
+			} catch(NumberFormatException e) {
+				log.error("Invalid value '{}' for threadQueueSize - using default value '{}'", prop, threadQueueSize);
+			}
+		}
+
+		prop = (String) properties.get("multicastResponsePort");
+		if(prop!=null) {
+			try {
+				multicastResponsePort = Integer.valueOf(prop);
+			} catch(NumberFormatException e) {
+				log.error("Invalid value '{}' for multicastResponsePort - using default value '{}'", prop, multicastResponsePort);
+			}
+		}
+
+		prop = (String) properties.get("callbackURI");
+		if(prop!=null) {
+			
+			try {
+				callbackURI = new Namespace(prop);
+			} catch(Exception e) {
+				log.error("Invalid value '{}' for callbackURI - using default value '{}'", prop, callbackURI);
+			}
+		}
+		shutdown();
+		activate(context);
+
+		if(serviceReg!=null) {
+			serviceReg.unregister();
+		}
+		if(context!=null) {
+			serviceReg = context.registerService(OSGiUpnpServiceConfiguration.class, this, null);
+		}
+	}
 
 }

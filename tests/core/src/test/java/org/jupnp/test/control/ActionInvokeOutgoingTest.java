@@ -113,7 +113,7 @@ public class ActionInvokeOutgoingTest {
 
         // Registery local device and its service
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
       LocalDevice ld = ActionSampleData.createTestDevice();
         LocalService service = ld.getServices()[0];
         upnpService.getRegistry().addDevice(ld);
@@ -151,7 +151,7 @@ public class ActionInvokeOutgoingTest {
 
         // Registery local device and its service
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
         LocalDevice ld = ActionSampleData.createTestDevice();
         LocalService service = ld.getServices()[0];
         upnpService.getRegistry().addDevice(ld);
@@ -164,7 +164,7 @@ public class ActionInvokeOutgoingTest {
 
         // Registery local device and its service
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
         LocalDevice ld = ActionSampleData.createTestDevice(ActionSampleData.LocalTestServiceThrowsException.class);
         LocalService service = ld.getServices()[0];
         upnpService.getRegistry().addDevice(ld);
@@ -223,7 +223,7 @@ public class ActionInvokeOutgoingTest {
                 };
             }
         };
-        upnpService.activate();
+        upnpService.startup();
 
         // Register remote device and its service
         RemoteDevice device = SampleData.createRemoteDevice();
@@ -304,7 +304,7 @@ public class ActionInvokeOutgoingTest {
                 };
             }
         };
-        upnpService.activate();
+        upnpService.startup();
 
         // Registery remote device and its service
         RemoteDevice device = SampleData.createRemoteDevice();
@@ -357,7 +357,7 @@ public class ActionInvokeOutgoingTest {
                 };
             }
         };
-        upnpService.activate();
+        upnpService.startup();
 
         // Registery remote device and its service
         RemoteDevice device = SampleData.createRemoteDevice();
@@ -398,7 +398,7 @@ public class ActionInvokeOutgoingTest {
     public void callRemoteGetNoResponse() throws Exception {
 
         MockUpnpService upnpService = new MockUpnpService();
-        upnpService.activate();
+        upnpService.startup();
 
         // Registery remote device and its service
         RemoteDevice device = SampleData.createRemoteDevice();
@@ -450,7 +450,7 @@ public class ActionInvokeOutgoingTest {
                 };
             }
         };
-        upnpService.activate();
+        upnpService.startup();
 
         // Registery remote device and its service
         RemoteDevice device = new RemoteDevice(
@@ -652,7 +652,7 @@ public class ActionInvokeOutgoingTest {
                 };
             }
         };
-        upnpService.activate();
+        upnpService.startup();
 
         // Registery remote device and its service
         RemoteDevice device = SampleData.createRemoteDevice();
