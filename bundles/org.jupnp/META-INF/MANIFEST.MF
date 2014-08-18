@@ -6,7 +6,7 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-Vendor: openHAB.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/*
-Import-Package: javax.inject,
+Import-Package: javax.inject;resolution:=optional,
  javax.servlet,
  javax.servlet.http,
  org.apache.http,
