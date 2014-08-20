@@ -47,6 +47,8 @@ import org.jupnp.transport.impl.NetworkAddressFactoryImpl;
 import org.jupnp.transport.impl.SOAPActionProcessorImpl;
 import org.jupnp.transport.impl.apache.StreamClientConfigurationImpl;
 import org.jupnp.transport.impl.apache.StreamClientImpl;
+import org.jupnp.transport.impl.apache.StreamServerConfigurationImpl;
+import org.jupnp.transport.impl.apache.StreamServerImpl;
 import org.jupnp.transport.impl.osgi.HttpServiceServletContainerAdapter;
 import org.jupnp.transport.spi.DatagramIO;
 import org.jupnp.transport.spi.DatagramProcessor;
@@ -211,9 +213,13 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
     }
 
     public StreamServer createStreamServer(NetworkAddressFactory networkAddressFactory) {
-        return new AsyncServletStreamServerImpl(
-                new AsyncServletStreamServerConfigurationImpl(new HttpServiceServletContainerAdapter(httpService))
-        );
+    	if(httpService!=null) {
+	    	return new AsyncServletStreamServerImpl(
+	                new AsyncServletStreamServerConfigurationImpl(new HttpServiceServletContainerAdapter(httpService))
+	        );
+    	} else {
+	    	return new StreamServerImpl(new StreamServerConfigurationImpl());
+    	}
     }
 
     public ExecutorService getMulticastReceiverExecutor() {
