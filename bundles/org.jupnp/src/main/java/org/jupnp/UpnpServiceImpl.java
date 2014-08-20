@@ -66,7 +66,12 @@ public class UpnpServiceImpl implements UpnpService {
 
     public UpnpServiceImpl(UpnpServiceConfiguration configuration) {
         this.configuration = configuration;
-    }
+
+        this.protocolFactory = createProtocolFactory();
+    	
+        this.registry = createRegistry(protocolFactory);
+        
+}
 
     protected void setOSGiUpnpServiceConfiguration(OSGiUpnpServiceConfiguration configuration) {
     	this.configuration = configuration;
@@ -189,10 +194,6 @@ public class UpnpServiceImpl implements UpnpService {
 	
 	            // Instantiation order is important: Router needs to start its network services after registry is ready
 	
-	            this.protocolFactory = createProtocolFactory();
-	
-	            this.registry = createRegistry(protocolFactory);
-	            
 	            log.debug("Using configuration: " + getConfiguration().getClass().getName());
 	
 	            this.router = createRouter(protocolFactory, registry);
