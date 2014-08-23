@@ -35,6 +35,15 @@
             </includes>
         </fileSet>
 
+        <!-- jUPnP Tools -->
+        <fileSet>
+            <directory>tools/org.jupnp.tool/target</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>jupnptool*.jar</include>
+            </includes>
+        </fileSet>
+
     </fileSets>
 
 
