@@ -16,6 +16,7 @@
 package org.jupnp;
 
 import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -118,7 +119,8 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
 
 	private BundleContext context;
 
-	private ServiceRegistration<OSGiUpnpServiceConfiguration> serviceReg;
+	@SuppressWarnings("rawtypes")
+	private ServiceRegistration serviceReg;
 
     /**
      * Defaults to port '0', ephemeral.
@@ -191,7 +193,8 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
         return genaEventProcessor;
     }
 
-    public StreamClient createStreamClient() {
+    @SuppressWarnings("rawtypes")
+	public StreamClient createStreamClient() {
         return new StreamClientImpl(
             new StreamClientConfigurationImpl(
                 getSyncProtocolExecutorService()
@@ -199,7 +202,8 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
         );
     }
 
-    public MulticastReceiver createMulticastReceiver(NetworkAddressFactory networkAddressFactory) {
+    @SuppressWarnings("rawtypes")
+	public MulticastReceiver createMulticastReceiver(NetworkAddressFactory networkAddressFactory) {
         return new MulticastReceiverImpl(
                 new MulticastReceiverConfigurationImpl(
                         networkAddressFactory.getMulticastGroup(),
@@ -208,11 +212,13 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
         );
     }
 
-    public DatagramIO createDatagramIO(NetworkAddressFactory networkAddressFactory) {
+    @SuppressWarnings("rawtypes")
+	public DatagramIO createDatagramIO(NetworkAddressFactory networkAddressFactory) {
         return new DatagramIOImpl(new DatagramIOConfigurationImpl());
     }
 
-    public StreamServer createStreamServer(NetworkAddressFactory networkAddressFactory) {
+    @SuppressWarnings("rawtypes")
+	public StreamServer createStreamServer(NetworkAddressFactory networkAddressFactory) {
     	if(httpService!=null) {
 	    	return new AsyncServletStreamServerImpl(
 	                new AsyncServletStreamServerConfigurationImpl(new HttpServiceServletContainerAdapter(httpService))
@@ -426,38 +432,43 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
 		if(properties == null)
 			return;
 		
-		String prop = (String) properties.get("threadPoolSize");
-		if(prop!=null) {
+		Object prop = properties.get("threadPoolSize");
+		if(prop instanceof String) {
 			try {
-				threadPoolSize = Integer.valueOf(prop);
+				threadPoolSize = Integer.valueOf((String)prop);
 			} catch(NumberFormatException e) {
 				log.error("Invalid value '{}' for threadPoolSize - using default value '{}'", prop, threadPoolSize);
 			}
+		} else if(prop instanceof Integer) {
+			threadPoolSize = (Integer) prop;
 		}
 
-		prop = (String) properties.get("threadQueueSize");
-		if(prop!=null) {
+		prop = properties.get("threadQueueSize");
+		if(prop instanceof String) {
 			try {
-				threadQueueSize = Integer.valueOf(prop);
+				threadQueueSize = Integer.valueOf((String) prop);
 			} catch(NumberFormatException e) {
 				log.error("Invalid value '{}' for threadQueueSize - using default value '{}'", prop, threadQueueSize);
 			}
+		} else if(prop instanceof Integer) {
+			threadQueueSize = (Integer) prop;
 		}
 
-		prop = (String) properties.get("multicastResponsePort");
-		if(prop!=null) {
+		prop = properties.get("multicastResponsePort");
+		if(prop instanceof Integer) {
 			try {
-				multicastResponsePort = Integer.valueOf(prop);
+				multicastResponsePort = Integer.valueOf((String) prop);
 			} catch(NumberFormatException e) {
 				log.error("Invalid value '{}' for multicastResponsePort - using default value '{}'", prop, multicastResponsePort);
 			}
+		} else if(prop instanceof Integer) {
+			multicastResponsePort = (Integer) prop;
 		}
 
-		prop = (String) properties.get("callbackURI");
-		if(prop!=null) {
-			
+		prop = properties.get("callbackURI");
+		if(prop instanceof String) {			
 			try {
-				callbackURI = new Namespace(prop);
+				callbackURI = new Namespace((String) prop);
 			} catch(Exception e) {
 				log.error("Invalid value '{}' for callbackURI - using default value '{}'", prop, callbackURI);
 			}
@@ -469,7 +480,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
 			serviceReg.unregister();
 		}
 		if(context!=null) {
-			serviceReg = context.registerService(OSGiUpnpServiceConfiguration.class, this, null);
+			serviceReg = context.registerService(OSGiUpnpServiceConfiguration.class.getName(), this, new Hashtable<String, Object>());
 		}
 	}
 
