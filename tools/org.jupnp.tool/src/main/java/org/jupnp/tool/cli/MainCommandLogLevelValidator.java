@@ -17,6 +17,9 @@ package org.jupnp.tool.cli;
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.ParameterException;
 
+/**
+ * @author Jochen Hiller - Initial contribution
+ */
 public class MainCommandLogLevelValidator implements IParameterValidator {
 	public void validate(String name, String value) throws ParameterException {
 		if (name.equals("--loglevel")) {

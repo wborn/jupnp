@@ -17,6 +17,9 @@ package org.jupnp.tool.cli;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * @author Jochen Hiller - Initial contribution
+ */
 public class PrintUtils {
 
 	private static final char[] BYTEARRAY_OF_SPACES = new char[128];

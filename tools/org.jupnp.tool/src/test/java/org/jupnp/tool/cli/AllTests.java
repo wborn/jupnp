@@ -17,6 +17,9 @@ package org.jupnp.tool.cli;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+/**
+ * @author Jochen Hiller - Initial contribution
+ */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ PrintUtilsTest.class, CommandLineTest.class,
 		SearchCommandTest.class })
