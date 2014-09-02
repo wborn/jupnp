@@ -95,6 +95,13 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
+					<finalName>jupnptool-${project.version}</finalName>
+					<!-- when do NOT append assemble id, do NOT attach to project artefacts -->
+					<!-- Otherwise you will see -->
+					<!-- [WARNING] Configuration options: ... Instead of attaching the assembly 
+						file: -->
+					<appendAssemblyId>false</appendAssemblyId>
+					<attach>false</attach>
 				</configuration>
 				<executions>
 					<execution>
@@ -103,13 +110,6 @@
 						<goals>
 							<goal>single</goal>
 						</goals>
-						<configuration>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-							<finalName>jupnptool-${version}</finalName>
-							<appendAssemblyId>false</appendAssemblyId>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
