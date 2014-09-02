@@ -455,7 +455,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
 		}
 
 		prop = properties.get("multicastResponsePort");
-		if(prop instanceof Integer) {
+		if(prop instanceof String) {
 			try {
 				multicastResponsePort = Integer.valueOf((String) prop);
 			} catch(NumberFormatException e) {
