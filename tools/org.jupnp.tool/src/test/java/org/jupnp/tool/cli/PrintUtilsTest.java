@@ -21,6 +21,8 @@ import org.junit.Test;
 
 /**
  * Test cases for PrintUtils test class.
+ * 
+ * @author Jochen Hiller - Initial contribution
  */
 public class PrintUtilsTest {
 

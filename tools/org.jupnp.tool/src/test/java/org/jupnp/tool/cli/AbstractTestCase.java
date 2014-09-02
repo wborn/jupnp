@@ -22,6 +22,8 @@ import org.junit.Assert;
 
 /**
  * Common functionality for test cases using JUPnPTool.
+ * 
+ * @author Jochen Hiller - Initial contribution
  */
 public abstract class AbstractTestCase {
 

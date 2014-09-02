@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
  * 
  * It will use a "silent" tool which wil redirect System.out and System.err to
  * streams, and will check the "printed" result in some test cases.
+ * 
+ * @author Jochen Hiller - Initial contribution
  */
 public class CommandLineTest extends AbstractTestCase {
 

@@ -31,6 +31,9 @@ import ch.qos.logback.core.util.StatusPrinter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
+/**
+ * @author Jochen Hiller - Initial contribution
+ */
 public class JUPnPTool {
 
 	public static final int RC_OK = 0;
@@ -104,7 +107,7 @@ public class JUPnPTool {
 			if (("udn".equals(sortBy)) || ("manufacturer".equals(sortBy))) {
 				verbose = true;
 			}
-			
+
 			printToolStartMessage("Search for UPnP devices for " + timeout
 					+ " seconds sorted by " + sortBy + " and filtered by "
 					+ filter);

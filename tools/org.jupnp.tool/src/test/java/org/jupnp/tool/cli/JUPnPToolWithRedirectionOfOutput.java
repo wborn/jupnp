@@ -31,6 +31,8 @@ import ch.qos.logback.core.util.StatusPrinter;
 
 /**
  * Extension of tool to allow redirection of logback to stdout and stderr.
+ * 
+ * @author Jochen Hiller - Initial contribution
  */
 public class JUPnPToolWithRedirectionOfOutput extends JUPnPTool {
 

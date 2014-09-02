@@ -22,6 +22,8 @@ import org.jupnp.tool.cli.SearchCommand.SearchResultPrinter;
 
 /**
  * This test case checks search command from tool.
+ * 
+ * @author Jochen Hiller - Initial contribution
  */
 public class SearchCommandTest extends AbstractTestCase {
 

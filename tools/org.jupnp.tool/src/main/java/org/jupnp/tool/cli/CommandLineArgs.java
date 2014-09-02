@@ -17,6 +17,9 @@ package org.jupnp.tool.cli;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
+/**
+ * @author Jochen Hiller - Initial contribution
+ */
 @Parameters(separators = "=", commandDescription = "jupnptool")
 public class CommandLineArgs {
 
@@ -35,6 +38,9 @@ public class CommandLineArgs {
 
 }
 
+/**
+ * @author Jochen Hiller - Initial contribution
+ */
 @Parameters(separators = "=", commandDescription = "Search for UPnP devices")
 class SearchCommandArgs {
 
@@ -48,6 +54,9 @@ class SearchCommandArgs {
 	public String filter = "*";
 }
 
+/**
+ * @author Jochen Hiller - Initial contribution
+ */
 @Parameters(separators = "=", commandDescription = "No operation")
 class NopCommandArgs {
 
