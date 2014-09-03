@@ -44,8 +44,6 @@ public class CommandLineTest extends AbstractTestCase {
 	@Test
 	public void testShowUsage() {
 		checkCommandLine(tool, JUPnPTool.RC_HELP, "-?");
-		final String s = out.toString();
-		System.out.println(s);
 	}
 
 	@Test
@@ -60,8 +58,8 @@ public class CommandLineTest extends AbstractTestCase {
 		// check output, must contain 21x Usage
 		final String s = out.toString();
 		// -1 as there is a result BEFORE first Usage
-		// *3 as each usage message contains 3x usage text
-		Assert.assertEquals(7 * 3, s.split("Usage").length - 1);
+		// *4 as each usage message contains 3x usage text
+		Assert.assertEquals(7 * 4, s.split("Usage").length - 1);
 	}
 
 	@Test
@@ -72,8 +70,8 @@ public class CommandLineTest extends AbstractTestCase {
 		// check output, must contain 9x usage
 		final String s = out.toString();
 		// -1 as there is a result BEFORE first Usage
-		// *3 as each usage message contains 3x usage text
-		Assert.assertEquals(3 * 3, s.split("Usage").length - 1);
+		// *4 as each usage message contains 3x usage text
+		Assert.assertEquals(3 * 4, s.split("Usage").length - 1);
 		// check stderr, must contain 3x error message, and wrong options
 		final String e = err.toString();
 		// -1 as there is a result BEFORE first Usage
@@ -109,8 +107,8 @@ public class CommandLineTest extends AbstractTestCase {
 		// check output, must contain 6x usage
 		final String s = out.toString();
 		// -1 as there is a result BEFORE first Usage
-		// *3 as each usage message contains 3x usage text
-		Assert.assertEquals(2 * 3, s.split("Usage").length - 1);
+		// *4 as each usage message contains 3x usage text
+		Assert.assertEquals(2 * 4, s.split("Usage").length - 1);
 	}
 
 	/**

@@ -17,6 +17,7 @@ package org.jupnp.tool.cli;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.jupnp.tool.cli.SearchCommand.SearchResultPrinter;
 
