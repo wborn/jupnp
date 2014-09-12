@@ -101,6 +101,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
     private int threadPoolSize = 20;
     private int threadQueueSize = 1000;
     private int multicastResponsePort;
+    private int streamListenPort;
     private Namespace callbackURI = new Namespace("http://localhost/upnpcallback");
   
     private ExecutorService defaultExecutorService;
@@ -145,6 +146,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
             throw new Error("Unsupported runtime environment, use org.jupnp.android.AndroidUpnpServiceConfiguration");
         }
 
+        this.streamListenPort = streamListenPort;
         this.multicastResponsePort = multicastResponsePort;
         
     }
@@ -305,7 +307,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
     }
 
     public NetworkAddressFactory createNetworkAddressFactory() {
-        return createNetworkAddressFactory(0, multicastResponsePort);
+        return createNetworkAddressFactory(streamListenPort, multicastResponsePort);
     }
 
     public void shutdown() {
@@ -462,6 +464,17 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
 			}
 		} else if(prop instanceof Integer) {
 			multicastResponsePort = (Integer) prop;
+		}
+
+		prop = properties.get("streamListenPort");
+		if(prop instanceof String) {
+			try {
+				streamListenPort = Integer.valueOf((String) prop);
+			} catch(NumberFormatException e) {
+				log.error("Invalid value '{}' for streamListenPort - using default value '{}'", prop, streamListenPort);
+			}
+		} else if(prop instanceof Integer) {
+			streamListenPort = (Integer) prop;
 		}
 
 		prop = properties.get("callbackURI");
