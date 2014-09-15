@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.jupnp.UpnpService;
-import org.jupnp.UpnpServiceImpl;
 import org.jupnp.model.message.header.STAllHeader;
 import org.jupnp.model.meta.LocalDevice;
 import org.jupnp.model.meta.RemoteDevice;
@@ -45,7 +44,7 @@ public class SearchCommand {
 	public int run(int timeout, String sortBy, String filter, boolean verbose) {
 		// This will create necessary network resources for UPnP right away
 		logger.debug("Starting jUPnP search...");
-		UpnpService upnpService = new UpnpServiceImpl();
+		UpnpService upnpService = tool.createUpnpService();
 
 		SearchResultPrinter printer = new SearchResultPrinter(sortBy, verbose);
 		if (!hasToSort(sortBy)) {
@@ -318,7 +317,8 @@ public class SearchCommand {
 				@Override
 				public int compare(Result o1, Result o2) {
 					if ("ip".equals(columnName)) {
-						return compareIpAddress(o1.ipAddress, o2.ipAddress);
+						return IpAddressUtils.compareIpAddress(o1.ipAddress,
+								o2.ipAddress);
 					} else if ("model".equals(columnName)) {
 						return o1.model.compareTo(o2.model);
 					} else if ("serialNumber".equals(columnName)) {
@@ -333,21 +333,6 @@ public class SearchCommand {
 				}
 			};
 			Collections.sort(results, comparator);
-		}
-
-		private int compareIpAddress(String ip1, String ip2) {
-			String[] ip1Parts = ip1.split("[\\.]");
-			String[] ip2Parts = ip2.split("[\\.]");
-			for (int i = 0; i < ip1Parts.length; i++) {
-				int ip1Int = Integer.parseInt(ip1Parts[i]);
-				int ip2Int = Integer.parseInt(ip2Parts[i]);
-				if (ip1Int < ip2Int) {
-					return -1;
-				} else if (ip1Int > ip2Int) {
-					return 1;
-				}
-			}
-			return 0;
 		}
 
 		private final static String STRING_WITH_SPACES = "                           ";

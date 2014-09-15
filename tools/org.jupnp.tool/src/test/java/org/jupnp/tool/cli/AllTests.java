@@ -21,7 +21,7 @@ import org.junit.runners.Suite;
  * @author Jochen Hiller - Initial contribution
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ PrintUtilsTest.class, CommandLineTest.class,
-		SearchCommandTest.class })
+@Suite.SuiteClasses({ PrintUtilsTest.class, IpAddressUtilsTest.class,
+		CommandLineTest.class, SearchCommandTest.class, InfoCommandTest.class })
 public final class AllTests {
 }

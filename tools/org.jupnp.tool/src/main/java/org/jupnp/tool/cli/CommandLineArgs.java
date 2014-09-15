@@ -14,6 +14,8 @@
 
 package org.jupnp.tool.cli;
 
+import java.util.List;
+
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
@@ -52,6 +54,17 @@ class SearchCommandArgs {
 
 	@Parameter(names = { "--filter", "-f" }, description = "Filter for devices containing this text (in some description)")
 	public String filter = "*";
+}
+
+/**
+ * @author Jochen Hiller - Initial contribution
+ */
+@Parameters(separators = "=", commandDescription = "Show UPnP device information")
+class InfoCommandArgs {
+
+	@Parameter(description = "IP address or UDN")
+	public List<String> ipAddressOrUdnList;
+
 }
 
 /**

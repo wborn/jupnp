@@ -19,6 +19,8 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
+import org.jupnp.UpnpService;
+import org.jupnp.UpnpServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +41,14 @@ public class JUPnPTool {
 	public static final int RC_OK = 0;
 	public static final int RC_HELP = 1;
 	public static final int RC_INVALID_OPTION = 2;
+	public static final int RC_MISSING_ARGUMENTS = 3;
 
 	public static final String TOOL_NAME = "jupnptool";
 	// TODO how to get build number?
 	public static final String TOOL_VERSION = "2.0.0.SNAPSHOT";
 
 	private static final String COMMAND_SEARCH = "search";
+	private static final String COMMAND_INFO = "info";
 	private static final String COMMAND_NOP = "nop";
 
 	private Logger logger = LoggerFactory.getLogger(JUPnPTool.class);
@@ -71,6 +75,7 @@ public class JUPnPTool {
 		// parse command line arguments with jCommander
 		JCommander commander = new JCommander(new CommandLineArgs());
 		commander.addCommand(COMMAND_SEARCH, new SearchCommandArgs());
+		commander.addCommand(COMMAND_INFO, new InfoCommandArgs());
 		commander.addCommand(COMMAND_NOP, new NopCommandArgs());
 		commander.setProgramName(TOOL_NAME);
 		try {
@@ -114,6 +119,21 @@ public class JUPnPTool {
 			SearchCommand cmd = new SearchCommand(this);
 			int rc = cmd.run(timeout, sortBy, filter, verbose);
 			return rc;
+		} else if (COMMAND_INFO.equals(commander.getParsedCommand())) {
+			JCommander infoCommander = commander.getCommands()
+					.get(COMMAND_INFO);
+			InfoCommandArgs infoArgs = (InfoCommandArgs) infoCommander
+					.getObjects().get(0);
+			List<String> ipAddressOrUdns = infoArgs.ipAddressOrUdnList;
+			boolean verbose = cmdLineArgs.verbose;
+
+			if ((ipAddressOrUdns == null) || (ipAddressOrUdns.size() == 0)) {
+				return RC_MISSING_ARGUMENTS;
+			}
+
+			InfoCommand cmd = new InfoCommand(this);
+			int rc = cmd.run(ipAddressOrUdns, verbose);
+			return rc;
 		} else if (COMMAND_NOP.equals(commander.getParsedCommand())) {
 			return RC_OK;
 		} else {
@@ -123,6 +143,10 @@ public class JUPnPTool {
 	}
 
 	// protected methods
+
+	protected UpnpService createUpnpService() {
+		return new UpnpServiceImpl();
+	}
 
 	/**
 	 * Sets the logger to the resource name, and reset logback configuration.
