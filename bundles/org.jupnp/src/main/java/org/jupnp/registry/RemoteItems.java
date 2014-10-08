@@ -131,12 +131,12 @@ class RemoteItems extends RegistryItems<RemoteDevice, RemoteGENASubscription> {
         if (registeredRemoteDevice != null) {
 
             // check for IP address change
-            DeviceDetails remoteDeviceDetails = registeredRemoteDevice.getDetails(); 
-            URL descriptorUrl = rdIdentity.getDescriptorURL(); 
-            if (remoteDeviceDetails != null) {
-                URL remoteBaseUrl = remoteDeviceDetails.getBaseURL();
-                if (descriptorUrl != null & remoteBaseUrl != null && !descriptorUrl.getHost().equals(remoteBaseUrl.getHost())) {
-                    log.fine("IP adress has changed - remove the registered device");
+            RemoteDeviceIdentity remoteDeviceIdentity = registeredRemoteDevice.getIdentity(); 
+            if (remoteDeviceIdentity != null) {
+                URL descriptorUrl = rdIdentity.getDescriptorURL(); 
+                URL remoteDescriptorUrl = remoteDeviceIdentity.getDescriptorURL();
+                if (descriptorUrl != null & remoteDescriptorUrl != null && !descriptorUrl.getHost().equals(remoteDescriptorUrl.getHost())) {
+                    log.fine("IP adress has changed - removing the registered device");
                     remove(registeredRemoteDevice);
                     return false;
                 }

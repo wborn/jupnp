@@ -60,9 +60,25 @@ public class SampleData {
         }
     }
 
+    public static InetAddress getSecondLocalBaseAddress() {
+        try {
+            return InetAddress.getByName("127.0.0.2");
+        } catch (UnknownHostException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     public static URL getLocalBaseURL() {
         try {
             return new URL("http://127.0.0.1:" + NetworkAddressFactoryImpl.DEFAULT_TCP_HTTP_LISTEN_PORT + "/");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static URL getSecondLocalBaseURL() {
+        try {
+            return new URL("http://127.0.0.2:" + NetworkAddressFactoryImpl.DEFAULT_TCP_HTTP_LISTEN_PORT + "/");
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -169,6 +185,16 @@ public class SampleData {
                 SampleDeviceRoot.getDeviceDescriptorURL(),
                 null,
                 getLocalBaseAddress()
+        );
+    }
+
+    public static RemoteDeviceIdentity createSecondRemoteDeviceIdentity(int maxAgeSeconds) {
+        return new RemoteDeviceIdentity(
+                SampleDeviceRoot.getRootUDN(),
+                maxAgeSeconds,
+                SampleDeviceRoot.getSecondDeviceDescriptorURL(),
+                null,
+                getSecondLocalBaseAddress()
         );
     }
 
