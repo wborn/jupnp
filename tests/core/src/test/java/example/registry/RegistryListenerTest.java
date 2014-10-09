@@ -283,23 +283,95 @@ public class RegistryListenerTest {
         assertEquals(listener.removed, true);
     }
 
+    @Test
+    public void ipAddressChangeOnRegisteredDevice() throws Exception {
+
+        final RemoteDevice discoveredDevice = new RemoteDevice(SampleData.createRemoteDeviceIdentity());
+        final RemoteDevice hydratedDevice = SampleData.createRemoteDevice();
+
+        MockUpnpService upnpService = new MockUpnpService() {
+            @Override
+            protected MockRouter createRouter() {
+                return new MockRouter(getConfiguration(), getProtocolFactory()) {
+                    @Override
+                    public StreamResponseMessage[] getStreamResponseMessages() {
+                        try {
+                            String deviceDescriptorXML =
+                                getConfiguration().getDeviceDescriptorBinderUDA10().generate(
+                                    hydratedDevice,
+                                    new RemoteClientInfo(),
+                                    getConfiguration().getNamespace()
+                                );
+                            String serviceOneXML =
+                                    getConfiguration().getServiceDescriptorBinderUDA10().generate(hydratedDevice.findServices()[0]);
+                                String serviceTwoXML =
+                                    getConfiguration().getServiceDescriptorBinderUDA10().generate(hydratedDevice.findServices()[1]);
+                                String serviceThreeXML =
+                                    getConfiguration().getServiceDescriptorBinderUDA10().generate(hydratedDevice.findServices()[2]);
+                                return new StreamResponseMessage[]{
+                                    new StreamResponseMessage(deviceDescriptorXML, ContentTypeHeader.DEFAULT_CONTENT_TYPE_UTF8),
+                                    new StreamResponseMessage(serviceOneXML, ContentTypeHeader.DEFAULT_CONTENT_TYPE_UTF8),
+                                    new StreamResponseMessage(serviceTwoXML, ContentTypeHeader.DEFAULT_CONTENT_TYPE_UTF8),
+                                    new StreamResponseMessage(serviceThreeXML, ContentTypeHeader.DEFAULT_CONTENT_TYPE_UTF8)
+                                };
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                };
+            }
+        };
+        upnpService.startup();
+
+        MyListener listener = new MyListener();
+        upnpService.getRegistry().addListener(listener);
+
+        RetrieveRemoteDescriptors retrieveDescriptors = new RetrieveRemoteDescriptors(upnpService, discoveredDevice);
+        retrieveDescriptors.run();
+
+        assertEquals(listener.added, true);
+        assertEquals(listener.removed, false);        
+        
+        listener.reset();
+
+        upnpService.getRegistry().addDevice(new RemoteDevice(SampleData.createSecondRemoteDeviceIdentity(1800)));
+
+        assertEquals(listener.added, true);
+        assertEquals(listener.removed, true); 
+        assertEquals(listener.deviceAdded.getIdentity().getDescriptorURL().getHost(), "127.0.0.2"); 
+        assertEquals(listener.deviceRemoved.getIdentity().getDescriptorURL().getHost(), "127.0.0.1"); 
+        
+        listener.reset();
+        
+        upnpService.getRegistry().removeAllRemoteDevices();
+        assertEquals(listener.added, false);
+        assertEquals(listener.removed, true);        
+    }
+    
     public class MyListener extends DefaultRegistryListener {
         public boolean added = false; // DOC: EXC1
         public boolean removed = false; // DOC: EXC1
+        public RemoteDevice deviceAdded = null; 
+        public RemoteDevice deviceRemoved = null; 
 
         @Override
         public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
-            Service myService = device.findService(new UDAServiceId("MY-SERVICE-123"));
-            if (myService != null) {
-                // Do something with the discovered service
-                added = true; // DOC: EXC2
-            }
+            added = true; // DOC: EXC2
+            deviceAdded = device; 
         }
 
         @Override
         public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {
             // Stop using the service if this is the same device, it's gone now
             removed = true; // DOC: EXC3
+            deviceRemoved = device; 
+        }
+        
+        public void reset() {
+            added = false; 
+            removed = false; 
+            deviceAdded = null; 
+            deviceRemoved = null; 
         }
     }
 

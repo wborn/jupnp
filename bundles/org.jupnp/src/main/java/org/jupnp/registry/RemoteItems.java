@@ -14,14 +14,7 @@
 
 package org.jupnp.registry;
 
-import org.jupnp.model.gena.CancelReason;
-import org.jupnp.model.gena.RemoteGENASubscription;
-import org.jupnp.model.meta.LocalDevice;
-import org.jupnp.model.meta.RemoteDevice;
-import org.jupnp.model.meta.RemoteDeviceIdentity;
-import org.jupnp.model.resource.Resource;
-import org.jupnp.model.types.UDN;
-
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +24,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.jupnp.model.gena.CancelReason;
+import org.jupnp.model.gena.RemoteGENASubscription;
+import org.jupnp.model.meta.DeviceDetails;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.RemoteDevice;
+import org.jupnp.model.meta.RemoteDeviceIdentity;
+import org.jupnp.model.resource.Resource;
+import org.jupnp.model.types.UDN;
 
 /**
  * Internal class, required by {@link RegistryImpl}.
@@ -125,8 +127,21 @@ class RemoteItems extends RegistryItems<RemoteDevice, RemoteGENASubscription> {
         }
 
         RemoteDevice registeredRemoteDevice = get(rdIdentity.getUdn(), false);
+                  
         if (registeredRemoteDevice != null) {
 
+            // check for IP address change
+            RemoteDeviceIdentity remoteDeviceIdentity = registeredRemoteDevice.getIdentity(); 
+            if (remoteDeviceIdentity != null) {
+                URL descriptorUrl = rdIdentity.getDescriptorURL(); 
+                URL remoteDescriptorUrl = remoteDeviceIdentity.getDescriptorURL();
+                if (descriptorUrl != null & remoteDescriptorUrl != null && !descriptorUrl.getHost().equals(remoteDescriptorUrl.getHost())) {
+                    log.fine("IP adress has changed - removing the registered device");
+                    remove(registeredRemoteDevice);
+                    return false;
+                }
+            }
+            
             if (!registeredRemoteDevice.isRoot()) {
                 log.fine("Updating root device of embedded: " + registeredRemoteDevice);
                 registeredRemoteDevice = registeredRemoteDevice.getRoot();
