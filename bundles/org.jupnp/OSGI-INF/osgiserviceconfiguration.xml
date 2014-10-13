@@ -14,11 +14,10 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="false" name="org.jupnp.OSGiConfiguration">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" configuration-policy="require" deactivate="deactivate" immediate="false" name="org.jupnp">
    <implementation class="org.jupnp.OSGiUpnpServiceConfiguration"/>
    <reference bind="setHttpService" cardinality="0..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="static" unbind="unsetHttpService"/>
    <service>
-      <provide interface="org.osgi.service.cm.ManagedService"/>
+      <provide interface="org.jupnp.OSGiUpnpServiceConfiguration"/>
    </service>
-   <property name="service.pid" type="String" value="org.jupnp"/>
 </scr:component>

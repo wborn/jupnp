@@ -40,6 +40,7 @@ public class HttpServiceServletContainerAdapter implements
 	private final static Logger logger = LoggerFactory.getLogger(HttpServiceServletContainerAdapter.class);
 	
 	protected HttpService httpService;
+	private String contextPath;
 	
 	public HttpServiceServletContainerAdapter(HttpService httpService) {
 		this.httpService = httpService;
@@ -60,6 +61,7 @@ public class HttpServiceServletContainerAdapter implements
 		try {
 			logger.info("Registering UPnP callback servlet as {}", contextPath);
 			httpService.registerServlet(contextPath, servlet, params, httpService.createDefaultHttpContext());
+			this.contextPath = contextPath;
 		} catch (ServletException e) {
 			logger.error("Failed to register UPnP servlet!", e);
 		} catch (NamespaceException e) {
@@ -73,6 +75,10 @@ public class HttpServiceServletContainerAdapter implements
 
 	@Override
 	public void stopIfRunning() {
+		if(contextPath!=null) {
+			httpService.unregister(contextPath);
+			contextPath = null;
+		}
 	}
 
 }

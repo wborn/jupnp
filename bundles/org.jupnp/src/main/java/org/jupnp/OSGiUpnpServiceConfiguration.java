@@ -14,8 +14,7 @@
 
 package org.jupnp;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -59,10 +58,8 @@ import org.jupnp.transport.spi.SOAPActionProcessor;
 import org.jupnp.transport.spi.StreamClient;
 import org.jupnp.transport.spi.StreamServer;
 import org.jupnp.util.Exceptions;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedService;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +90,7 @@ import org.slf4j.LoggerFactory;
  * @author Christian Bauer
  * @author Kai Kreuzer - introduced bounded thread pool and http service streaming server
  */
-public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, ManagedService {
+public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
     private static Logger log = LoggerFactory.getLogger(OSGiUpnpServiceConfiguration.class);
 
@@ -116,8 +113,6 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
     private Namespace namespace;
 
 	private HttpService httpService;
-
-	private BundleContext context;
 
 	@SuppressWarnings("rawtypes")
 	private ServiceRegistration serviceReg;
@@ -151,9 +146,9 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
         
     }
 
-    protected void activate(BundleContext context) {
-    	
-    	this.context = context;
+    protected void activate(Map<String, Object> configProps) throws ConfigurationException {
+    	    	
+    	createConfiguration(configProps);
     	
         defaultExecutorService = createDefaultExecutorService();
 
@@ -398,6 +393,11 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
                 log.warn("Root cause: " + cause);
             }
         }
+        
+        @Override
+        public void shutdown() {
+        	super.shutdown();
+        }
     }
 
     // Executors.DefaultThreadFactory is package visibility (...no touching, you unworthy JDK user!)
@@ -427,8 +427,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
         }
     }
 
-	@Override
-	public void updated(Dictionary<String, ?> properties)
+	private void createConfiguration(Map<String, Object> properties)
 			throws ConfigurationException {
 		if(properties == null)
 			return;
@@ -485,15 +484,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration, M
 				log.error("Invalid value '{}' for callbackURI - using default value '{}'", prop, callbackURI);
 			}
 		}
-		shutdown();
-		activate(context);
 
-		if(serviceReg!=null) {
-			serviceReg.unregister();
-		}
-		if(context!=null) {
-			serviceReg = context.registerService(OSGiUpnpServiceConfiguration.class.getName(), this, new Hashtable<String, Object>());
-		}
 	}
 
 }
