@@ -25,9 +25,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jupnp.binding.xml.DeviceDescriptorBinder;
+import org.jupnp.binding.xml.RecoveringUDA10DeviceDescriptorBinderImpl;
+import org.jupnp.binding.xml.RecoveringUDA10ServiceDescriptorBinderImpl;
 import org.jupnp.binding.xml.ServiceDescriptorBinder;
-import org.jupnp.binding.xml.UDA10DeviceDescriptorBinderImpl;
-import org.jupnp.binding.xml.UDA10ServiceDescriptorBinderImpl;
 import org.jupnp.model.ModelUtil;
 import org.jupnp.model.Namespace;
 import org.jupnp.model.message.UpnpHeaders;
@@ -329,11 +329,11 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
     }
 
     protected DeviceDescriptorBinder createDeviceDescriptorBinderUDA10() {
-        return new UDA10DeviceDescriptorBinderImpl();
+        return new RecoveringUDA10DeviceDescriptorBinderImpl();
     }
 
     protected ServiceDescriptorBinder createServiceDescriptorBinderUDA10() {
-        return new UDA10ServiceDescriptorBinderImpl();
+        return new RecoveringUDA10ServiceDescriptorBinderImpl();
     }
 
     protected Namespace createNamespace() {

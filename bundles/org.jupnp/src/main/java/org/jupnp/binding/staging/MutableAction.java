@@ -29,10 +29,10 @@ public class MutableAction {
     public List<MutableActionArgument> arguments = new ArrayList();
 
     public Action build() {
-        return new Action(name, createActionArgumennts());
+        return new Action(name, createActionArguments());
     }
 
-    public ActionArgument[] createActionArgumennts() {
+    public ActionArgument[] createActionArguments() {
         ActionArgument[] array = new ActionArgument[arguments.size()];
         int i = 0;
         for (MutableActionArgument argument : arguments) {

@@ -26,6 +26,7 @@ import org.xml.sax.SAXParseException;
 
 /**
  * @author Michael Pujos
+ * @author Kai Kreuzer - added faulty descriptors as found by Belkin WeMo
  */
 public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescriptorBinderImpl {
 
@@ -41,7 +42,9 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
             try {
                 if (descriptorXml != null)
                   descriptorXml = descriptorXml.trim(); // Always trim whitespace
-                device = super.describe(undescribedDevice, descriptorXml);
+                  String fixedXml = fixMimeTypes(descriptorXml);
+                  fixedXml = fixWrongNamespaces(fixedXml);
+                device = super.describe(undescribedDevice, fixedXml);
                 return device;
             } catch (DescriptorBindingException ex) {
                 log.warning("Regular parsing failed: " + Exceptions.unwrap(ex).getMessage());
@@ -70,7 +73,7 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
                     log.warning("Removing trailing garbage didn't work: " + Exceptions.unwrap(ex).getMessage());
                 }
             }
-
+            
             // Try to fix "up to five" missing namespace declarations
             DescriptorBindingException lastException = originalException;
             fixedXml = descriptorXml;
@@ -89,6 +92,7 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
                 }
             }
 
+            
             // TODO: This code used kxml, which probably should not be the case
             
 //            fixedXml = XmlPullParserUtils.fixXMLEntities(descriptorXml);
@@ -146,8 +150,24 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
         }
         return null;
     }
+    
+    protected String fixMimeTypes(String descriptorXml) {
+    	if(descriptorXml.contains("<mimetype>jpg</mimetype>")) {
+            log.warning("Detected invalid mimetype 'jpg', replacing it with 'image/jpeg'");
+            return descriptorXml.replaceAll("<mimetype>jpg</mimetype>", "<mimetype>image/jpeg</mimetype>");
+    	}
+    	return descriptorXml;
+    }
+    
+    protected String fixWrongNamespaces(String descriptorXml) {
+    	if(descriptorXml.contains("<root xmlns=\"urn:Belkin:device-1-0\">")) {
+            log.warning("Detected invalid root namespace 'urn:Belkin', replacing it with 'urn:schemas-upnp-org'");
+    		return descriptorXml.replaceAll("<root xmlns=\"urn:Belkin:device-1-0\">", "<root xmlns=\"urn:schemas-upnp-org:device-1-0\">");
+    	}
+    	return descriptorXml;
+	}
 
-    protected String fixMissingNamespaces(String descriptorXml, DescriptorBindingException ex) {
+	protected String fixMissingNamespaces(String descriptorXml, DescriptorBindingException ex) {
         // Windows: org.jupnp.binding.xml.DescriptorBindingException: Could not parse device descriptor: org.jupnp.xml.ParserException: org.xml.sax.SAXParseException: The prefix "dlna" for element "dlna:X_DLNADOC" is not bound.
         // Android: org.xmlpull.v1.XmlPullParserException: undefined prefix: dlna (position:START_TAG <{null}dlna:X_DLNADOC>@19:17 in java.io.StringReader@406dff48)
 
