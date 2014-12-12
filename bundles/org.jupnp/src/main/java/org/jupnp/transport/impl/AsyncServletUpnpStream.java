@@ -53,7 +53,7 @@ import java.util.logging.Logger;
  */
 public abstract class AsyncServletUpnpStream extends UpnpStream implements AsyncListener {
 
-    final private static Logger log = Logger.getLogger(UpnpStream.class.getName());
+    final private Logger log = Logger.getLogger(UpnpStream.class.getName());
 
     final protected AsyncContext asyncContext;
     final protected HttpServletRequest request;

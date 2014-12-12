@@ -71,7 +71,7 @@ import java.util.regex.Pattern;
  */
 public abstract class DOMParser<D extends DOM> implements ErrorHandler, EntityResolver {
 
-    private static Logger log = Logger.getLogger(DOMParser.class.getName());
+    private Logger log = Logger.getLogger(DOMParser.class.getName());
 
     public static final URL XML_SCHEMA_RESOURCE =
             Thread.currentThread().getContextClassLoader().getResource("org.jupnp/schemas/xml.xsd");

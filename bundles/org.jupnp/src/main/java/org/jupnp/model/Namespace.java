@@ -57,7 +57,7 @@ import org.jupnp.util.URIUtil;
  */
 public class Namespace {
 
-    final private static Logger log = Logger.getLogger(Namespace.class.getName());
+    final private Logger log = Logger.getLogger(Namespace.class.getName());
 
     public static final String DEVICE = "/dev";
     public static final String SERVICE = "/svc";

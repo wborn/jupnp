@@ -31,8 +31,6 @@ import java.util.regex.Matcher;
  */
 public class ServiceType {
 
-    final private static Logger log = Logger.getLogger(ServiceType.class.getName());
-
     public static final Pattern PATTERN =
         Pattern.compile("urn:(" + Constants.REGEX_NAMESPACE + "):service:(" + Constants.REGEX_TYPE + "):([0-9]+).*");
 
@@ -79,6 +77,8 @@ public class ServiceType {
      * @return Either a {@link UDAServiceType} or a more generic {@link ServiceType}.
      */
     public static ServiceType valueOf(String s) throws InvalidValueException {
+
+        final Logger log = Logger.getLogger(ServiceType.class.getName());
 
         if (s == null)
             throw new InvalidValueException("Can't parse null string");

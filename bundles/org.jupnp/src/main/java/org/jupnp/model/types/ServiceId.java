@@ -27,8 +27,6 @@ import java.util.regex.Matcher;
  */
 public class ServiceId {
 
-    final private static Logger log = Logger.getLogger(ServiceId.class.getName());
-
     public static final String UNKNOWN = "UNKNOWN";
 
     public static final Pattern PATTERN =
@@ -62,6 +60,8 @@ public class ServiceId {
     }
 
     public static ServiceId valueOf(String s) throws InvalidValueException {
+
+        final Logger log = Logger.getLogger(ServiceId.class.getName());
 
         ServiceId serviceId = null;
 

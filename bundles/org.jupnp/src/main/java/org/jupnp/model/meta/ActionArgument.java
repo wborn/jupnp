@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  */
 public class ActionArgument<S extends Service> implements Validatable {
 
-    final private static Logger log = Logger.getLogger(ActionArgument.class.getName());
+    final private Logger log = Logger.getLogger(ActionArgument.class.getName());
 
     public enum Direction {
         IN, OUT

@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 public abstract class UnsignedVariableInteger {
 
-    final private static Logger log = Logger.getLogger(UnsignedVariableInteger.class.getName());
+    final private Logger log = Logger.getLogger(UnsignedVariableInteger.class.getName());
 
     public enum Bits {
         EIGHT(0xffL),

@@ -55,7 +55,7 @@ import java.util.logging.Logger;
  */
 public class SOAPActionProcessorImpl implements SOAPActionProcessor, ErrorHandler {
 
-    private static Logger log = Logger.getLogger(SOAPActionProcessor.class.getName());
+    private Logger log = Logger.getLogger(SOAPActionProcessor.class.getName());
     
     protected DocumentBuilderFactory createDocumentBuilderFactory() throws FactoryConfigurationError {
     	return DocumentBuilderFactory.newInstance();

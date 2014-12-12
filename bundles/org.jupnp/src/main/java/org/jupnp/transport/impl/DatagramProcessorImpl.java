@@ -40,7 +40,7 @@ import java.util.Locale;
  */
 public class DatagramProcessorImpl implements DatagramProcessor {
 
-    private static Logger log = Logger.getLogger(DatagramProcessor.class.getName());
+    private Logger log = Logger.getLogger(DatagramProcessor.class.getName());
 
     public IncomingDatagramMessage read(InetAddress receivedOnAddress, DatagramPacket datagram) throws UnsupportedDataException {
 

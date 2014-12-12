@@ -60,7 +60,7 @@ import static org.jupnp.model.XMLUtil.appendNewElementIfNotNull;
  */
 public class UDA10ServiceDescriptorBinderImpl implements ServiceDescriptorBinder, ErrorHandler {
 
-    private static Logger log = Logger.getLogger(ServiceDescriptorBinder.class.getName());
+    private Logger log = Logger.getLogger(ServiceDescriptorBinder.class.getName());
 
     public <S extends Service> S describe(S undescribedService, String descriptorXml) throws DescriptorBindingException, ValidationException {
         if (descriptorXml == null || descriptorXml.length() == 0) {

@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  */
 class LocalItems extends RegistryItems<LocalDevice, LocalGENASubscription> {
 
-    private static Logger log = Logger.getLogger(Registry.class.getName());
+    private Logger log = Logger.getLogger(Registry.class.getName());
     
     protected Map<UDN, DiscoveryOptions> discoveryOptions = new HashMap<UDN, DiscoveryOptions>();
     protected long lastAliveIntervalTimestamp = 0;

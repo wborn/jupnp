@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  */
 public class Icon implements Validatable {
 
-    final private static Logger log = Logger.getLogger(StateVariable.class.getName());
+    final private Logger log = Logger.getLogger(StateVariable.class.getName());
 
     final private MimeType mimeType;
     final private int width;

@@ -65,7 +65,7 @@ import org.xml.sax.SAXParseException;
  */
 public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, ErrorHandler {
 
-    private static Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
+    private Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
 
     public <D extends Device> D describe(D undescribedDevice, String descriptorXml) throws DescriptorBindingException, ValidationException {
 
@@ -574,7 +574,8 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
     }
 
     static protected URI parseURI(String uri) {
-
+    	Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
+    	
         // TODO: UPNP VIOLATION: Netgear DG834 uses a non-URI: 'www.netgear.com'
         if (uri.startsWith("www.")) {
              uri = "http://" + uri;

@@ -30,7 +30,7 @@ import org.xml.sax.SAXParseException;
  */
 public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescriptorBinderImpl {
 
-    private static Logger log = Logger.getLogger(RecoveringUDA10DeviceDescriptorBinderImpl.class.getName());
+    private Logger log = Logger.getLogger(RecoveringUDA10DeviceDescriptorBinderImpl.class.getName());
 
     @Override
     public <D extends Device> D describe(D undescribedDevice, String descriptorXml) throws DescriptorBindingException, ValidationException {

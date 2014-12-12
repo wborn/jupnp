@@ -43,7 +43,7 @@ import java.util.logging.Logger;
  */
 public class AnnotationActionBinder {
 
-    private static Logger log = Logger.getLogger(AnnotationLocalServiceBinder.class.getName());
+    private Logger log = Logger.getLogger(AnnotationLocalServiceBinder.class.getName());
 
     protected UpnpAction annotation;
     protected Method method;

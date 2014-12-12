@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  */
 public class CallbackHeader extends UpnpHeader<List<URL>> {
 
-    final private static Logger log = Logger.getLogger(CallbackHeader.class.getName());
+    final private Logger log = Logger.getLogger(CallbackHeader.class.getName());
 
     public CallbackHeader() {
         setValue(new ArrayList());

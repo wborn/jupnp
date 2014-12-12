@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  */
 public class MethodActionExecutor extends AbstractActionExecutor {
 
-    private static Logger log = Logger.getLogger(MethodActionExecutor.class.getName());
+    private Logger log = Logger.getLogger(MethodActionExecutor.class.getName());
 
     protected Method method;
 

@@ -52,7 +52,7 @@ import org.jupnp.protocol.ProtocolFactory;
  */
 public class RegistryImpl implements Registry {
 
-    private static Logger log = Logger.getLogger(Registry.class.getName());
+    private Logger log = Logger.getLogger(Registry.class.getName());
 
     protected UpnpService upnpService;
     protected RegistryMaintainer registryMaintainer;

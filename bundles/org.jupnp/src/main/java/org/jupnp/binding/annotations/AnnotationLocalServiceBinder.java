@@ -54,7 +54,7 @@ import java.util.logging.Logger;
  */
 public class AnnotationLocalServiceBinder implements LocalServiceBinder {
 
-    private static Logger log = Logger.getLogger(AnnotationLocalServiceBinder.class.getName());
+    private Logger log = Logger.getLogger(AnnotationLocalServiceBinder.class.getName());
 
     public LocalService read(Class<?> clazz) throws LocalServiceBindingException {
         log.fine("Reading and binding annotations of service implementation class: " + clazz);

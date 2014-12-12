@@ -49,7 +49,7 @@ import org.jupnp.util.Reflections;
  */
 public class DefaultServiceManager<T> implements ServiceManager<T> {
 
-    private static Logger log = Logger.getLogger(DefaultServiceManager.class.getName());
+    private Logger log = Logger.getLogger(DefaultServiceManager.class.getName());
 
     final protected LocalService<T> service;
     final protected Class<T> serviceClass;

@@ -40,7 +40,7 @@ import java.net.URL;
  */
 public class SendingEvent extends SendingSync<OutgoingEventRequestMessage, StreamResponseMessage> {
 
-    final private static Logger log = Logger.getLogger(SendingEvent.class.getName());
+    final private Logger log = Logger.getLogger(SendingEvent.class.getName());
 
     final protected String subscriptionId;
     final protected OutgoingEventRequestMessage[] requestMessages;

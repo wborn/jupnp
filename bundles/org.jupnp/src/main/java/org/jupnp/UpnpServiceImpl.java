@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UpnpServiceImpl implements UpnpService {
 
-    private static Logger log = LoggerFactory.getLogger(UpnpServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(UpnpServiceImpl.class);
 
     protected boolean isConfigured = false;    
     protected Boolean isRunning = false;

@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  */
 public class ReceivingSearchResponse extends ReceivingAsync<IncomingSearchResponse> {
 
-    final private static Logger log = Logger.getLogger(ReceivingSearchResponse.class.getName());
+    final private Logger log = Logger.getLogger(ReceivingSearchResponse.class.getName());
 
     public ReceivingSearchResponse(UpnpService upnpService, IncomingDatagramMessage<UpnpResponse> inputMessage) {
         super(upnpService, new IncomingSearchResponse(inputMessage));

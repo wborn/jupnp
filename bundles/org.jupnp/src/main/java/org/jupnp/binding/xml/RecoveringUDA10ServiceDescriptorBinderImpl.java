@@ -26,7 +26,7 @@ import org.jupnp.model.meta.Service;
  */
 public class RecoveringUDA10ServiceDescriptorBinderImpl extends UDA10ServiceDescriptorBinderImpl {
 
-    private static Logger log = Logger.getLogger(ServiceDescriptorBinder.class.getName());
+    private Logger log = Logger.getLogger(ServiceDescriptorBinder.class.getName());
 
     @Override
     public <S extends Service> S describe(S undescribedService, String descriptorXml) throws DescriptorBindingException, ValidationException {

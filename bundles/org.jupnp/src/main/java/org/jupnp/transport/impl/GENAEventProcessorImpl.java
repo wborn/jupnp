@@ -47,7 +47,7 @@ import java.util.logging.Logger;
  */
 public class GENAEventProcessorImpl implements GENAEventProcessor, ErrorHandler {
 
-    private static Logger log = Logger.getLogger(GENAEventProcessor.class.getName());
+    private Logger log = Logger.getLogger(GENAEventProcessor.class.getName());
 
     protected DocumentBuilderFactory createDocumentBuilderFactory() throws FactoryConfigurationError {
     	return DocumentBuilderFactory.newInstance();

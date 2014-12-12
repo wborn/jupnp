@@ -45,7 +45,7 @@ import java.util.logging.Logger;
  */
 public class StreamServerImpl implements StreamServer<StreamServerConfigurationImpl> {
 
-    final private static Logger log = Logger.getLogger(StreamServer.class.getName());
+    final private Logger log = Logger.getLogger(StreamServer.class.getName());
 
     final protected StreamServerConfigurationImpl configuration;
 

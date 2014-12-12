@@ -68,7 +68,7 @@ import java.util.logging.Logger;
  */
 public abstract class HttpServerConnectionUpnpStream extends UpnpStream {
 
-    final private static Logger log = Logger.getLogger(UpnpStream.class.getName());
+    final private Logger log = Logger.getLogger(UpnpStream.class.getName());
 
     protected final HttpServerConnection connection;
     protected final BasicHttpProcessor httpProcessor = new BasicHttpProcessor();

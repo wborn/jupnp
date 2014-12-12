@@ -73,7 +73,7 @@ import java.util.logging.Logger;
  */
 public abstract class SubscriptionCallback implements Runnable {
 
-    protected static Logger log = Logger.getLogger(SubscriptionCallback.class.getName());
+    protected Logger log = Logger.getLogger(SubscriptionCallback.class.getName());
 
     protected final Service service;
     protected final Integer requestedDurationSeconds;

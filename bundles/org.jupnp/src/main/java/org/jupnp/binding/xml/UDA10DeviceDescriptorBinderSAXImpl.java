@@ -49,7 +49,7 @@ import static org.jupnp.binding.xml.Descriptor.Device.ELEMENT;
  */
 public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBinderImpl {
 
-    private static Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
+    private Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
 
     @Override
     public <D extends Device> D describe(D undescribedDevice, String descriptorXml) throws DescriptorBindingException, ValidationException {
@@ -128,6 +128,8 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
 
         public static final ELEMENT EL = ELEMENT.specVersion;
 
+        Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
+        
         public SpecVersionHandler(MutableUDAVersion instance, DeviceDescriptorHandler parent) {
             super(instance, parent);
         }
@@ -164,6 +166,8 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
 
         public static final ELEMENT EL = ELEMENT.device;
 
+        Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
+        
         public DeviceHandler(MutableDevice instance, DeviceDescriptorHandler parent) {
             super(instance, parent);
         }
@@ -276,6 +280,8 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
 
         public static final ELEMENT EL = ELEMENT.icon;
 
+        private Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
+        
         public IconHandler(MutableIcon instance, DeviceDescriptorHandler parent) {
             super(instance, parent);
         }
@@ -379,7 +385,7 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
                         break;
                 }
             } catch (InvalidValueException ex) {
-                log.warning(
+                Logger.getLogger(DeviceDescriptorBinder.class.getName()).warning(
                     "UPnP specification violation, skipping invalid service declaration. " + ex.getMessage()
                 );
             }

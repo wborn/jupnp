@@ -25,8 +25,6 @@ import java.util.logging.Logger;
  */
 public class RequestInfo {
 
-    final private static Logger log = Logger.getLogger(RequestInfo.class.getName());
-
     public static void reportRequest(StringBuilder builder, HttpServletRequest req) {
         builder.append("Request: ");
         builder.append(req.getMethod());
@@ -156,10 +154,11 @@ public class RequestInfo {
     }
 
     public static void dumpRequestString(long timestamp, HttpServletRequest request) {
-        log.info(getRequestInfoString(timestamp, request));
+    	Logger.getLogger(RequestInfo.class.getName()).info(getRequestInfoString(timestamp, request));
     }
 
     public static void dumpRequestHeaders(long timestamp, String text, HttpServletRequest request) {
+    	Logger log = Logger.getLogger(RequestInfo.class.getName());
         log.info(text);
         dumpRequestString(timestamp, request);
         Enumeration headers = request.getHeaderNames();

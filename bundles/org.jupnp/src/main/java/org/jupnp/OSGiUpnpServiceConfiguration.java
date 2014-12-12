@@ -92,7 +92,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
-    private static Logger log = LoggerFactory.getLogger(OSGiUpnpServiceConfiguration.class);
+    private Logger log = LoggerFactory.getLogger(OSGiUpnpServiceConfiguration.class);
 
     // configurable properties
     private int threadPoolSize = 20;

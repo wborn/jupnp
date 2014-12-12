@@ -57,7 +57,7 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
     // Ephemeral port is the default
 	public static final int DEFAULT_MULTICAST_RESPONSE_LISTEN_PORT = 0;
 
-    private static Logger log = Logger.getLogger(NetworkAddressFactoryImpl.class.getName());
+    private Logger log = Logger.getLogger(NetworkAddressFactoryImpl.class.getName());
 
     final protected Set<String> useInterfaces = new HashSet<String>();
     final protected Set<String> useAddresses = new HashSet<String>();

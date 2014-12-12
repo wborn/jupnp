@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractActionExecutor implements ActionExecutor {
 
-    private static Logger log = Logger.getLogger(AbstractActionExecutor.class.getName());
+    private Logger log = Logger.getLogger(AbstractActionExecutor.class.getName());
 
     protected Map<ActionArgument<LocalService>, StateVariableAccessor> outputArgumentAccessors =
         new HashMap<ActionArgument<LocalService>, StateVariableAccessor>();

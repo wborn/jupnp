@@ -54,7 +54,7 @@ import java.util.logging.Logger;
  */
 public abstract class LocalGENASubscription extends GENASubscription<LocalService> implements PropertyChangeListener {
 
-    private static Logger log = Logger.getLogger(LocalGENASubscription.class.getName());
+    private Logger log = Logger.getLogger(LocalGENASubscription.class.getName());
 
     final List<URL> callbackURLs;
 

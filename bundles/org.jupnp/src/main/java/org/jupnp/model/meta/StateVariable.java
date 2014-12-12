@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  */
 public class StateVariable<S extends Service> implements Validatable {
 
-    final private static Logger log = Logger.getLogger(StateVariable.class.getName());
+    final private Logger log = Logger.getLogger(StateVariable.class.getName());
 
     final private String name;
     final private StateVariableTypeDetails type;

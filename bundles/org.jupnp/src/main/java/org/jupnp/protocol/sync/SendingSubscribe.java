@@ -45,7 +45,7 @@ import java.util.logging.Logger;
  */
 public class SendingSubscribe extends SendingSync<OutgoingSubscribeRequestMessage, IncomingSubscribeResponseMessage> {
 
-    final private static Logger log = Logger.getLogger(SendingSubscribe.class.getName());
+    final private Logger log = Logger.getLogger(SendingSubscribe.class.getName());
 
     final protected RemoteGENASubscription subscription;
 

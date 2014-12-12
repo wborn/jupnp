@@ -64,9 +64,9 @@ import org.jupnp.transport.RouterException;
  */
 public class ReceivingSearch extends ReceivingAsync<IncomingSearchRequest> {
 
-    final private static Logger log = Logger.getLogger(ReceivingSearch.class.getName());
+    final private Logger log = Logger.getLogger(ReceivingSearch.class.getName());
 
-    private static final boolean LOG_ENABLED = log.isLoggable(Level.FINE);
+    private final boolean LOG_ENABLED = log.isLoggable(Level.FINE);
 
     final protected Random randomGenerator = new Random();
 

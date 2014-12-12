@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
 
-    private static Logger log = LoggerFactory.getLogger(DatagramIOImpl.class);
+    private Logger log = LoggerFactory.getLogger(DatagramIOImpl.class);
 
     /* Implementation notes for unicast/multicast UDP:
 

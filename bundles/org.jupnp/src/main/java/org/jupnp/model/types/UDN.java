@@ -35,8 +35,6 @@ import java.util.logging.Logger;
  */
 public class UDN {
 
-    final private static Logger log = Logger.getLogger(UDN.class.getName());
-
     public static final String PREFIX = "uuid:";
 
     private String identifierString;
@@ -94,6 +92,9 @@ public class UDN {
      * @return A global unique identifier, stable for the current system and salt.
      */
     public static UDN uniqueSystemIdentifier(String salt) {
+
+        final Logger log = Logger.getLogger(UDN.class.getName());
+
         StringBuilder systemSalt = new StringBuilder();
 
         // Bug: I've seen InetAddress.getLocalHost() block *forever* on Android, until device is rebooted

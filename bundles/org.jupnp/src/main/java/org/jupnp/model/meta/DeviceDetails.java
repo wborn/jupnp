@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  */
 public class DeviceDetails implements Validatable {
 
-    final private static Logger log = Logger.getLogger(DeviceDetails.class.getName());
+    final private Logger log = Logger.getLogger(DeviceDetails.class.getName());
 
     final private URL baseURL;
     final private String friendlyName;

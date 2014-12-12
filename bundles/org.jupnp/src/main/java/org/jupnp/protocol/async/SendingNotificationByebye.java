@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  */
 public class SendingNotificationByebye extends SendingNotification {
 
-    final private static Logger log = Logger.getLogger(SendingNotification.class.getName());
+    final private Logger log = Logger.getLogger(SendingNotification.class.getName());
 
     public SendingNotificationByebye(UpnpService upnpService, LocalDevice device) {
         super(upnpService, device);

@@ -54,7 +54,7 @@ import java.util.logging.Logger;
  */
 public class ReceivingSubscribe extends ReceivingSync<StreamRequestMessage, OutgoingSubscribeResponseMessage> {
 
-    final private static Logger log = Logger.getLogger(ReceivingSubscribe.class.getName());
+    final private Logger log = Logger.getLogger(ReceivingSubscribe.class.getName());
 
     protected LocalGENASubscription subscription;
 

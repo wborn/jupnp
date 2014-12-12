@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  */
 public class StateVariableTypeDetails implements Validatable {
 
-    final private static Logger log = Logger.getLogger(StateVariableTypeDetails.class.getName());
+    final private Logger log = Logger.getLogger(StateVariableTypeDetails.class.getName());
 
     final private Datatype datatype;
     final private String defaultValue;

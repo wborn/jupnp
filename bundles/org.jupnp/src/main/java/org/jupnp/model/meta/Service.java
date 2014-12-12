@@ -34,7 +34,7 @@ import org.jupnp.model.types.ServiceType;
  */
 public abstract class Service<D extends Device, S extends Service> {
 
-	final private static Logger log = Logger.getLogger(Service.class.getName());
+	final private Logger log = Logger.getLogger(Service.class.getName());
 
     final private ServiceType serviceType;
     final private ServiceId serviceId;

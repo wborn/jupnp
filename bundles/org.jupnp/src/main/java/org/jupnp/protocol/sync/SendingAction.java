@@ -49,7 +49,7 @@ import java.util.logging.Logger;
  */
 public class SendingAction extends SendingSync<OutgoingActionRequestMessage, IncomingActionResponseMessage> {
 
-    final private static Logger log = Logger.getLogger(SendingAction.class.getName());
+    final private Logger log = Logger.getLogger(SendingAction.class.getName());
 
     final protected ActionInvocation actionInvocation;
 

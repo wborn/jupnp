@@ -29,8 +29,6 @@ import java.util.regex.Matcher;
  * @author Christian Bauer
  */
 public class UDAServiceId extends ServiceId {
-	
-	private static Logger log = Logger.getLogger(UDAServiceId.class.getName());
 
     public static final String DEFAULT_NAMESPACE = "upnp-org";
     public static final String BROKEN_DEFAULT_NAMESPACE = "schemas-upnp-org"; // TODO: UPNP VIOLATION: Intel UPnP tools!
@@ -47,7 +45,10 @@ public class UDAServiceId extends ServiceId {
     }
 
     public static UDAServiceId valueOf(String s) throws InvalidValueException {
-        Matcher matcher = UDAServiceId.PATTERN.matcher(s);
+    	
+    	final Logger log = Logger.getLogger(UDAServiceId.class.getName());
+
+    	Matcher matcher = UDAServiceId.PATTERN.matcher(s);
         if (matcher.matches() && matcher.groupCount() >= 1) {
             return new UDAServiceId(matcher.group(1));
         }

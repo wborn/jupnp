@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  */
 public class ReceivingEvent extends ReceivingSync<StreamRequestMessage, OutgoingEventResponseMessage> {
 
-    final private static Logger log = Logger.getLogger(ReceivingEvent.class.getName());
+    final private Logger log = Logger.getLogger(ReceivingEvent.class.getName());
 
     public ReceivingEvent(UpnpService upnpService, StreamRequestMessage inputMessage) {
         super(upnpService, inputMessage);

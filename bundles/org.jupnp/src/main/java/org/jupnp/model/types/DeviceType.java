@@ -31,8 +31,6 @@ import java.util.regex.Pattern;
  */
 public class DeviceType {
 
-    final private static Logger log = Logger.getLogger(DeviceType.class.getName());
-
     public static final String UNKNOWN = "UNKNOWN";
 
     public static final Pattern PATTERN =
@@ -76,6 +74,8 @@ public class DeviceType {
      * @return Either a {@link UDADeviceType} or a more generic {@link DeviceType}.
      */
     public static DeviceType valueOf(String s) throws InvalidValueException {
+
+        final Logger log = Logger.getLogger(DeviceType.class.getName());
 
         DeviceType deviceType = null;
 

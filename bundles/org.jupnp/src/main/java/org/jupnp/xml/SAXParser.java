@@ -40,8 +40,6 @@ import java.util.logging.Logger;
  */
 public class SAXParser {
 
-    final private static Logger log = Logger.getLogger(SAXParser.class.getName());
-
     public static final URI XML_SCHEMA_NAMESPACE =
             URI.create("http://www.w3.org/2001/xml.xsd");
     public static final URL XML_SCHEMA_RESOURCE =
@@ -129,6 +127,8 @@ public class SAXParser {
 
 
     public static class Handler<I> extends DefaultHandler {
+
+        final private Logger log = Logger.getLogger(SAXParser.class.getName());
 
         protected SAXParser parser;
         protected I instance;

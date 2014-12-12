@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class HttpServiceServletContainerAdapter implements
 		ServletContainerAdapter {
 
-	private final static Logger logger = LoggerFactory.getLogger(HttpServiceServletContainerAdapter.class);
+	private final Logger logger = LoggerFactory.getLogger(HttpServiceServletContainerAdapter.class);
 	
 	protected HttpService httpService;
 	private String contextPath;

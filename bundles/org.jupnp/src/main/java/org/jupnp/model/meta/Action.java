@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  */
 public class Action<S extends Service> implements Validatable {
 
-    final private static Logger log = Logger.getLogger(Action.class.getName());
+    final private Logger log = Logger.getLogger(Action.class.getName());
 
     final private String name;
     final private ActionArgument[] arguments;

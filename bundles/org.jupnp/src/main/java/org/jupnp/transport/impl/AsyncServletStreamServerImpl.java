@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AsyncServletStreamServerImpl implements StreamServer<AsyncServletStreamServerConfigurationImpl> {
 
-    final private static Logger log = LoggerFactory.getLogger(AsyncServletStreamServerImpl.class);
+    final private Logger log = LoggerFactory.getLogger(AsyncServletStreamServerImpl.class);
 
     final protected AsyncServletStreamServerConfigurationImpl configuration;
     protected int localPort;

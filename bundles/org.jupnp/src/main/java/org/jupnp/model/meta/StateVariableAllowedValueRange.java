@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  */
 public class StateVariableAllowedValueRange implements Validatable {
 
-    final private static Logger log = Logger.getLogger(StateVariableAllowedValueRange.class.getName());
+    final private Logger log = Logger.getLogger(StateVariableAllowedValueRange.class.getName());
 
     final private long minimum;
     final private long maximum;

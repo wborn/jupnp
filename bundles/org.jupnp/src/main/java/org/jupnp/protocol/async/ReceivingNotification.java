@@ -70,7 +70,7 @@ import java.util.logging.Logger;
  */
 public class ReceivingNotification extends ReceivingAsync<IncomingNotificationRequest> {
 
-    final private static Logger log = Logger.getLogger(ReceivingNotification.class.getName());
+    final private Logger log = Logger.getLogger(ReceivingNotification.class.getName());
 
     public ReceivingNotification(UpnpService upnpService, IncomingDatagramMessage<UpnpRequest> inputMessage) {
         super(upnpService, new IncomingNotificationRequest(inputMessage));

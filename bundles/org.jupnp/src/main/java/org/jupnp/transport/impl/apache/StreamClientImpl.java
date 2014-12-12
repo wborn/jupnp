@@ -65,7 +65,7 @@ import java.util.logging.Logger;
  */
 public class StreamClientImpl extends AbstractStreamClient<StreamClientConfigurationImpl, HttpUriRequest> {
 
-    final private static Logger log = Logger.getLogger(StreamClient.class.getName());
+    final private Logger log = Logger.getLogger(StreamClient.class.getName());
 
     final protected StreamClientConfigurationImpl configuration;
     final protected PoolingClientConnectionManager clientConnectionManager;

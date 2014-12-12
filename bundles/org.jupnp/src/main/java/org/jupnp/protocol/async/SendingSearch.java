@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  */
 public class SendingSearch extends SendingAsync {
 
-    final private static Logger log = Logger.getLogger(SendingSearch.class.getName());
+    final private Logger log = Logger.getLogger(SendingSearch.class.getName());
 
     private final UpnpHeader searchTarget;
     private final int mxSeconds;

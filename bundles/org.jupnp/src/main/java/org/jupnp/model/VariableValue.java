@@ -26,7 +26,7 @@ import org.jupnp.model.types.InvalidValueException;
  */
 public class VariableValue {
 
-    final private static Logger log = Logger.getLogger(VariableValue.class.getName());
+    final private Logger log = Logger.getLogger(VariableValue.class.getName());
 
     final private Datatype datatype;
     final private Object value;

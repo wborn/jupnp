@@ -37,7 +37,7 @@ import java.util.logging.Logger;
  */
 public class SendingUnsubscribe extends SendingSync<OutgoingUnsubscribeRequestMessage, StreamResponseMessage> {
 
-    final private static Logger log = Logger.getLogger(SendingUnsubscribe.class.getName());
+    final private Logger log = Logger.getLogger(SendingUnsubscribe.class.getName());
 
     final protected RemoteGENASubscription subscription;
 

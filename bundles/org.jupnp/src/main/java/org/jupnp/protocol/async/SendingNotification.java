@@ -43,7 +43,7 @@ import java.util.logging.Logger;
  */
 public abstract class SendingNotification extends SendingAsync {
 
-    final private static Logger log = Logger.getLogger(SendingNotification.class.getName());
+    final private Logger log = Logger.getLogger(SendingNotification.class.getName());
 
     private LocalDevice device;
 

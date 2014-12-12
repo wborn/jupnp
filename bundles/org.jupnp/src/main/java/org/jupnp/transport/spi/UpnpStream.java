@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  */
 public abstract class UpnpStream implements Runnable {
 
-    private static Logger log = Logger.getLogger(UpnpStream.class.getName());
+    private Logger log = Logger.getLogger(UpnpStream.class.getName());
 
     protected final ProtocolFactory protocolFactory;
     protected ReceivingSync syncProtocol;

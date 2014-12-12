@@ -86,7 +86,7 @@ import org.jupnp.util.Exceptions;
  */
 public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
-    private static Logger log = Logger.getLogger(DefaultUpnpServiceConfiguration.class.getName());
+    private Logger log = Logger.getLogger(DefaultUpnpServiceConfiguration.class.getName());
 
     final private static int THREAD_POOL_SIZE = 20;
     final private static int THREAD_QUEUE_SIZE = 1000;
@@ -316,7 +316,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
                      @Override
                      public void rejectedExecution(Runnable runnable, ThreadPoolExecutor threadPoolExecutor) {
                          // Log and discard
-                         log.warning("Thread pool rejected execution of " + runnable.getClass());
+                    	 Logger.getLogger(DefaultUpnpServiceConfiguration.class.getName()).warning("Thread pool rejected execution of " + runnable.getClass());
                          super.rejectedExecution(runnable, threadPoolExecutor);
                      }
                  }
@@ -348,8 +348,8 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
                     return;
                 }
                 // Log only
-                log.warning("Thread terminated " + runnable + " abruptly with exception: " + throwable);
-                log.warning("Root cause: " + cause);
+                Logger.getLogger(DefaultUpnpServiceConfiguration.class.getName()).warning("Thread terminated " + runnable + " abruptly with exception: " + throwable);
+                Logger.getLogger(DefaultUpnpServiceConfiguration.class.getName()).warning("Root cause: " + cause);
             }
         }
     }

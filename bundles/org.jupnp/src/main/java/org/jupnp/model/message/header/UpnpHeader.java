@@ -33,8 +33,6 @@ import java.util.logging.Logger;
  */
 public abstract class UpnpHeader<T> {
 
-    final private static Logger log = Logger.getLogger(UpnpHeader.class.getName());
-
     /**
      * Maps a standardized UPnP header to potential header subtypes.
      */
@@ -161,6 +159,7 @@ public abstract class UpnpHeader<T> {
      * @return The best matching header subtype instance, or <code>null</code> if no subtype can be found.
      */
     public static UpnpHeader newInstance(UpnpHeader.Type type, String headerValue) {
+        final Logger log = Logger.getLogger(UpnpHeader.class.getName());
 
         // Try all the UPnP headers and see if one matches our value parsers
         UpnpHeader upnpHeader = null;

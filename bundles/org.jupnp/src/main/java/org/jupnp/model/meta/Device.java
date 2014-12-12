@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  */
 public abstract class Device<DI extends DeviceIdentity, D extends Device, S extends Service> implements Validatable {
 
-    final private static Logger log = Logger.getLogger(Device.class.getName());
+    final private Logger log = Logger.getLogger(Device.class.getName());
 
     final private DI identity;
 

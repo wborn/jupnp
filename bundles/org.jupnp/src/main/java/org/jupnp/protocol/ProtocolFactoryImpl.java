@@ -63,7 +63,7 @@ import org.jupnp.transport.RouterException;
  */
 public class ProtocolFactoryImpl implements ProtocolFactory {
 
-    final private static Logger log = Logger.getLogger(ProtocolFactory.class.getName());
+    final private Logger log = Logger.getLogger(ProtocolFactory.class.getName());
 
     protected final UpnpService upnpService;
 

@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  */
 public abstract class SendingAsync implements Runnable {
 
-    final private static Logger log = Logger.getLogger(UpnpService.class.getName());
+    final private Logger log = Logger.getLogger(UpnpService.class.getName());
 
     private final UpnpService upnpService;
 

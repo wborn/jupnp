@@ -41,7 +41,7 @@ import org.jupnp.model.types.UDN;
  */
 class RemoteItems extends RegistryItems<RemoteDevice, RemoteGENASubscription> {
 
-    private static Logger log = Logger.getLogger(Registry.class.getName());
+    private Logger log = Logger.getLogger(Registry.class.getName());
 
     RemoteItems(RegistryImpl registry) {
         super(registry);

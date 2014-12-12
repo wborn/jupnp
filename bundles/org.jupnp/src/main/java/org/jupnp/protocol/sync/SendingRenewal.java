@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  */
 public class SendingRenewal extends SendingSync<OutgoingRenewalRequestMessage, IncomingSubscribeResponseMessage> {
 
-    final private static Logger log = Logger.getLogger(SendingRenewal.class.getName());
+    final private Logger log = Logger.getLogger(SendingRenewal.class.getName());
 
     final protected RemoteGENASubscription subscription;
 

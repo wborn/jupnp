@@ -40,7 +40,7 @@ import org.jupnp.registry.Registry;
  */
 public class ControlPointImpl implements ControlPoint {
 
-    private static Logger log = Logger.getLogger(ControlPointImpl.class.getName());
+    private Logger log = Logger.getLogger(ControlPointImpl.class.getName());
 
     protected UpnpServiceConfiguration configuration;
     protected ProtocolFactory protocolFactory;

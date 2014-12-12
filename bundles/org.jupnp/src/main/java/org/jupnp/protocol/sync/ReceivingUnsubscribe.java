@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  */
 public class ReceivingUnsubscribe extends ReceivingSync<StreamRequestMessage, StreamResponseMessage> {
 
-    final private static Logger log = Logger.getLogger(ReceivingUnsubscribe.class.getName());
+    final private Logger log = Logger.getLogger(ReceivingUnsubscribe.class.getName());
 
     public ReceivingUnsubscribe(UpnpService upnpService, StreamRequestMessage inputMessage) {
         super(upnpService, inputMessage);

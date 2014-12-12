@@ -44,7 +44,7 @@ import java.util.logging.Logger;
  */
 public abstract class ReceivingSync<IN extends StreamRequestMessage, OUT extends StreamResponseMessage> extends ReceivingAsync<IN> {
 
-    final private static Logger log = Logger.getLogger(UpnpService.class.getName());
+    final private Logger log = Logger.getLogger(UpnpService.class.getName());
 
     final protected RemoteClientInfo remoteClientInfo;
     protected OUT outputMessage;
