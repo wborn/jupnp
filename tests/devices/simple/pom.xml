@@ -49,6 +49,7 @@
 							org.osgi.framework,
 							org.osgi.service.event,
 							org.osgi.service.upnp,
+							org.osgi.service.device,
 							org.osgi.util.tracker
 						</Import-Package>
 						<Export-Package>
