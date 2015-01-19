@@ -23,6 +23,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 
 import org.jupnp.transport.spi.ServletContainerAdapter;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -40,10 +41,12 @@ public class HttpServiceServletContainerAdapter implements
 	private final Logger logger = LoggerFactory.getLogger(HttpServiceServletContainerAdapter.class);
 	
 	protected HttpService httpService;
+	private BundleContext context;
 	private String contextPath;
 	
-	public HttpServiceServletContainerAdapter(HttpService httpService) {
+	public HttpServiceServletContainerAdapter(HttpService httpService, BundleContext context) {
 		this.httpService = httpService;
+		this.context = context;
 	}
 	
 	@Override
@@ -52,7 +55,12 @@ public class HttpServiceServletContainerAdapter implements
 
 	@Override
 	public int addConnector(String host, int port) throws IOException {
-		return 0;
+		if(port==-1) {
+			try {
+				port = Integer.parseInt(context.getProperty("org.osgi.service.http.port"));
+			} catch(NumberFormatException e) {}
+		}
+		return port;
 	}
 
 	@Override

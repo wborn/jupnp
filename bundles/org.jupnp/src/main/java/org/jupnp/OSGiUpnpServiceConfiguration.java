@@ -58,6 +58,7 @@ import org.jupnp.transport.spi.SOAPActionProcessor;
 import org.jupnp.transport.spi.StreamClient;
 import org.jupnp.transport.spi.StreamServer;
 import org.jupnp.util.Exceptions;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.http.HttpService;
@@ -114,6 +115,8 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
 	private HttpService httpService;
 
+	private BundleContext context;
+
 	@SuppressWarnings("rawtypes")
 	private ServiceRegistration serviceReg;
 
@@ -146,8 +149,10 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
         
     }
 
-    protected void activate(Map<String, Object> configProps) throws ConfigurationException {
-    	    	
+    protected void activate(BundleContext context, Map<String, Object> configProps) throws ConfigurationException {
+    	
+    	this.context = context;
+    	
     	createConfiguration(configProps);
     	
         defaultExecutorService = createDefaultExecutorService();
@@ -217,7 +222,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 	public StreamServer createStreamServer(NetworkAddressFactory networkAddressFactory) {
     	if(httpService!=null) {
 	    	return new AsyncServletStreamServerImpl(
-	                new AsyncServletStreamServerConfigurationImpl(new HttpServiceServletContainerAdapter(httpService))
+	                new AsyncServletStreamServerConfigurationImpl(new HttpServiceServletContainerAdapter(httpService, context), callbackURI.getBasePath().getPort())
 	        );
     	} else {
 	    	return new StreamServerImpl(new StreamServerConfigurationImpl());
