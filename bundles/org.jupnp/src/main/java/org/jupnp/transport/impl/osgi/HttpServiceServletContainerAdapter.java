@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This is a servlet container adapter for an OSGi http service.
+ * It is a singleton as there will be only a single OSGi http service available to register servlets on
  * 
  * @author Kai Kreuzer
  * @author Ivan Iliev - No longer a singleton
@@ -41,13 +42,22 @@ public class HttpServiceServletContainerAdapter implements
 
 	private final Logger logger = LoggerFactory.getLogger(HttpServiceServletContainerAdapter.class);
 	
+	private static HttpServiceServletContainerAdapter instance = null;
+	
 	protected HttpService httpService;
 	private BundleContext context;
 	private String contextPath;
 	
-	public HttpServiceServletContainerAdapter(HttpService httpService, BundleContext context) {
+	private HttpServiceServletContainerAdapter(HttpService httpService, BundleContext context) {
 		this.httpService = httpService;
 		this.context = context;
+	}
+	
+	public static synchronized HttpServiceServletContainerAdapter getInstance(HttpService httpService, BundleContext context) {
+	    if(instance == null) {
+	        instance = new HttpServiceServletContainerAdapter(httpService, context);
+	    }
+	    return instance;
 	}
 	
 	@Override

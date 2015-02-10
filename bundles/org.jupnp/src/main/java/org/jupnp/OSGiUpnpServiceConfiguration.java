@@ -224,7 +224,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
             if (httpService != null) {
                 return new ServletStreamServerImpl(new ServletStreamServerConfigurationImpl(
-                        new HttpServiceServletContainerAdapter(httpService, context),
+                        HttpServiceServletContainerAdapter.getInstance(httpService, context),
                         httpProxyPort != -1 ? httpProxyPort : callbackURI.getBasePath().getPort()));
             }
         }
