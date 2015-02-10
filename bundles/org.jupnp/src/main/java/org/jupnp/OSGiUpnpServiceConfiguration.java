@@ -222,7 +222,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 	public StreamServer createStreamServer(NetworkAddressFactory networkAddressFactory) {
     	if(httpService!=null) {
 	    	return new AsyncServletStreamServerImpl(
-	                new AsyncServletStreamServerConfigurationImpl(new HttpServiceServletContainerAdapter(httpService, context), callbackURI.getBasePath().getPort())
+	                new AsyncServletStreamServerConfigurationImpl(HttpServiceServletContainerAdapter.getInstance(httpService, context), callbackURI.getBasePath().getPort())
 	        );
     	} else {
 	    	return new StreamServerImpl(new StreamServerConfigurationImpl());

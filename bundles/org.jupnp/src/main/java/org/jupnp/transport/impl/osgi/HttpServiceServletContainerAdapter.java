@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This is a servlet container adapter for an OSGi http service.
+ * It is a singleton as there will be only a single OSGi http service available to register servlets on
  * 
  * @author Kai Kreuzer
  *
@@ -40,13 +41,22 @@ public class HttpServiceServletContainerAdapter implements
 
 	private final Logger logger = LoggerFactory.getLogger(HttpServiceServletContainerAdapter.class);
 	
+	private static HttpServiceServletContainerAdapter instance = null;
+	
 	protected HttpService httpService;
 	private BundleContext context;
 	private String contextPath;
 	
-	public HttpServiceServletContainerAdapter(HttpService httpService, BundleContext context) {
+	private HttpServiceServletContainerAdapter(HttpService httpService, BundleContext context) {
 		this.httpService = httpService;
 		this.context = context;
+	}
+	
+	public static synchronized HttpServiceServletContainerAdapter getInstance(HttpService httpService, BundleContext context) {
+	    if(instance == null) {
+	        instance = new HttpServiceServletContainerAdapter(httpService, context);
+	    }
+	    return instance;
 	}
 	
 	@Override
@@ -65,16 +75,18 @@ public class HttpServiceServletContainerAdapter implements
 
 	@Override
 	public void registerServlet(String contextPath, Servlet servlet) {
-		Dictionary<?, ?> params = new Properties();
-		try {
-			logger.info("Registering UPnP callback servlet as {}", contextPath);
-			httpService.registerServlet(contextPath, servlet, params, httpService.createDefaultHttpContext());
-			this.contextPath = contextPath;
-		} catch (ServletException e) {
-			logger.error("Failed to register UPnP servlet!", e);
-		} catch (NamespaceException e) {
-			logger.error("Failed to register UPnP servlet!", e);
-		}
+	    if(this.contextPath == null) {
+    		Dictionary<?, ?> params = new Properties();
+    		try {
+    			logger.info("Registering UPnP callback servlet as {}", contextPath);
+    			httpService.registerServlet(contextPath, servlet, params, httpService.createDefaultHttpContext());
+    			this.contextPath = contextPath;
+    		} catch (ServletException e) {
+    			logger.error("Failed to register UPnP servlet!", e);
+    		} catch (NamespaceException e) {
+    			logger.error("Failed to register UPnP servlet!", e);
+    		}
+	    }
 	}
 
 	@Override
@@ -83,9 +95,9 @@ public class HttpServiceServletContainerAdapter implements
 
 	@Override
 	public void stopIfRunning() {
-		if(contextPath!=null) {
-			httpService.unregister(contextPath);
-			contextPath = null;
+		if(this.contextPath != null) {
+			httpService.unregister(this.contextPath);
+			this.contextPath = null;
 		}
 	}
 
