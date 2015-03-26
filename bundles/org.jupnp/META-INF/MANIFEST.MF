@@ -7,7 +7,6 @@ Bundle-Vendor: openHAB.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/*
 Import-Package: javax.imageio;resolution:=optional,
- javax.inject;resolution:=optional,
  javax.servlet,
  javax.servlet.http,
  javax.swing;resolution:=optional,
