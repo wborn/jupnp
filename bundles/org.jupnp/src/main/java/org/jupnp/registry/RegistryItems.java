@@ -14,6 +14,7 @@
 
 package org.jupnp.registry;
 
+import org.jupnp.UpnpServiceConfiguration;
 import org.jupnp.model.ValidationException;
 import org.jupnp.model.gena.GENASubscription;
 import org.jupnp.model.meta.Device;
@@ -168,10 +169,15 @@ abstract class RegistryItems<D extends Device, S extends GENASubscription> {
     }
 
     Resource[] getResources(Device device) throws RegistrationException {
-        try {
-            return registry.getConfiguration().getNamespace().getResources(device);
-        } catch (ValidationException ex) {
-            throw new RegistrationException("Resource discover error: " + ex.toString(), ex);
+        UpnpServiceConfiguration config = registry.getConfiguration();
+        if(config != null) {
+            try {
+                return config.getNamespace().getResources(device);
+            } catch (ValidationException ex) {
+                throw new RegistrationException("Resource discover error: " + ex.toString(), ex);
+            }
+        } else {
+            return new Resource[0];
         }
     }
 }
