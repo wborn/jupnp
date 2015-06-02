@@ -18,8 +18,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
-
 import org.jupnp.UpnpServiceConfiguration;
 import org.jupnp.controlpoint.event.ExecuteAction;
 import org.jupnp.controlpoint.event.Search;
@@ -49,7 +47,6 @@ public class ControlPointImpl implements ControlPoint {
     protected ControlPointImpl() {
     }
 
-    @Inject
     public ControlPointImpl(UpnpServiceConfiguration configuration, ProtocolFactory protocolFactory, Registry registry) {
         log.fine("Creating ControlPoint: " + getClass().getName());
         

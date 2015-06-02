@@ -25,8 +25,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
-
 import org.jupnp.UpnpService;
 import org.jupnp.UpnpServiceConfiguration;
 import org.jupnp.model.DiscoveryOptions;
@@ -64,7 +62,6 @@ public class RegistryImpl implements Registry {
     /**
      * Starts background maintenance immediately.
      */
-    @Inject
     public RegistryImpl(UpnpService upnpService) {
         log.fine("Creating Registry: " + getClass().getName());
 

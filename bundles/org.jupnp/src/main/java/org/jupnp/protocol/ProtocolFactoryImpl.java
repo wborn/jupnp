@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
-
 import org.jupnp.UpnpService;
 import org.jupnp.UpnpServiceConfiguration;
 import org.jupnp.model.Namespace;
@@ -59,7 +57,7 @@ import org.jupnp.transport.RouterException;
 
 /**
  * Default implementation, directly instantiates the appropriate protocols.
- *
+ * 
  * @author Christian Bauer
  */
 public class ProtocolFactoryImpl implements ProtocolFactory {
@@ -72,7 +70,6 @@ public class ProtocolFactoryImpl implements ProtocolFactory {
         upnpService = null;
     }
 
-    @Inject
     public ProtocolFactoryImpl(UpnpService upnpService) {
         log.fine("Creating ProtocolFactory: " + getClass().getName());
         this.upnpService = upnpService;
@@ -92,8 +89,8 @@ public class ProtocolFactoryImpl implements ProtocolFactory {
 
             switch (incomingRequest.getOperation().getMethod()) {
                 case NOTIFY:
-                    return isByeBye(incomingRequest) || isSupportedServiceAdvertisement(incomingRequest)
-                        ? createReceivingNotification(incomingRequest) : null;
+                    return isByeBye(incomingRequest) || isSupportedServiceAdvertisement(incomingRequest) ? createReceivingNotification(incomingRequest)
+                            : null;
                 case MSEARCH:
                     return createReceivingSearch(incomingRequest);
             }
@@ -101,8 +98,8 @@ public class ProtocolFactoryImpl implements ProtocolFactory {
         } else if (message.getOperation() instanceof UpnpResponse) {
             IncomingDatagramMessage<UpnpResponse> incomingResponse = message;
 
-            return isSupportedServiceAdvertisement(incomingResponse)
-                ? createReceivingSearchResponse(incomingResponse) : null;
+            return isSupportedServiceAdvertisement(incomingResponse) ? createReceivingSearchResponse(incomingResponse)
+                    : null;
         }
 
         throw new ProtocolCreationException("Protocol for incoming datagram message not found: " + message);
@@ -129,15 +126,18 @@ public class ProtocolFactoryImpl implements ProtocolFactory {
 
     protected boolean isSupportedServiceAdvertisement(IncomingDatagramMessage message) {
         UpnpServiceConfiguration config = upnpService.getConfiguration();
-        if(config == null) {
+        if (config == null) {
             return false;
         }
         ServiceType[] exclusiveServiceTypes = config.getExclusiveServiceTypes();
-        if (exclusiveServiceTypes == null) return false; // Discovery is disabled
-        if (exclusiveServiceTypes.length == 0) return true; // Any advertisement is fine
+        if (exclusiveServiceTypes == null)
+            return false; // Discovery is disabled
+        if (exclusiveServiceTypes.length == 0)
+            return true; // Any advertisement is fine
 
         String usnHeader = message.getHeaders().getFirstHeader(UpnpHeader.Type.USN.getHttpName());
-        if (usnHeader == null) return false; // Not a service advertisement, drop it
+        if (usnHeader == null)
+            return false; // Not a service advertisement, drop it
 
         try {
             NamedServiceType nst = NamedServiceType.valueOf(usnHeader);
@@ -186,13 +186,10 @@ public class ProtocolFactoryImpl implements ProtocolFactory {
             if (message.getUri().getPath().contains(Namespace.EVENTS + Namespace.CALLBACK_FILE)) {
                 log.warning("Fixing trailing garbage in event message path: " + message.getUri().getPath());
                 String invalid = message.getUri().toString();
-                message.setUri(
-                    URI.create(invalid.substring(
-                        0, invalid.indexOf(Namespace.CALLBACK_FILE) + Namespace.CALLBACK_FILE.length()
-                    ))
-                );
+                message.setUri(URI.create(invalid.substring(0, invalid.indexOf(Namespace.CALLBACK_FILE)
+                        + Namespace.CALLBACK_FILE.length())));
                 if (getUpnpService().getConfiguration().getNamespace().isEventCallbackPath(message.getUri())
-                    && message.getOperation().getMethod().equals(UpnpRequest.Method.NOTIFY))
+                        && message.getOperation().getMethod().equals(UpnpRequest.Method.NOTIFY))
                     return createReceivingEvent(message);
             }
 
@@ -217,18 +214,15 @@ public class ProtocolFactoryImpl implements ProtocolFactory {
         return new SendingAction(getUpnpService(), actionInvocation, controlURL);
     }
 
-    public SendingSubscribe createSendingSubscribe(RemoteGENASubscription subscription) throws ProtocolCreationException {
+    public SendingSubscribe createSendingSubscribe(RemoteGENASubscription subscription)
+            throws ProtocolCreationException {
         try {
-            List<NetworkAddress> activeStreamServers =
-                getUpnpService().getRouter().getActiveStreamServers(
-                    subscription.getService().getDevice().getIdentity().getDiscoveredOnLocalAddress()
-                );
+            List<NetworkAddress> activeStreamServers = getUpnpService().getRouter().getActiveStreamServers(
+                    subscription.getService().getDevice().getIdentity().getDiscoveredOnLocalAddress());
             return new SendingSubscribe(getUpnpService(), subscription, activeStreamServers);
         } catch (RouterException ex) {
             throw new ProtocolCreationException(
-                "Failed to obtain local stream servers (for event callback URL creation) from router",
-                ex
-            );
+                    "Failed to obtain local stream servers (for event callback URL creation) from router", ex);
         }
     }
 

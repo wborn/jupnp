@@ -14,7 +14,6 @@
 
 package org.jupnp.registry.event;
 
-import javax.inject.Qualifier;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -25,7 +24,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * @author Christian Bauer
  */
-@Qualifier
 @Target({FIELD, PARAMETER})
 @Retention(RUNTIME)
 public @interface After {

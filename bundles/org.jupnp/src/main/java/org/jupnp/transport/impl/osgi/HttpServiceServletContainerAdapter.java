@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This is a servlet container adapter for an OSGi http service.
- * It is a singleton as there will be only a single OSGi http service available to register servlets on
  * 
  * @author Kai Kreuzer
+ * @author Ivan Iliev - No longer a singleton
  *
  */
 public class HttpServiceServletContainerAdapter implements
@@ -41,31 +41,13 @@ public class HttpServiceServletContainerAdapter implements
 
 	private final Logger logger = LoggerFactory.getLogger(HttpServiceServletContainerAdapter.class);
 	
-	private static HttpServiceServletContainerAdapter instance = null;
-	
 	protected HttpService httpService;
 	private BundleContext context;
 	private String contextPath;
 	
-	private HttpServiceServletContainerAdapter(HttpService httpService, BundleContext context) {
+	public HttpServiceServletContainerAdapter(HttpService httpService, BundleContext context) {
 		this.httpService = httpService;
 		this.context = context;
-	}
-	
-	public static synchronized HttpServiceServletContainerAdapter getInstance(HttpService httpService, BundleContext context) {
-	    if(instance == null) {
-	        instance = new HttpServiceServletContainerAdapter(httpService, context);
-        } else {
-            if (instance.httpService != httpService || instance.context != context) {
-                instance.logger.warn("Cannot create another instance with different parameters. Use the existing one."
-                                      + "httpService: cur={}, new={}, equals={}; context: cur={}, new={}, equals={}",
-                                      instance.httpService, httpService,
-                                      httpService == null ? "--" : httpService.equals(instance.httpService),
-                                      instance.context, context,
-                                      context == null ? "--" : context.equals(instance.context));
-            }
-        }
-	    return instance;
 	}
 	
 	@Override
@@ -88,7 +70,7 @@ public class HttpServiceServletContainerAdapter implements
     		Dictionary<?, ?> params = new Properties();
     		try {
     			logger.info("Registering UPnP callback servlet as {}", contextPath);
-    			httpService.registerServlet(contextPath, servlet, params, httpService.createDefaultHttpContext());
+    			httpService.registerServlet(contextPath, servlet, params, new DisableAuthenticationHttpContext());
     			this.contextPath = contextPath;
     		} catch (ServletException e) {
     			logger.error("Failed to register UPnP servlet!", e);
