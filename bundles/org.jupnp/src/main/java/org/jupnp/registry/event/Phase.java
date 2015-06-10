@@ -21,8 +21,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.inject.Qualifier;
-
 /**
  * @author Christian Bauer
  */
@@ -42,28 +40,24 @@ public interface Phase {
 //    };
 //
 
-    @Qualifier
     @Target({FIELD, PARAMETER})
     @Retention(RUNTIME)
     public @interface Alive {
 
     }
 
-    @Qualifier
     @Target({FIELD, PARAMETER})
     @Retention(RUNTIME)
     public @interface Complete {
 
     }
 
-    @Qualifier
     @Target({FIELD, PARAMETER})
     @Retention(RUNTIME)
     public @interface Byebye {
 
     }
 
-    @Qualifier
     @Target({FIELD, PARAMETER})
     @Retention(RUNTIME)
     public @interface Updated {

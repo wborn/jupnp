@@ -27,9 +27,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
-
-import javax.inject.Inject;
 
 import org.jupnp.UpnpServiceConfiguration;
 import org.jupnp.model.NetworkAddress;
@@ -87,7 +84,6 @@ public class RouterImpl implements Router {
      * @param configuration   The configuration used by this router.
      * @param protocolFactory The protocol factory used by this router.
      */
-    @Inject
     public RouterImpl(UpnpServiceConfiguration configuration, ProtocolFactory protocolFactory) {
         this.configuration = configuration;
         this.protocolFactory = protocolFactory;

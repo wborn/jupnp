@@ -14,6 +14,19 @@
 
 package org.jupnp.transport.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.jupnp.model.message.Connection;
 import org.jupnp.model.message.StreamRequestMessage;
 import org.jupnp.model.message.StreamResponseMessage;
@@ -25,72 +38,21 @@ import org.jupnp.transport.spi.UpnpStream;
 import org.jupnp.util.Exceptions;
 import org.jupnp.util.io.IO;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
- * Implementation based on Servlet 3.0 API.
- * <p>
- * Concrete implementations must provide a connection wrapper, as this wrapper most likely has
- * to access proprietary APIs to implement connection checking.
- * </p>
- *
- * @author Christian Bauer
+ * Abstract implementation of a {@link UpnpStream}. This class is extended for each servlet implementations (blocking
+ * servlet 2.4 and async servlet 3.0).
+ * 
+ * @author Ivan Iliev - Initial contribution and API
+ * 
  */
-public abstract class AsyncServletUpnpStream extends UpnpStream implements AsyncListener {
-
-    final private Logger log = Logger.getLogger(UpnpStream.class.getName());
-
-    final protected AsyncContext asyncContext;
-    final protected HttpServletRequest request;
+public abstract class ServletUpnpStream extends UpnpStream {
 
     protected StreamResponseMessage responseMessage;
 
-    public AsyncServletUpnpStream(ProtocolFactory protocolFactory,
-                                  AsyncContext asyncContext,
-                                  HttpServletRequest request) {
+    final protected Logger log = Logger.getLogger(UpnpStream.class.getName());
+
+    public ServletUpnpStream(ProtocolFactory protocolFactory) {
         super(protocolFactory);
-        this.asyncContext = asyncContext;
-        this.request = request;
-        asyncContext.addListener(this);
-    }
-
-    protected HttpServletRequest getRequest() {
-        return request;
-    }
-
-    protected HttpServletResponse getResponse() {
-        ServletResponse response;
-        if ((response = asyncContext.getResponse()) == null) {
-            throw new IllegalStateException(
-                "Couldn't get response from asynchronous context, already timed out"
-            );
-        }
-        return (HttpServletResponse) response;
-    }
-
-    protected void complete() {
-        try {
-            asyncContext.complete();
-        } catch (IllegalStateException ex) {
-            // If Jetty's connection, for whatever reason, is in an illegal state, this will be thrown
-            // and we can "probably" ignore it. The request is complete, no matter how it ended.
-            log.info("Error calling servlet container's AsyncContext#complete() method: " + ex);
-        }
     }
 
     @Override
@@ -115,6 +77,7 @@ public abstract class AsyncServletUpnpStream extends UpnpStream implements Async
 
         } catch (Throwable t) {
             log.info("Exception occurred during UPnP stream processing: " + t);
+            t.printStackTrace();
             if (log.isLoggable(Level.FINER)) {
                 log.log(Level.FINER, "Cause: " + Exceptions.unwrap(t), Exceptions.unwrap(t));
             }
@@ -130,33 +93,6 @@ public abstract class AsyncServletUpnpStream extends UpnpStream implements Async
         }
     }
 
-    @Override
-    public void onStartAsync(AsyncEvent event) throws IOException {
-        // This is a completely useless callback, it will only be called on request.startAsync() which
-        // then immediately removes the listener... what were they thinking.
-    }
-
-    @Override
-    public void onComplete(AsyncEvent event) throws IOException {
-        if (log.isLoggable(Level.FINER))
-            log.finer("Completed asynchronous processing of HTTP request: " + event.getSuppliedRequest());
-        responseSent(responseMessage);
-    }
-
-    @Override
-    public void onTimeout(AsyncEvent event) throws IOException {
-        if (log.isLoggable(Level.FINER))
-            log.finer("Asynchronous processing of HTTP request timed out: " + event.getSuppliedRequest());
-        responseException(new Exception("Asynchronous request timed out"));
-    }
-
-    @Override
-    public void onError(AsyncEvent event) throws IOException {
-        if (log.isLoggable(Level.FINER))
-            log.finer("Asynchronous processing of HTTP request error: " + event.getThrowable());
-        responseException(event.getThrowable());
-    }
-
     protected StreamRequestMessage readRequestMessage() throws IOException {
         // Extract what we need from the HTTP httpRequest
         String requestMethod = getRequest().getMethod();
@@ -167,11 +103,8 @@ public abstract class AsyncServletUpnpStream extends UpnpStream implements Async
 
         StreamRequestMessage requestMessage;
         try {
-            requestMessage =
-                new StreamRequestMessage(
-                    UpnpRequest.Method.getByHttpName(requestMethod),
-                    URI.create(requestURI)
-                );
+            requestMessage = new StreamRequestMessage(UpnpRequest.Method.getByHttpName(requestMethod),
+                    URI.create(requestURI));
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException("Invalid request URI: " + requestURI, ex);
         }
@@ -201,7 +134,14 @@ public abstract class AsyncServletUpnpStream extends UpnpStream implements Async
         InputStream is = null;
         try {
             is = getRequest().getInputStream();
-            bodyBytes = IO.readBytes(is);
+
+            // Needed as on some bad HTTP Stack implementations the inputStream may block when trying to read a request
+            // without a body (GET)
+            if (UpnpRequest.Method.GET.getHttpName().equals(requestMethod)) {
+                bodyBytes = new byte[] {};
+            } else {
+                bodyBytes = IO.readBytes(is);
+            }
         } finally {
             if (is != null)
                 is.close();
@@ -257,4 +197,9 @@ public abstract class AsyncServletUpnpStream extends UpnpStream implements Async
 
     abstract protected Connection createConnection();
 
+    abstract protected HttpServletRequest getRequest();
+
+    abstract protected HttpServletResponse getResponse();
+
+    abstract protected void complete();
 }

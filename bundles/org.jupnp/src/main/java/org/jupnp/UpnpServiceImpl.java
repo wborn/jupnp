@@ -14,6 +14,12 @@
 
 package org.jupnp;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.jupnp.controlpoint.ControlPoint;
 import org.jupnp.controlpoint.ControlPointImpl;
@@ -26,22 +32,21 @@ import org.jupnp.transport.Router;
 import org.jupnp.transport.RouterException;
 import org.jupnp.transport.RouterImpl;
 import org.jupnp.util.Exceptions;
+import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of {@link UpnpService}, starts immediately on construction.
  * <p>
- * If no {@link UpnpServiceConfiguration} is provided it will automatically
- * instantiate {@link DefaultUpnpServiceConfiguration}. This configuration <strong>does not
- * work</strong> on Android! Use the {@link org.jupnp.android.AndroidUpnpService}
- * application component instead
+ * If no {@link UpnpServiceConfiguration} is provided it will automatically instantiate
+ * {@link DefaultUpnpServiceConfiguration}. This configuration <strong>does not work</strong> on Android! Use the
+ * {@link org.jupnp.android.AndroidUpnpService} application component instead
  * </p>
  * <p>
- * Override the various <tt>create...()</tt> methods to customize instantiation of protocol factory,
- * router, etc.
+ * Override the various <tt>create...()</tt> methods to customize instantiation of protocol factory, router, etc.
  * </p>
- *
+ * 
  * @author Christian Bauer
  * @author Kai Kreuzer - OSGiified the service
  */
@@ -49,9 +54,9 @@ public class UpnpServiceImpl implements UpnpService {
 
     private final Logger log = LoggerFactory.getLogger(UpnpServiceImpl.class);
 
-    protected boolean isConfigured = false;    
+    protected boolean isConfigured = false;
     protected Boolean isRunning = false;
-    
+
     protected UpnpServiceConfiguration configuration;
     protected ProtocolFactory protocolFactory;
     protected Registry registry;
@@ -59,30 +64,68 @@ public class UpnpServiceImpl implements UpnpService {
     protected ControlPoint controlPoint;
     protected Router router;
 
+    protected ScheduledExecutorService scheduledExecutorService;
+    
+    protected volatile ScheduledFuture<?> scheduledFuture;
+
     public UpnpServiceImpl() {
-    	this(new DefaultUpnpServiceConfiguration());
+        this(new DefaultUpnpServiceConfiguration());
     }
 
     public UpnpServiceImpl(UpnpServiceConfiguration configuration) {
         this.configuration = configuration;
 
         this.protocolFactory = createProtocolFactory();
-    	
+
         this.registry = createRegistry(protocolFactory);
-        
-}
+
+    }
+
+    private static ScheduledExecutorService createExecutor() {
+        return Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+
+            @Override
+            public Thread newThread(Runnable runnable) {
+                Thread thread = new Thread(runnable, "Upnp Service Delayed Startup Thread");
+                thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+
+                    @Override
+                    public void uncaughtException(Thread thread, Throwable exception) {
+                        throw new IllegalStateException(exception);
+                    }
+                });
+                return thread;
+            }
+        });
+    }
 
     protected void setOSGiUpnpServiceConfiguration(OSGiUpnpServiceConfiguration configuration) {
-    	this.configuration = configuration;
-    	if(isRunning) {
-    		restart(true);
-    	}
+        this.configuration = configuration;
+        if (isRunning) {
+            restart(true);
+        }
     }
 
     protected void unsetOSGiUpnpServiceConfiguration(OSGiUpnpServiceConfiguration configuration) {
-    	this.configuration = null;
+        this.configuration = null;
     }
-    
+
+    protected void setHttpService(HttpService httpService) {
+        // Only need to restart jupnp after/if HttpService appears
+        if (isRunning) {
+            shutdown(false);
+            delayedStartup(1500);
+        }
+    }
+
+    protected void unsetHttpService(HttpService httpService) {
+        // Only need to restart jupnp after/if HttpService disappears
+        if (isRunning) {
+            shutdown(false);
+            delayedStartup(1500);
+        }
+    }
+
     protected ProtocolFactory createProtocolFactory() {
         return new ProtocolFactoryImpl(this);
     }
@@ -124,19 +167,19 @@ public class UpnpServiceImpl implements UpnpService {
     }
 
     protected void shutdown(boolean separateThread) {
-    	Runnable shutdown = new Runnable() {
+        Runnable shutdown = new Runnable() {
             @Override
             public void run() {
-            	synchronized (isRunning) {
-            		if(isRunning) {
-	                    log.info("Shutting down UPnP service...");
-	                    shutdownRegistry();
-	                    shutdownRouter();
-	                    shutdownConfiguration();
-	                    log.info("UPnP service shutdown completed");
-	                    isRunning = false;
-            		}
-        		}
+                synchronized (isRunning) {
+                    if (isRunning) {
+                        log.info("Shutting down UPnP service...");
+                        shutdownRegistry();
+                        shutdownConfiguration();
+                        shutdownRouter();
+                        log.info("UPnP service shutdown completed");
+                        isRunning = false;
+                    }
+                }
             }
         };
         if (separateThread) {
@@ -151,20 +194,18 @@ public class UpnpServiceImpl implements UpnpService {
         Runnable restart = new Runnable() {
             @Override
             public void run() {
-            	shutdown();
-            	startup();
+                shutdown();
+                startup();
             }
         };
         if (separateThread) {
             // This is not a daemon thread, it has to complete!
             new Thread(restart).start();
         } else {
-        	restart.run();
+            restart.run();
         }
     }
 
-    
-    
     protected void shutdownRegistry() {
         getRegistry().shutdown();
     }
@@ -186,40 +227,63 @@ public class UpnpServiceImpl implements UpnpService {
         getConfiguration().shutdown();
     }
 
+    private void delayedStartup(int msDelay) {
+
+        Runnable startup = new Runnable() {
+            @Override
+            public void run() {
+                startup();
+            }
+        };
+        
+        if(scheduledFuture != null) {
+            scheduledFuture.cancel(true);
+        }
+        
+        scheduledFuture = scheduledExecutorService.schedule(startup, msDelay, TimeUnit.MILLISECONDS);
+    }
+
     public void startup() {
-    	synchronized (isRunning) {
-    		if(!isRunning) {
-	            log.info("Starting UPnP service...");
-	
-	            // Instantiation order is important: Router needs to start its network services after registry is ready
-	
-	            log.debug("Using configuration: " + getConfiguration().getClass().getName());
-	
-	            this.router = createRouter(protocolFactory, registry);
-	
-	            try {
-	                this.router.enable();
-	            } catch (RouterException ex) {
-	                throw new RuntimeException("Enabling network router failed: " + ex, ex);
-	            }
-	
-	            this.controlPoint = createControlPoint(protocolFactory, registry);
-	
-	            log.debug("UPnP service started successfully");
+        synchronized (isRunning) {
+            if (!isRunning) {
+                log.info("Starting UPnP service...");
 
-	            isRunning = true;
+                // Instantiation order is important: Router needs to start its network services after registry is ready
 
-	            controlPoint.search(new STAllHeader());
-    		}
-		}
+                log.debug("Using configuration: " + getConfiguration().getClass().getName());
+
+                this.router = createRouter(protocolFactory, registry);
+
+                try {
+                    this.router.enable();
+                } catch (RouterException ex) {
+                    throw new RuntimeException("Enabling network router failed: " + ex, ex);
+                }
+
+                this.controlPoint = createControlPoint(protocolFactory, registry);
+
+                log.debug("UPnP service started successfully");
+
+                isRunning = true;
+
+                controlPoint.search(new STAllHeader());
+            }
+        }
     }
 
     protected void activate() {
-    	startup();
+        scheduledFuture = null;
+        scheduledExecutorService = createExecutor();
+        startup();
     }
 
     protected void deactivate() {
-    	shutdown();
+        if(scheduledFuture != null) {
+            scheduledFuture.cancel(true);
+        }
+        
+        scheduledExecutorService.shutdownNow();
+        shutdown();
     }
 
 }

@@ -18,15 +18,15 @@ import org.jupnp.transport.spi.ServletContainerAdapter;
 import org.jupnp.transport.spi.StreamServerConfiguration;
 
 /**
- * Settings for the async Servlet 3.0 implementation.
+ * Settings for the async Servlet 2.4/3.0 implementation.
  * <p>
- * If you are trying to integrate jUPnP with an existing/running servlet
- * container, implement {@link org.jupnp.transport.spi.ServletContainerAdapter}.
+ * If you are trying to integrate jUPnP with an existing/running servlet container, implement
+ * {@link org.jupnp.transport.spi.ServletContainerAdapter}.
  * </p>
- *
+ * 
  * @author Christian Bauer
  */
-public class AsyncServletStreamServerConfigurationImpl implements StreamServerConfiguration {
+public class ServletStreamServerConfigurationImpl implements StreamServerConfiguration {
 
     protected ServletContainerAdapter servletContainerAdapter;
     protected int listenPort = 0;
@@ -35,19 +35,17 @@ public class AsyncServletStreamServerConfigurationImpl implements StreamServerCo
     /**
      * Defaults to port '0', ephemeral.
      */
-    public AsyncServletStreamServerConfigurationImpl(ServletContainerAdapter servletContainerAdapter) {
+    public ServletStreamServerConfigurationImpl(ServletContainerAdapter servletContainerAdapter) {
         this.servletContainerAdapter = servletContainerAdapter;
     }
 
-    public AsyncServletStreamServerConfigurationImpl(ServletContainerAdapter servletContainerAdapter,
-                                                     int listenPort) {
+    public ServletStreamServerConfigurationImpl(ServletContainerAdapter servletContainerAdapter, int listenPort) {
         this.servletContainerAdapter = servletContainerAdapter;
         this.listenPort = listenPort;
     }
 
-    public AsyncServletStreamServerConfigurationImpl(ServletContainerAdapter servletContainerAdapter,
-                                                     int listenPort,
-                                                     int asyncTimeoutSeconds) {
+    public ServletStreamServerConfigurationImpl(ServletContainerAdapter servletContainerAdapter, int listenPort,
+            int asyncTimeoutSeconds) {
         this.servletContainerAdapter = servletContainerAdapter;
         this.listenPort = listenPort;
         this.asyncTimeoutSeconds = asyncTimeoutSeconds;
@@ -65,9 +63,9 @@ public class AsyncServletStreamServerConfigurationImpl implements StreamServerCo
     }
 
     /**
-     * The time in seconds this server wait for the {@link org.jupnp.transport.Router}
-     * to execute a {@link org.jupnp.transport.spi.UpnpStream}.
-     *
+     * The time in seconds this server wait for the {@link org.jupnp.transport.Router} to execute a
+     * {@link org.jupnp.transport.spi.UpnpStream}.
+     * 
      * @return The default of 60 seconds.
      */
     public int getAsyncTimeoutSeconds() {
