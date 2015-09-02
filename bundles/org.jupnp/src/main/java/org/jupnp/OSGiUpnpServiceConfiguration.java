@@ -97,6 +97,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
     private int threadPoolSize = 20;
     private int threadQueueSize = 1000;
     private int multicastResponsePort;
+    private int httpProxyPort = -1;
     private int streamListenPort;
     private Namespace callbackURI = new Namespace("http://localhost/upnpcallback");
 
@@ -171,11 +172,11 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
         if (serviceReg != null) {
             serviceReg.unregister();
         }
-        
+
         if (httpServiceReference != null) {
             context.ungetService(httpServiceReference);
         }
-        
+
         shutdown();
     }
 
@@ -223,8 +224,8 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
             if (httpService != null) {
                 return new ServletStreamServerImpl(new ServletStreamServerConfigurationImpl(
-                        new HttpServiceServletContainerAdapter(httpService, context), callbackURI.getBasePath()
-                                .getPort()));
+                        new HttpServiceServletContainerAdapter(httpService, context),
+                        httpProxyPort != -1 ? httpProxyPort : callbackURI.getBasePath().getPort()));
             }
         }
 
@@ -317,8 +318,8 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
         if (getDefaultExecutorService() != null) {
             log.debug("Shutting down default executor service");
             getDefaultExecutorService().shutdownNow();
-            
-            //create the executor again ready for reuse in case the runtime is started up again.
+
+            // create the executor again ready for reuse in case the runtime is started up again.
             defaultExecutorService = createDefaultExecutorService();
         }
     }
@@ -375,8 +376,8 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
         public JUPnPExecutor(ThreadFactory threadFactory, RejectedExecutionHandler rejectedHandler) {
             // This is the same as Executors.newCachedThreadPool
-            super(threadPoolSize, threadPoolSize, 10L, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(
-                    threadQueueSize), threadFactory, rejectedHandler);
+            super(threadPoolSize, threadPoolSize, 10L, TimeUnit.SECONDS,
+                    new ArrayBlockingQueue<Runnable>(threadQueueSize), threadFactory, rejectedHandler);
             allowCoreThreadTimeOut(true);
         }
 
@@ -484,6 +485,16 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
             }
         }
 
+        prop = properties.get("httpProxyPort");
+        if (prop instanceof String) {
+            try {
+                httpProxyPort = Integer.valueOf((String) prop);
+            } catch (NumberFormatException e) {
+                log.error("Invalid value '{}' for httpProxyPort - using default value '{}'", prop, httpProxyPort);
+            }
+        } else if (prop instanceof Integer) {
+            httpProxyPort = (Integer) prop;
+        }
     }
 
 }
