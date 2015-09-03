@@ -143,7 +143,7 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
     }
 
     public int getMulticastResponsePort() {
-        return DEFAULT_MULTICAST_RESPONSE_LISTEN_PORT;
+        return multicastResponsePort > 0 ? multicastResponsePort : DEFAULT_MULTICAST_RESPONSE_LISTEN_PORT;
     }
 
     public int getStreamListenPort() {
