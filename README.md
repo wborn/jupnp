@@ -1,3 +1,5 @@
+![build status](https://travis-ci.org/openhab/jupnp.svg)
+
 # Introduction
 
 jUPnP is a Java UPnP library and has been forked from the Cling project (https://github.com/4thline/cling).
