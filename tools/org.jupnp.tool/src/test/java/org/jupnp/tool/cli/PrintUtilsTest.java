@@ -40,6 +40,7 @@ public class PrintUtilsTest {
 		table.add(new String[] { "192.168.2.5", "Sonos PLAY:3", "-" });
 		String s = PrintUtils.printTable(table, 4);
 		// System.out.println(s);
+		
 		c(s, "IP             Model                      SerialNumber    ");
 		c(s, "==             =====                      ============    ");
 		c(s, "192.168.2.1    QIVICON                    1234567890      ");

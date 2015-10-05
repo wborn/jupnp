@@ -7,8 +7,15 @@
 		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
 			by default -->
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M:%line -
+				%msg%n
 			</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="PLAIN_STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%msg%n</pattern>
 		</encoder>
 	</appender>
 
@@ -16,6 +23,10 @@
 	<logger name="org.apache.http.client" level="WARN" />
 	<!-- set to DEBUG for on the wire logging -->
 	<logger name="org.apache.http.wire" level="WARN" />
+
+	<logger name="org.jupnp.tool.cli.stats" level="INFO" additivity="false">
+		<appender-ref ref="PLAIN_STDOUT" />
+	</logger>
 
 	<root level="DEBUG">
 		<appender-ref ref="STDOUT" />

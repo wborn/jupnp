@@ -11,6 +11,16 @@
 			</pattern>
 		</encoder>
 	</appender>
+	
+	<appender name="PLAIN_STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<logger name="org.jupnp.tool.cli.stats" level="INFO" additivity="false">
+		<appender-ref ref="PLAIN_STDOUT" />
+	</logger>
 
 	<root level="OFF">
 		<appender-ref ref="STDOUT" />
