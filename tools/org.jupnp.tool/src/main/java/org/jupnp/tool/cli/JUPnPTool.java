@@ -18,11 +18,16 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.jupnp.UpnpService;
 import org.jupnp.UpnpServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
@@ -30,11 +35,12 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
-
 /**
+ * This class is the main class for the jupnptool.
+ * 
  * @author Jochen Hiller - Initial contribution
+ * @author Jochen Hiller - Added pool configuration arguments, added
+ *         jul-over-slf4j logging
  */
 public class JUPnPTool {
 
@@ -44,17 +50,23 @@ public class JUPnPTool {
 	public static final int RC_MISSING_ARGUMENTS = 3;
 
 	public static final String TOOL_NAME = "jupnptool";
-	// TODO how to get build number?
-	public static final String TOOL_VERSION = "2.0.0.SNAPSHOT";
 
 	private static final String COMMAND_SEARCH = "search";
 	private static final String COMMAND_INFO = "info";
 	private static final String COMMAND_NOP = "nop";
 
+	private static final long DEFAULT_TIMEOUT = 10L;
+
 	private Logger logger = LoggerFactory.getLogger(JUPnPTool.class);
 
 	protected PrintStream outputStream;
 	protected PrintStream errorStream;
+
+	/** Holds the pool configuration. */
+	private String poolConfiguration;
+
+	/** Holds the multicastResponsePort. */
+	private Integer multicastResponsePort;
 
 	public static void main(String[] args) {
 		JUPnPTool tool = new JUPnPTool();
@@ -72,6 +84,12 @@ public class JUPnPTool {
 	}
 
 	public int doMain(String[] args) {
+		// Configure java.util.logging to log via slf4j
+		java.util.logging.LogManager.getLogManager().reset();
+		SLF4JBridgeHandler.removeHandlersForRootLogger();
+		SLF4JBridgeHandler.install();
+		java.util.logging.Logger.getLogger("global").setLevel(java.util.logging.Level.FINEST);
+
 		// parse command line arguments with jCommander
 		JCommander commander = new JCommander(new CommandLineArgs());
 		commander.addCommand(COMMAND_SEARCH, new SearchCommandArgs());
@@ -95,15 +113,22 @@ public class JUPnPTool {
 			setLogging("logback.xml", "OFF");
 		}
 
+		// check if pool has been configured, preserve that
+		if (cmdLineArgs.poolConfig != null) {
+			poolConfiguration = cmdLineArgs.poolConfig;
+		}
+		// multicast response port
+		if (cmdLineArgs.multicastResponsePort != null) {
+			multicastResponsePort = cmdLineArgs.multicastResponsePort;
+		}
+
 		// dispatch commands
 		if (cmdLineArgs.doHelp) {
 			printToolUsage(commander);
 			return RC_HELP;
 		} else if (COMMAND_SEARCH.equals(commander.getParsedCommand())) {
-			JCommander searchCommander = commander.getCommands().get(
-					COMMAND_SEARCH);
-			SearchCommandArgs searchArgs = (SearchCommandArgs) searchCommander
-					.getObjects().get(0);
+			JCommander searchCommander = commander.getCommands().get(COMMAND_SEARCH);
+			SearchCommandArgs searchArgs = (SearchCommandArgs) searchCommander.getObjects().get(0);
 			int timeout = searchArgs.timeout;
 			String sortBy = searchArgs.sortBy;
 			String filter = searchArgs.filter;
@@ -113,17 +138,14 @@ public class JUPnPTool {
 				verbose = true;
 			}
 
-			printToolStartMessage("Search for UPnP devices for " + timeout
-					+ " seconds sorted by " + sortBy + " and filtered by "
-					+ filter);
+			printToolStartMessage("Search for UPnP devices for " + timeout + " seconds sorted by " + sortBy
+					+ " and filtered by " + filter);
 			SearchCommand cmd = new SearchCommand(this);
 			int rc = cmd.run(timeout, sortBy, filter, verbose);
 			return rc;
 		} else if (COMMAND_INFO.equals(commander.getParsedCommand())) {
-			JCommander infoCommander = commander.getCommands()
-					.get(COMMAND_INFO);
-			InfoCommandArgs infoArgs = (InfoCommandArgs) infoCommander
-					.getObjects().get(0);
+			JCommander infoCommander = commander.getCommands().get(COMMAND_INFO);
+			InfoCommandArgs infoArgs = (InfoCommandArgs) infoCommander.getObjects().get(0);
 			List<String> ipAddressOrUdns = infoArgs.ipAddressOrUdnList;
 			boolean verbose = cmdLineArgs.verbose;
 
@@ -131,10 +153,24 @@ public class JUPnPTool {
 				return RC_MISSING_ARGUMENTS;
 			}
 
+			printToolStartMessage("Info for UPnP devices for " + ipAddressOrUdns);
 			InfoCommand cmd = new InfoCommand(this);
 			int rc = cmd.run(ipAddressOrUdns, verbose);
 			return rc;
 		} else if (COMMAND_NOP.equals(commander.getParsedCommand())) {
+			// for NOP command we create a UPnP service, start and shutdown
+			// immediately. This helps during testing
+			logger.debug("Starting jUPnP...");
+			printToolStartMessage("No operation");
+
+			UpnpService upnpService = createUpnpService();
+			upnpService.startup();
+			try {
+				logger.debug("Stopping jUPnP...");
+				upnpService.shutdown();
+			} catch (Exception ex) {
+				logger.error("Error during shutdown", ex);
+			}
 			return RC_OK;
 		} else {
 			printToolUsage(commander);
@@ -145,7 +181,30 @@ public class JUPnPTool {
 	// protected methods
 
 	protected UpnpService createUpnpService() {
-		return new UpnpServiceImpl();
+		return createUpnpService(DEFAULT_TIMEOUT);
+	}
+
+	protected UpnpService createUpnpService(long timeoutSeconds) {
+		// set the timeout to be used
+		CmdlineUPnPServiceConfiguration.setTimeout(timeoutSeconds);
+		// sets the pool configuration
+		if (poolConfiguration != null) {
+			StringTokenizer tokenizer = new StringTokenizer(poolConfiguration, ",");
+			int core = Integer.valueOf(tokenizer.nextToken()).intValue();
+			int max = Integer.valueOf(tokenizer.nextToken()).intValue();
+			int queue = Integer.valueOf(tokenizer.nextToken()).intValue();
+			CmdlineUPnPServiceConfiguration.setPoolConfiguration(core, max, queue);
+			// one token left for stats option?
+			String stats = tokenizer.countTokens() == 1 ? tokenizer.nextToken() : null;
+			if (CommandLineArgs.POOL_CONFIG_STATS_OPTION.equalsIgnoreCase(stats)) {
+				CmdlineUPnPServiceConfiguration.setDebugStatistics(true);
+			}
+		}
+		if (multicastResponsePort != null) {
+			CmdlineUPnPServiceConfiguration.setMulticastResponsePort(multicastResponsePort);
+		}
+
+		return new UpnpServiceImpl(new CmdlineUPnPServiceConfiguration());
 	}
 
 	/**
@@ -155,8 +214,7 @@ public class JUPnPTool {
 	 *            either logback.xml, or logback-enabled.xml
 	 */
 	protected void setLogging(String resourceName, String rootAppenderLogLevel) {
-		LoggerContext context = (LoggerContext) LoggerFactory
-				.getILoggerFactory();
+		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 		try {
 			// will assume to find logback XML files in root of JAR file
 			URL url = this.getClass().getResource("/" + resourceName);
@@ -195,12 +253,22 @@ public class JUPnPTool {
 	// private methods
 
 	private void printToolStartMessage(String msg) {
-		printStdout(TOOL_NAME + " (" + TOOL_VERSION + "): " + msg);
+		printStdout(getToolNameVersion() + ": " + msg
+				+ ((poolConfiguration != null) ? (" (pool configuration='" + poolConfiguration + "'") : "")
+				+ ((multicastResponsePort != null) ? (", multicastResponsePort=" + multicastResponsePort.intValue())
+						: "")
+				+ ")");
 	}
 
 	private void printToolUsage(JCommander commander) {
 		StringBuilder sb = new StringBuilder();
 		commander.usage(sb);
 		printStdout(sb.toString());
+	}
+
+	private String getToolNameVersion() {
+		String name = getClass().getPackage().getImplementationTitle();
+		String version = getClass().getPackage().getImplementationVersion();
+		return name + " (" + version + ")";
 	}
 }

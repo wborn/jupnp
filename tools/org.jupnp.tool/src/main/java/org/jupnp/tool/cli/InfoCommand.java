@@ -50,17 +50,14 @@ public class InfoCommand {
 		}
 
 		Registry registry = upnpService.getRegistry();
-		for (Iterator<RemoteDevice> iter = registry.getRemoteDevices()
-				.iterator(); iter.hasNext();) {
+		for (Iterator<RemoteDevice> iter = registry.getRemoteDevices().iterator(); iter.hasNext();) {
 			RemoteDevice device = iter.next();
 
-			String ipAddress = device.getIdentity().getDescriptorURL()
-					.getHost();
+			String ipAddress = device.getIdentity().getDescriptorURL().getHost();
 			String udn = device.getIdentity().getUdn().getIdentifierString();
 			logger.info("ip: " + ipAddress + ", udn=" + udn);
 
-			for (Iterator<String> searchIiter = ipAddressOrUdns.iterator(); searchIiter
-					.hasNext();) {
+			for (Iterator<String> searchIiter = ipAddressOrUdns.iterator(); searchIiter.hasNext();) {
 				String ipAddressOrUdn = searchIiter.next();
 				boolean match = false;
 				if (isSameUdn(udn, ipAddressOrUdn)) {
@@ -84,38 +81,29 @@ public class InfoCommand {
 		return JUPnPTool.RC_OK;
 	}
 
-	private void showDeviceInfo(RemoteDevice device, String searchCriteria,
-			boolean verbose) {
+	private void showDeviceInfo(RemoteDevice device, String searchCriteria, boolean verbose) {
 		logger.info(device.toString());
 		sb = new StringBuilder();
 		sb.append("Device info for " + searchCriteria);
 		print("UDN", device.getIdentity().getUdn().getIdentifierString());
 		print("Display", device.getDisplayString());
-		print("Model.Name", device.getDetails().getModelDetails()
-				.getModelName());
-		print("Model.Description", device.getDetails().getModelDetails()
-				.getModelDescription());
-		print("Model.Number", device.getDetails().getModelDetails()
-				.getModelNumber());
-		print("Model.URI", device.getDetails().getModelDetails().getModelURI()
-				.toString());
-		print("DescriptorURL", device.getIdentity().getDescriptorURL()
-				.toString());
+		print("Model.Name", device.getDetails().getModelDetails().getModelName());
+		print("Model.Description", device.getDetails().getModelDetails().getModelDescription());
+		print("Model.Number", device.getDetails().getModelDetails().getModelNumber());
+		print("Model.URI", device.getDetails().getModelDetails().getModelURI());
+		print("DescriptorURL", device.getIdentity().getDescriptorURL());
 		print("SerialNumber", device.getDetails().getSerialNumber());
 		print("FriendlyName", device.getDetails().getFriendlyName());
 		print("UPC", device.getDetails().getUpc());
-		print("Manufacturer", device.getDetails().getManufacturerDetails()
-				.getManufacturer());
-		print("ManufacturerURI", device.getDetails().getManufacturerDetails()
-				.getManufacturerURI().toString());
-		print("PresentationURI", device.getDetails().getPresentationURI()
-				.toString());
+		print("Manufacturer", device.getDetails().getManufacturerDetails().getManufacturer());
+		print("ManufacturerURI", device.getDetails().getManufacturerDetails().getManufacturerURI());
+		print("PresentationURI", device.getDetails().getPresentationURI());
 		if (verbose) {
 			print("Type", device.getType().getType());
 			print("Type.Display", device.getType().getDisplayString());
 			print("Type.Version", String.valueOf(device.getType().getVersion()));
-			print("UDA.Version", String.valueOf(device.getVersion().getMajor())
-					+ "." + String.valueOf(device.getVersion().getMinor()));
+			print("UDA.Version", String.valueOf(device.getVersion().getMajor()) + "."
+					+ String.valueOf(device.getVersion().getMinor()));
 			print("isRootDevice", String.valueOf(device.isRoot()));
 			print("isFullyHydrated", String.valueOf(device.isFullyHydrated()));
 		}
@@ -139,8 +127,7 @@ public class InfoCommand {
 				s = String.valueOf(o);
 			}
 		}
-		sb.append("\n" + desc
-				+ "\t\t\t\t".substring(0, 3 - (desc.length() / 8)) + s);
+		sb.append("\n" + desc + "\t\t\t\t".substring(0, 3 - (desc.length() / 8)) + s);
 	}
 
 	private String flatList(List<String> l) {

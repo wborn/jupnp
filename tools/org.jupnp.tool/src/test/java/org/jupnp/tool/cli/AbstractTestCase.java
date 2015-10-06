@@ -35,8 +35,7 @@ public abstract class AbstractTestCase {
 		// will write output to buffers to check content later in tests
 		this.out = new ByteArrayOutputStream();
 		this.err = new ByteArrayOutputStream();
-		this.tool = new JUPnPToolWithRedirectionOfOutput(new PrintStream(out),
-				new PrintStream(err));
+		this.tool = new JUPnPToolWithRedirectionOfOutput(new PrintStream(out), new PrintStream(err));
 	}
 
 	public void releaseSilentTool() {
@@ -51,11 +50,15 @@ public abstract class AbstractTestCase {
 		}
 	}
 
-	public void checkCommandLine(final JUPnPTool tool, final int rcExpected,
-			final String argsAsString) {
+	public void checkCommandLine(final JUPnPTool tool, final int rcExpected, final String argsAsString) {
 		final String[] args = argsAsString.split(" ");
 		final int rc = tool.doMain(args);
 		Assert.assertEquals(rcExpected, rc);
+	}
+
+	public void resetStreams() {
+		this.out.reset();
+		this.err.reset();
 	}
 
 }

@@ -14,6 +14,11 @@
 
 package org.jupnp.tool.cli;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This class checks all command line options from tool.
  * 
- * It will use a "silent" tool which wil redirect System.out and System.err to
+ * It will use a "silent" tool which will redirect System.out and System.err to
  * streams, and will check the "printed" result in some test cases.
  * 
  * @author Jochen Hiller - Initial contribution
@@ -56,10 +61,9 @@ public class CommandLineTest extends AbstractTestCase {
 		checkCommandLine(tool, JUPnPTool.RC_HELP, "-h -v");
 		checkCommandLine(tool, JUPnPTool.RC_HELP, "--help --verbose");
 		// check output, must contain 21x Usage
-		final String s = out.toString();
 		// -1 as there is a result BEFORE first Usage
-		// *4 as each usage message contains 3x usage text
-		Assert.assertEquals(7 * 4, s.split("Usage").length - 1);
+		// *4 as each usage message contains 4x usage text
+		Assert.assertThat(out.toString().split("Usage").length - 1, is(equalTo(7 * 4)));
 	}
 
 	@Test
@@ -68,25 +72,23 @@ public class CommandLineTest extends AbstractTestCase {
 		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "--xxx");
 		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "--blablub");
 		// check output, must contain 9x usage
-		final String s = out.toString();
+		String s = out.toString();
 		// -1 as there is a result BEFORE first Usage
 		// *4 as each usage message contains 3x usage text
-		Assert.assertEquals(3 * 4, s.split("Usage").length - 1);
+		Assert.assertThat(s.split("Usage").length - 1, is(equalTo(3 * 4)));
 		// check stderr, must contain 3x error message, and wrong options
-		final String e = err.toString();
+		String e = err.toString();
 		// -1 as there is a result BEFORE first Usage
-		Assert.assertEquals(3, e.split("Unknown").length - 1);
-		Assert.assertTrue(e.contains("-x"));
-		Assert.assertTrue(e.contains("--xxx"));
-		Assert.assertTrue(e.contains("--blablub"));
+		Assert.assertThat(e.split("Unknown").length - 1, is(equalTo(3)));
+		Assert.assertThat(e, containsString("-x"));
+		Assert.assertThat(e, containsString("--xxx"));
+		Assert.assertThat(e, containsString("--blablub"));
 	}
 
 	@Test
 	public void testCommandNop() {
 		checkCommandLine(tool, JUPnPTool.RC_OK, "nop");
-		// no output on console expected
-		final String s = out.toString();
-		Assert.assertEquals("", s);
+		Assert.assertThat(out.toString(), containsString("No operation"));
 	}
 
 	@Test
@@ -94,21 +96,22 @@ public class CommandLineTest extends AbstractTestCase {
 		checkCommandLine(tool, JUPnPTool.RC_OK, "nop");
 		checkCommandLine(tool, JUPnPTool.RC_OK, "-l=INFO nop");
 		checkCommandLine(tool, JUPnPTool.RC_OK, "--loglevel=INFO nop");
-		// no output on console expected
-		final String s = out.toString();
-		Assert.assertEquals("", s);
+		resetStreams();
+		// do not check streams, will have some INFO messages
+
+		checkCommandLine(tool, JUPnPTool.RC_OK, "--loglevel=WARN nop");
+		Assert.assertThat(out.toString(), containsString("No operation"));
 	}
 
 	@Test
 	public void testLogLevelWithWrongOptions() {
 		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "-l=XYZ nop");
-		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION,
-				"--loglevel=ABC nop");
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "--loglevel=ABC nop");
 		// check output, must contain 6x usage
-		final String s = out.toString();
+		String s = out.toString();
 		// -1 as there is a result BEFORE first Usage
 		// *4 as each usage message contains 3x usage text
-		Assert.assertEquals(2 * 4, s.split("Usage").length - 1);
+		Assert.assertThat(s.split("Usage").length - 1, is(equalTo(2 * 4)));
 	}
 
 	/**
@@ -119,8 +122,7 @@ public class CommandLineTest extends AbstractTestCase {
 		checkCommandLine(tool, JUPnPTool.RC_OK, "nop");
 		Logger l = LoggerFactory.getLogger(this.getClass());
 		l.info("Some Info");
-		final String s = out.toString();
-		Assert.assertEquals("", s);
+		Assert.assertThat(out.toString(), containsString("No operation"));
 	}
 
 	/**
@@ -132,11 +134,92 @@ public class CommandLineTest extends AbstractTestCase {
 		Logger l = LoggerFactory.getLogger(this.getClass());
 		l.info("Some Info");
 		l.debug("Some Debug");
-		final String s = out.toString();
-		Assert.assertTrue(s
-				.contains("INFO  org.jupnp.tool.cli.CommandLineTest - Some Info"));
+		String s = out.toString();
+		Assert.assertThat(s, containsString("INFO  org.jupnp.tool.cli.CommandLineTest - Some Info"));
 		// DEBUG must NOT be included
-		Assert.assertFalse(s.contains("DEBUG"));
+		// Assert.assertFalse(s.contains("DEBUG"));
+		Assert.assertThat(s, not(containsString("DEBUG")));
 	}
 
+	@Test
+	public void testPoolConfigurationsOK() {
+		checkCommandLine(tool, JUPnPTool.RC_OK, "--pool=20,40,1000 nop");
+		checkCommandLine(tool, JUPnPTool.RC_OK, "-p=20,40,1000 nop");
+		checkCommandLine(tool, JUPnPTool.RC_OK, "-p=20,20,1000 nop");
+		checkCommandLine(tool, JUPnPTool.RC_OK, "-p=1,1,1 nop");
+		checkCommandLine(tool, JUPnPTool.RC_OK, "--pool=20,40,1000,stats nop");
+		checkCommandLine(tool, JUPnPTool.RC_OK, "--pool=20,40,1000, nop");
+	}
+
+	@Test
+	public void testPoolConfigurationsWrong() {
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "--pool=20,40 nop");
+		Assert.assertThat(err.toString(), containsString("(not 3 or 4 parameters)"));
+		resetStreams();
+
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "--pool=20 nop");
+		Assert.assertThat(err.toString(), containsString("(not 3 or 4 parameters)"));
+		resetStreams();
+
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "-p=20,40 nop");
+		Assert.assertThat(err.toString(), containsString("(not 3 or 4 parameters)"));
+		resetStreams();
+
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "-p=40,20,1000 nop");
+		Assert.assertThat(err.toString(), containsString("(max must be greater than core)"));
+		resetStreams();
+
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "-p=0,0,0 nop");
+		Assert.assertThat(err.toString(), containsString("(all values must be greater than 0)"));
+		resetStreams();
+
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "-p=-1,40,1000 nop");
+		Assert.assertThat(err.toString(), containsString("(all values must be greater than 0)"));
+		resetStreams();
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "-p=20,-1,1000 nop");
+		Assert.assertThat(err.toString(), containsString("(all values must be greater than 0)"));
+		resetStreams();
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "-p=20,40,-1 nop");
+		Assert.assertThat(err.toString(), containsString("(all values must be greater than 0)"));
+		resetStreams();
+
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "--pool=20A,40,1000 nop");
+		Assert.assertThat(err.toString(), containsString("(numbers wrong)"));
+		resetStreams();
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "--pool=20,4B0,1000 nop");
+		Assert.assertThat(err.toString(), containsString("(numbers wrong)"));
+		resetStreams();
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "--pool=20,40,C1000 nop");
+		Assert.assertThat(err.toString(), containsString("(numbers wrong)"));
+		resetStreams();
+
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "--pool=20,40,1000,WRONGOPTIONS nop");
+		Assert.assertThat(err.toString(), containsString("(only stats allowed as last option)"));
+		resetStreams();
+	}
+
+	@Test
+	public void testMulticastResponsPortOK() {
+		checkCommandLine(tool, JUPnPTool.RC_OK, "--multicastResponsePort=1900 nop");
+		checkCommandLine(tool, JUPnPTool.RC_OK, "-m=1900 nop");
+		checkCommandLine(tool, JUPnPTool.RC_OK, "--multicastResponsePort=0 nop");
+		checkCommandLine(tool, JUPnPTool.RC_OK, "-m=0 nop");
+		checkCommandLine(tool, JUPnPTool.RC_OK, "--multicastResponsePort=65535 nop");
+		checkCommandLine(tool, JUPnPTool.RC_OK, "-m=65535 nop");
+	}
+
+	@Test
+	public void testMulticastResponsPortWrong() {
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "--multicastResponsePort=ABC nop");
+		Assert.assertThat(err.toString(), containsString("is not a valid number"));
+		resetStreams();
+
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "--multicastResponsePort=-1 nop");
+		Assert.assertThat(err.toString(), containsString("must be between 0..65535"));
+		resetStreams();
+
+		checkCommandLine(tool, JUPnPTool.RC_INVALID_OPTION, "--multicastResponsePort=65536 nop");
+		Assert.assertThat(err.toString(), containsString("must be between 0..65535"));
+		resetStreams();
+	}
 }

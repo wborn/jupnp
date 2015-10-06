@@ -55,6 +55,7 @@ public class SearchCommandTest extends AbstractTestCase {
 		res.add("192.168.3.255", "", "", "", "");
 		String s = res.asBody();
 		// System.out.println(s);
+		
 		int index1 = s.indexOf("192.168.3.1");
 		int index2 = s.indexOf("192.168.3.2");
 		int index100 = s.indexOf("192.168.3.100");

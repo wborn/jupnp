@@ -21,6 +21,7 @@ import com.beust.jcommander.Parameters;
 
 /**
  * @author Jochen Hiller - Initial contribution
+ * @author Jochen Hiller - Added pool configuration, multicast port arguments
  */
 @Parameters(separators = "=", commandDescription = "jupnptool")
 public class CommandLineArgs {
@@ -28,8 +29,18 @@ public class CommandLineArgs {
 	@Parameter(names = { "--help", "-h", "-?" }, description = "Help how to use this tool", help = true)
 	public Boolean doHelp = Boolean.FALSE;
 
-	@Parameter(names = { "--loglevel", "-l" }, description = "Set LogLevel to {DEBUG|INFO|WARN|ERROR|OFF}", validateWith = MainCommandLogLevelValidator.class)
+	@Parameter(names = { "--loglevel",
+			"-l" }, description = "Set LogLevel to {DEBUG|INFO|WARN|ERROR|OFF}", validateWith = MainCommandLogLevelValidator.class)
 	public String logLevel = "DISABLED";
+
+	@Parameter(names = { "--multicastResponsePort",
+			"-m" }, description = "Specify Multicast Response Port", validateWith = MainCommandMutlicastResponsePortValidator.class)
+	public Integer multicastResponsePort = 0;
+
+	@Parameter(names = { "--pool",
+			"-p" }, description = "Configure thread pools and enable pool statistic ", validateWith = MainCommandPoolConfigurationValidator.class)
+	public String poolConfig = "100,200,100";
+	public static final String POOL_CONFIG_STATS_OPTION = "stats";
 
 	@Parameter(names = { "--verbose", "-v" }, description = "Enable verbose messages")
 	public Boolean verbose = Boolean.FALSE;
@@ -49,10 +60,12 @@ class SearchCommandArgs {
 	@Parameter(names = { "--timeout", "-t" }, description = "The timeout when search will be finished")
 	public Integer timeout = 10;
 
-	@Parameter(names = { "--sort", "-s" }, description = "Sort using {none|ip|model|serialNumber|manufacturer|udn}", validateWith = SearchCommandSortByValidator.class)
+	@Parameter(names = { "--sort",
+			"-s" }, description = "Sort using {none|ip|model|serialNumber|manufacturer|udn}", validateWith = SearchCommandSortByValidator.class)
 	public String sortBy = "none";
 
-	@Parameter(names = { "--filter", "-f" }, description = "Filter for devices containing this text (in some description)")
+	@Parameter(names = { "--filter",
+			"-f" }, description = "Filter for devices containing this text (in some description)")
 	public String filter = "*";
 }
 

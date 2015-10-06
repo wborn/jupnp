@@ -338,7 +338,9 @@ public class SearchCommand {
 		private final static String STRING_WITH_SPACES = "                           ";
 
 		private String fixedWidth(String s, int width) {
-			if (s.length() >= width) {
+			if (s == null) {
+				return STRING_WITH_SPACES.substring(0, width);
+			} else if (s.length() >= width) {
 				return s;
 			} else {
 				return s + STRING_WITH_SPACES.substring(0, width - s.length());
