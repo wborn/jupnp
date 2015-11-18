@@ -53,15 +53,15 @@ public class CmdlineUPnPServiceConfiguration extends DefaultUpnpServiceConfigura
 	private static final transient Logger logger = LoggerFactory.getLogger(DefaultUpnpServiceConfiguration.class);
 	private static final transient Logger statsLogger = LoggerFactory.getLogger("org.jupnp.tool.cli.stats");
 
-	private static boolean DEBUG_STATISTICS = false;
+	static boolean DEBUG_STATISTICS = false;
 
-	private static int THREAD_CORE_POOL_SIZE = 100;
-	private static int THREAD_MAX_POOL_SIZE = THREAD_CORE_POOL_SIZE * 2;
-	private static int THREAD_QUEUE_SIZE = 1000;
+	static int THREAD_CORE_POOL_SIZE = 100;
+	static int THREAD_MAX_POOL_SIZE = THREAD_CORE_POOL_SIZE * 2;
+	static int THREAD_QUEUE_SIZE = 1000;
 
-	private static long TIMEOUT_SECONDS = 10L;
+	static long TIMEOUT_MILLI_SECONDS = 10000L;
 
-	private static int MULTICAST_RESPONSE_LISTEN_PORT = NetworkAddressFactoryImpl.DEFAULT_MULTICAST_RESPONSE_LISTEN_PORT;
+	static int MULTICAST_RESPONSE_LISTEN_PORT = NetworkAddressFactoryImpl.DEFAULT_MULTICAST_RESPONSE_LISTEN_PORT;
 
 	// class methods to configure behavior
 
@@ -69,14 +69,11 @@ public class CmdlineUPnPServiceConfiguration extends DefaultUpnpServiceConfigura
 		DEBUG_STATISTICS = onOrOff;
 	}
 
-	public static void setTimeout(long seconds) {
-		TIMEOUT_SECONDS = seconds;
-	}
-
-	public static void setPoolConfiguration(int core, int max, int queue) {
+	public static void setPoolConfiguration(int core, int max, int queue, long timeout) {
 		THREAD_CORE_POOL_SIZE = core;
 		THREAD_MAX_POOL_SIZE = max;
 		THREAD_QUEUE_SIZE = queue;
+		TIMEOUT_MILLI_SECONDS = timeout;
 	}
 
 	public static void setMulticastResponsePort(Integer port) {
@@ -123,11 +120,11 @@ public class CmdlineUPnPServiceConfiguration extends DefaultUpnpServiceConfigura
 		public JUPnPExecutor(ThreadFactory threadFactory, RejectedExecutionHandler rejectedHandler) {
 			// This is the same as Executors.newCachedThreadPool
 			// define timeout when tasks can not be executed to given timeout
-			super(THREAD_CORE_POOL_SIZE, THREAD_MAX_POOL_SIZE, TIMEOUT_SECONDS, TimeUnit.SECONDS,
+			super(THREAD_CORE_POOL_SIZE, THREAD_MAX_POOL_SIZE, TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS,
 					new ArrayBlockingQueue<Runnable>(THREAD_QUEUE_SIZE), threadFactory, rejectedHandler);
 			allowCoreThreadTimeOut(true);
 			logger.debug("Created Executor with core=" + THREAD_CORE_POOL_SIZE + ", max=" + THREAD_MAX_POOL_SIZE
-					+ ", queue=" + THREAD_QUEUE_SIZE + ", timeout=" + TIMEOUT_SECONDS);
+					+ ", queue=" + THREAD_QUEUE_SIZE + ", timeout=" + TIMEOUT_MILLI_SECONDS + "ms");
 			if (DEBUG_STATISTICS) {
 				stats = new Statistics();
 			}
@@ -234,7 +231,7 @@ public class CmdlineUPnPServiceConfiguration extends DefaultUpnpServiceConfigura
 
 			public void dumpPoolStats() {
 				statsLogger.info("Dump Pool Statistics:");
-				statsLogger.info("[timestamp,corePoolSize,poolSize,maxPoolSize,activeCounts,queueSize,completedTasks]");
+				statsLogger.info("[timestamp,corePoolSize,poolSize,maxPoolSize,activeThreads,queueSize,completedTasks]");
 				for (Iterator<PoolStatPoint> iter = points.iterator(); iter.hasNext();) {
 					PoolStatPoint p = iter.next();
 					statsLogger.info("" + p.timestamp + "," + p.corePoolSize + "," + p.poolSize + "," + p.maxPoolSize

@@ -62,6 +62,9 @@ public class JUPnPTool {
 	protected PrintStream outputStream;
 	protected PrintStream errorStream;
 
+	/** Local created service, make it available for testing purposes. */
+	protected UpnpService upnpService;
+
 	/** Holds the pool configuration. */
 	private String poolConfiguration;
 
@@ -163,7 +166,7 @@ public class JUPnPTool {
 			logger.debug("Starting jUPnP...");
 			printToolStartMessage("No operation");
 
-			UpnpService upnpService = createUpnpService();
+			upnpService = createUpnpService();
 			upnpService.startup();
 			try {
 				logger.debug("Stopping jUPnP...");
@@ -185,15 +188,26 @@ public class JUPnPTool {
 	}
 
 	protected UpnpService createUpnpService(long timeoutSeconds) {
-		// set the timeout to be used
-		CmdlineUPnPServiceConfiguration.setTimeout(timeoutSeconds);
 		// sets the pool configuration
 		if (poolConfiguration != null) {
 			StringTokenizer tokenizer = new StringTokenizer(poolConfiguration, ",");
 			int core = Integer.valueOf(tokenizer.nextToken()).intValue();
 			int max = Integer.valueOf(tokenizer.nextToken()).intValue();
 			int queue = Integer.valueOf(tokenizer.nextToken()).intValue();
-			CmdlineUPnPServiceConfiguration.setPoolConfiguration(core, max, queue);
+			String timeoutAsString = tokenizer.nextToken().trim();
+			long timeout = 10000L; // in ms
+			if (timeoutAsString.endsWith("ms")) {
+				timeoutAsString = timeoutAsString.substring(0, timeoutAsString.indexOf("ms")).trim();
+				timeout = Integer.valueOf(timeoutAsString) * 1L;
+			} else if (timeoutAsString.endsWith("s")) {
+				timeoutAsString = timeoutAsString.substring(0, timeoutAsString.indexOf("s")).trim();
+				timeout = Integer.valueOf(timeoutAsString) * 1000L;
+			} else if (timeoutAsString.endsWith("m")) {
+				timeoutAsString = timeoutAsString.substring(0, timeoutAsString.indexOf("m")).trim();
+				timeout = Integer.valueOf(timeoutAsString) * 60L * 1000L;
+			}
+
+			CmdlineUPnPServiceConfiguration.setPoolConfiguration(core, max, queue, timeout);
 			// one token left for stats option?
 			String stats = tokenizer.countTokens() == 1 ? tokenizer.nextToken() : null;
 			if (CommandLineArgs.POOL_CONFIG_STATS_OPTION.equalsIgnoreCase(stats)) {
@@ -254,7 +268,7 @@ public class JUPnPTool {
 
 	private void printToolStartMessage(String msg) {
 		printStdout(getToolNameVersion() + ": " + msg
-				+ ((poolConfiguration != null) ? (" (pool configuration='" + poolConfiguration + "'") : "")
+				+ ((poolConfiguration != null) ? (" (poolConfiguration='" + poolConfiguration + "'") : "")
 				+ ((multicastResponsePort != null) ? (", multicastResponsePort=" + multicastResponsePort.intValue())
 						: "")
 				+ ")");
