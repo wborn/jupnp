@@ -14,6 +14,8 @@
 
 package org.jupnp.model.gena;
 
+import org.jupnp.internal.compat.java.beans.PropertyChangeEvent;
+import org.jupnp.internal.compat.java.beans.PropertyChangeListener;
 import org.jupnp.model.ServiceManager;
 import org.jupnp.model.UserConstants;
 import org.jupnp.model.message.header.SubscriptionIdHeader;
@@ -23,8 +25,6 @@ import org.jupnp.model.state.StateVariableValue;
 import org.jupnp.model.types.UnsignedIntegerFourBytes;
 import org.jupnp.util.Exceptions;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
@@ -51,6 +51,7 @@ import java.util.logging.Logger;
  * </p>
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - Changed to use Compact2 compliant Java Beans
  */
 public abstract class LocalGENASubscription extends GENASubscription<LocalService> implements PropertyChangeListener {
 

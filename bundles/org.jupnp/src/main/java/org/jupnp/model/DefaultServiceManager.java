@@ -14,9 +14,6 @@
 
 package org.jupnp.model;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +23,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jupnp.internal.compat.java.beans.PropertyChangeEvent;
+import org.jupnp.internal.compat.java.beans.PropertyChangeListener;
+import org.jupnp.internal.compat.java.beans.PropertyChangeSupport;
 import org.jupnp.model.meta.LocalService;
 import org.jupnp.model.meta.StateVariable;
 import org.jupnp.model.state.StateVariableAccessor;
@@ -46,6 +46,7 @@ import org.jupnp.util.Reflections;
  * </p>
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - Changed to use Compact2 compliant Java Beans
  */
 public class DefaultServiceManager<T> implements ServiceManager<T> {
 

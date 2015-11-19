@@ -14,6 +14,7 @@
 
 package org.jupnp.model.gena;
 
+import org.jupnp.internal.compat.java.beans.PropertyChangeSupport;
 import org.jupnp.model.Location;
 import org.jupnp.model.Namespace;
 import org.jupnp.model.NetworkAddress;
@@ -23,7 +24,6 @@ import org.jupnp.model.meta.RemoteService;
 import org.jupnp.model.state.StateVariableValue;
 import org.jupnp.model.types.UnsignedIntegerFourBytes;
 
-import java.beans.PropertyChangeSupport;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +37,7 @@ import java.util.List;
  * </p>
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - Changed to use Compact2 compliant Java Beans
  */
 public abstract class RemoteGENASubscription extends GENASubscription<RemoteService> {
 
