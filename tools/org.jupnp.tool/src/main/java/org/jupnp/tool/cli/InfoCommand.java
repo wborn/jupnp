@@ -113,10 +113,11 @@ public class InfoCommand {
 	}
 
 	private void print(final String desc, final Object o) {
-		String s;
 		if (o == null) {
-			s = "(null)";
+			// do skip this property, as null makes no sense
+			return;
 		} else {
+			String s;
 			if (o instanceof String) {
 				if (((String) o).length() == 0) {
 					s = "\"\"";
@@ -126,8 +127,8 @@ public class InfoCommand {
 			} else {
 				s = String.valueOf(o);
 			}
+			sb.append("\n" + desc + "\t\t\t\t".substring(0, 3 - (desc.length() / 8)) + s);
 		}
-		sb.append("\n" + desc + "\t\t\t\t".substring(0, 3 - (desc.length() / 8)) + s);
 	}
 
 	private String flatList(List<String> l) {
