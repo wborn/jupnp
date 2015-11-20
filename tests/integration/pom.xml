@@ -5,13 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.jupnp</groupId>
+        <groupId>org.jupnp.pom</groupId>
         <artifactId>tests</artifactId>
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
     <name>jUPnP OSGi Test Integration</name>
     <artifactId>jupnp-osgi-tests-integration</artifactId>
+    <groupId>org.jupnp.tests</groupId>
     <packaging>jar</packaging>
 
     <build>
@@ -64,14 +65,14 @@
     <dependencies>
 
         <dependency>
-            <groupId>org.jupnp</groupId>
+            <groupId>org.jupnp.tests</groupId>
             <artifactId>jupnp-osgi-tests-common</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.jupnp.bundles</groupId>
+            <groupId>org.jupnp</groupId>
             <artifactId>org.jupnp</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

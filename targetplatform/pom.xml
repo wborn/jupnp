@@ -8,7 +8,7 @@
     <version>2.0.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.jupnp</groupId>
+  <groupId>org.jupnp.pom</groupId>
   <artifactId>targetplatform</artifactId>
 
   <name>jUPnP Target Platform</name>

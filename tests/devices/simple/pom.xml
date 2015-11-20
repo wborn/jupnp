@@ -4,13 +4,14 @@
 
     <parent>
         <relativePath>../../</relativePath>
-        <groupId>org.jupnp</groupId>
+        <groupId>org.jupnp.pom</groupId>
         <artifactId>tests</artifactId>
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
     <name>jUPnP OSGi Test Simple Device</name>
     <artifactId>jupnp-osgi-tests-devices-simple</artifactId>
+    <groupId>org.jupnp.tests</groupId>
     <packaging>bundle</packaging>
 
     <properties>
@@ -77,7 +78,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>org.jupnp</groupId>
+            <groupId>org.jupnp.tests</groupId>
             <artifactId>jupnp-osgi-tests-common</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

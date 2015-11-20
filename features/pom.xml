@@ -11,8 +11,8 @@
     </parent>
 
     <name>jUPnP Features</name>
-    <groupId>org.jupnp.features</groupId>
-    <artifactId>pom</artifactId>
+    <groupId>org.jupnp.pom</groupId>
+    <artifactId>features</artifactId>
     <packaging>pom</packaging>
 
     <modules>
@@ -50,7 +50,7 @@
 					<pomDependencies>consider</pomDependencies>
 					<target>
 						<artifact>
-							<groupId>org.jupnp</groupId>
+							<groupId>org.jupnp.pom</groupId>
 							<artifactId>targetplatform</artifactId>
 							<version>${project.version}</version>
 							<classifier>jupnp</classifier>

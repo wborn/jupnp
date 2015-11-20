@@ -11,6 +11,7 @@
 
     <name>jUPnP Tests</name>
     <artifactId>tests</artifactId>
+    <groupId>org.jupnp.pom</groupId>
     <packaging>pom</packaging>
 
     <modules>

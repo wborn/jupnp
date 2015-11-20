@@ -1,4 +1,4 @@
-![build status](https://travis-ci.org/openhab/jupnp.svg)
+![build status](https://travis-ci.org/jupnp/jupnp.svg)
 
 # Introduction
 
@@ -29,7 +29,7 @@ Make sure that the "mvn" command is available on your path
 Checkout the source code from GitHub, e.g. by running
 
 ````
-git clone https://github.com/openhab/jupnp.git
+git clone https://github.com/jupnp/jupnp.git
 ````
 
 3. Building with Maven

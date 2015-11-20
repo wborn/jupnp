@@ -11,8 +11,8 @@
     </parent>
 
     <name>jUPnP Distribution</name>
-    <artifactId>jupnp-distribution</artifactId>
-	<packaging>eclipse-repository</packaging>
+    <artifactId>p2repo</artifactId>
+    <packaging>eclipse-repository</packaging>
 
     <build>
         <plugins>
@@ -62,7 +62,7 @@
 					<pomDependencies>consider</pomDependencies>
 					<target>
 						<artifact>
-							<groupId>org.jupnp</groupId>
+							<groupId>org.jupnp.pom</groupId>
 							<artifactId>targetplatform</artifactId>
 							<version>${project.version}</version>
 							<classifier>jupnp</classifier>

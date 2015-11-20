@@ -18,8 +18,8 @@
         <module>distribution</module>
     </modules>
 
-
     <name>jUPnP</name>
+    <description>UPnP/DLNA library for Java</description>
     <url>http://jupnp.org</url>
 
     <licenses>
@@ -30,10 +30,27 @@
     </licenses>
 
     <organization>
-        <name>openHAB UG (haftungsbeschraenkt)</name>
-        <url>http://www.openHAB.org</url>
+        <name>jUPnP.org</name>
+        <url>http://www.jupnp.org</url>
     </organization>
 
+	<developers>
+		<developer>
+			<name>Kai Kreuzer</name>
+			<email>kai@openhab.org</email>
+		        <organization>jUPnP.org</organization>
+      			<organizationUrl>http://www.jupnp.org</organizationUrl>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:git@github.com:jupnp/jupnp.git</connection>
+		<developerConnection>scm:git:git@github.com:jupnp/jupnp.git</developerConnection>
+		<url>git@github.com:jupnp/jupnp.git</url>
+	</scm>
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/jupnp/jupnp/issues</url>
+	</issueManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -134,7 +151,7 @@
                 </excludes>
                 <useDefaultExcludes>true</useDefaultExcludes>
                 <properties>
-                    <year>2014</year>
+                    <year>2015</year>
                 </properties>
                 <encoding>UTF-8</encoding>
             </configuration>
@@ -175,5 +192,19 @@
         </dependency>
 
     </dependencies>
+
+    <profiles>
+    <!-- We need this profile in order to set '-Xdoclint:none' as a project property which will be used later by maven-javadoc-plugin as an 'additionalparam' to be passed to the javadoc.exe. -->
+    <!-- This option will be used only if the JDK version is 1.8 or higher. Earlier versions of javadoc.exe does not accept this option. -->
+    <profile>
+      <id>doclint-java8-disable</id>
+      <activation>
+        <jdk>[1.8,)</jdk>
+      </activation>
+      <properties>
+        <javadoc.opts>-Xdoclint:none</javadoc.opts>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>
