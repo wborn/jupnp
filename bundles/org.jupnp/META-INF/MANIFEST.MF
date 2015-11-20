@@ -6,10 +6,8 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-Vendor: openHAB.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/*
-Import-Package: javax.imageio;resolution:=optional,
- javax.servlet,
+Import-Package: javax.servlet,
  javax.servlet.http,
- javax.swing;resolution:=optional,
  javax.xml,
  javax.xml.namespace,
  javax.xml.parsers,
@@ -48,6 +46,7 @@ Export-Package: org.jupnp,
  org.jupnp.controlpoint,
  org.jupnp.controlpoint.event,
  org.jupnp.http,
+ org.jupnp.internal.compat.java.beans,
  org.jupnp.mock,
  org.jupnp.model,
  org.jupnp.model.action,

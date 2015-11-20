@@ -20,11 +20,11 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.upnp.UPnPDevice;
 import org.osgi.service.upnp.UPnPEventListener;
 import org.osgi.service.upnp.UPnPService;
+import org.jupnp.internal.compat.java.beans.PropertyChangeSupport;
 import org.jupnp.model.meta.LocalDevice;
 import org.jupnp.model.meta.LocalService;
 import org.jupnp.osgi.Activator;
 
-import java.beans.PropertyChangeSupport;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 /**
  * @author Bruce Green
+ * @author Jochen Hiller - Changed to use Compact2 compliant Java Beans
  */
 public class DataAdapter implements UPnPEventListener {
 

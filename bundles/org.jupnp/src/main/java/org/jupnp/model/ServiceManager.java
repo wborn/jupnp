@@ -14,10 +14,10 @@
 
 package org.jupnp.model;
 
+import org.jupnp.internal.compat.java.beans.PropertyChangeSupport;
 import org.jupnp.model.meta.LocalService;
 import org.jupnp.model.state.StateVariableValue;
 
-import java.beans.PropertyChangeSupport;
 import java.util.Collection;
 
 /**
@@ -67,6 +67,7 @@ import java.util.Collection;
  *            and {@link org.jupnp.model.state.StateVariableAccessor}s.
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - Changed to use Compact2 compliant Java Beans
  */
 public interface ServiceManager<T> {
 
