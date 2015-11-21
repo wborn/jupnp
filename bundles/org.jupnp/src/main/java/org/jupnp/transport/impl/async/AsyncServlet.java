@@ -73,7 +73,7 @@ public class AsyncServlet extends HttpServlet {
             @Override
             public void onTimeout(AsyncEvent arg0) throws IOException {
                 long duration = System.currentTimeMillis() - startTime;
-                log.warn(String.format("AsyncListener.onTimeout(): id: %3d, duration: %,4d, request: %s", counter,
+                log.debug(String.format("AsyncListener.onTimeout(): id: %3d, duration: %,4d, request: %s", counter,
                         duration, arg0.getSuppliedRequest()));
             }
 
@@ -87,14 +87,14 @@ public class AsyncServlet extends HttpServlet {
             @Override
             public void onError(AsyncEvent arg0) throws IOException {
                 long duration = System.currentTimeMillis() - startTime;
-                log.warn(String.format("AsyncListener.onError(): id: %3d, duration: %,4d, response: %s", counter,
+                log.debug(String.format("AsyncListener.onError(): id: %3d, duration: %,4d, response: %s", counter,
                         duration, arg0.getSuppliedResponse()));
             }
 
             @Override
             public void onComplete(AsyncEvent arg0) throws IOException {
                 long duration = System.currentTimeMillis() - startTime;
-                log.info(String.format("AsyncListener.onComplete(): id: %3d, duration: %,4d, response: %s", counter,
+                log.debug(String.format("AsyncListener.onComplete(): id: %3d, duration: %,4d, response: %s", counter,
                         duration, arg0.getSuppliedResponse()));
             }
 

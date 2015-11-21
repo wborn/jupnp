@@ -338,6 +338,7 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
      * <li>have no bound IP addresses</li>
      * <li>named "vmnet*" (OS X VMWare does not properly stop interfaces when it quits)</li>
      * <li>named "vnic*" (OS X Parallels interfaces should be ignored as well)</li>
+     * <li>named "vboxnet*" (OS X Virtual Box interfaces should be ignored as well)</li>
      * <li>named "*virtual*" (VirtualBox interfaces, for example</li>
      * <li>named "ppp*"</li>
      * </ul>
@@ -368,6 +369,11 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
             return false;
         }
 
+        if (iface.getName().toLowerCase(Locale.ENGLISH).startsWith("vboxnet")) {
+            log.finer("Skipping network interface (Virtual Box): " + iface.getDisplayName());
+            return false;
+        }        
+        
         if (iface.getName().toLowerCase(Locale.ENGLISH).contains("virtual")) {
             log.finer("Skipping network interface (named '*virtual*'): " + iface.getDisplayName());
             return false;
