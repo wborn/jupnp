@@ -83,12 +83,13 @@ import org.jupnp.util.Exceptions;
  *
  * @author Christian Bauer
  * @author Kai Kreuzer - introduced bounded thread pool
+ * @author Jochen Hiller - increased thread pool size to 200
  */
 public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
     private Logger log = Logger.getLogger(DefaultUpnpServiceConfiguration.class.getName());
 
-    final private static int THREAD_POOL_SIZE = 20;
+    final private static int THREAD_POOL_SIZE = 200;
     final private static int THREAD_QUEUE_SIZE = 1000;
     
     final private int streamListenPort;

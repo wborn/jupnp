@@ -88,13 +88,14 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Christian Bauer
  * @author Kai Kreuzer - introduced bounded thread pool and http service streaming server
+ * @author Jochen Hiller - increased thread pool size to 200
  */
 public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
     private Logger log = LoggerFactory.getLogger(OSGiUpnpServiceConfiguration.class);
 
     // configurable properties
-    private int threadPoolSize = 20;
+    private int threadPoolSize = 200;
     private int threadQueueSize = 1000;
     private int multicastResponsePort;
     private int httpProxyPort = -1;
