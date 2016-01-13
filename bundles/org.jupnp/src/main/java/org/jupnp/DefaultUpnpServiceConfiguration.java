@@ -89,6 +89,8 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
 
     private Logger log = Logger.getLogger(DefaultUpnpServiceConfiguration.class.getName());
 
+    /** we will use a core pool size of 1 as long as we allow to timeout core threads. */
+    final private static int CORE_THREAD_POOL_SIZE = 1;
     final private static int THREAD_POOL_SIZE = 200;
     final private static int THREAD_QUEUE_SIZE = 1000;
     
@@ -326,7 +328,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
 
         public JUPnPExecutor(ThreadFactory threadFactory, RejectedExecutionHandler rejectedHandler) {
             // This is the same as Executors.newCachedThreadPool
-            super(THREAD_POOL_SIZE,
+            super(CORE_THREAD_POOL_SIZE,
             	  THREAD_POOL_SIZE,
                   10L,
                   TimeUnit.SECONDS,

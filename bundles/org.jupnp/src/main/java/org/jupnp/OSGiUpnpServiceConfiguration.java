@@ -94,6 +94,9 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
     private Logger log = LoggerFactory.getLogger(OSGiUpnpServiceConfiguration.class);
 
+    /** we will use a core pool size of 1 as long as we allow to timeout core threads. */
+    final private static int CORE_THREAD_POOL_SIZE = 1;
+
     // configurable properties
     private int threadPoolSize = 200;
     private int threadQueueSize = 1000;
@@ -377,7 +380,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
         public JUPnPExecutor(ThreadFactory threadFactory, RejectedExecutionHandler rejectedHandler) {
             // This is the same as Executors.newCachedThreadPool
-            super(threadPoolSize, threadPoolSize, 10L, TimeUnit.SECONDS,
+            super(CORE_THREAD_POOL_SIZE, threadPoolSize, 10L, TimeUnit.SECONDS,
                     new ArrayBlockingQueue<Runnable>(threadQueueSize), threadFactory, rejectedHandler);
             allowCoreThreadTimeOut(true);
         }
