@@ -20,5 +20,5 @@
       <provide interface="org.jupnp.UpnpService"/>
    </service>
    <reference bind="setOSGiUpnpServiceConfiguration" cardinality="1..1" interface="org.jupnp.OSGiUpnpServiceConfiguration" name="OSGiUpnpServiceConfiguration" policy="static" unbind="unsetOSGiUpnpServiceConfiguration"/>
-   <reference bind="setHttpService" cardinality="0..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="dynamic" unbind="unsetHttpService"/>
+   <reference bind="setHttpService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="static" unbind="unsetHttpService"/>
 </scr:component>

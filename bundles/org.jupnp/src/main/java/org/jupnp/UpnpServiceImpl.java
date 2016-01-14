@@ -65,20 +65,14 @@ public class UpnpServiceImpl implements UpnpService {
     protected Router router;
 
     protected ScheduledExecutorService scheduledExecutorService;
-    
+
     protected volatile ScheduledFuture<?> scheduledFuture;
 
     public UpnpServiceImpl() {
-        this(new DefaultUpnpServiceConfiguration());
     }
 
     public UpnpServiceImpl(UpnpServiceConfiguration configuration) {
         this.configuration = configuration;
-
-        this.protocolFactory = createProtocolFactory();
-
-        this.registry = createRegistry(protocolFactory);
-
     }
 
     private static ScheduledExecutorService createExecutor() {
@@ -235,11 +229,11 @@ public class UpnpServiceImpl implements UpnpService {
                 startup();
             }
         };
-        
-        if(scheduledFuture != null) {
+
+        if (scheduledFuture != null) {
             scheduledFuture.cancel(true);
         }
-        
+
         scheduledFuture = scheduledExecutorService.schedule(startup, msDelay, TimeUnit.MILLISECONDS);
     }
 
@@ -252,6 +246,8 @@ public class UpnpServiceImpl implements UpnpService {
 
                 log.debug("Using configuration: " + getConfiguration().getClass().getName());
 
+                this.protocolFactory = createProtocolFactory();
+                this.registry = createRegistry(protocolFactory);
                 this.router = createRouter(protocolFactory, registry);
 
                 try {
@@ -278,10 +274,10 @@ public class UpnpServiceImpl implements UpnpService {
     }
 
     protected void deactivate() {
-        if(scheduledFuture != null) {
+        if (scheduledFuture != null) {
             scheduledFuture.cancel(true);
         }
-        
+
         scheduledExecutorService.shutdownNow();
         shutdown();
     }
