@@ -92,6 +92,8 @@ import org.slf4j.LoggerFactory;
  */
 public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
+    private static final String OSGI_SERVICE_HTTP_PORT = "org.osgi.service.http.port";
+
     private Logger log = LoggerFactory.getLogger(OSGiUpnpServiceConfiguration.class);
 
     /** we will use a core pool size of 1 as long as we allow to timeout core threads. */
@@ -102,7 +104,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
     private int threadQueueSize = 1000;
     private int multicastResponsePort;
     private int httpProxyPort = -1;
-    private int streamListenPort;
+    private int streamListenPort = 8080;
     private Namespace callbackURI = new Namespace("http://localhost/upnpcallback");
 
     private ExecutorService defaultExecutorService;
@@ -478,6 +480,12 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
             }
         } else if (prop instanceof Integer) {
             streamListenPort = (Integer) prop;
+        } else if (System.getProperty(OSGI_SERVICE_HTTP_PORT) != null) {
+            try {
+                streamListenPort = Integer.valueOf(System.getProperty(OSGI_SERVICE_HTTP_PORT));
+            } catch (NumberFormatException e) {
+                log.debug("Invalid value '{}' for osgi.http.port - using default value '{}'", prop, streamListenPort);
+            }
         }
 
         prop = properties.get("callbackURI");
