@@ -15,14 +15,8 @@
 package org.jupnp;
 
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jupnp.binding.xml.DeviceDescriptorBinder;
 import org.jupnp.binding.xml.RecoveringUDA10DeviceDescriptorBinderImpl;
@@ -57,7 +51,6 @@ import org.jupnp.transport.spi.NetworkAddressFactory;
 import org.jupnp.transport.spi.SOAPActionProcessor;
 import org.jupnp.transport.spi.StreamClient;
 import org.jupnp.transport.spi.StreamServer;
-import org.jupnp.util.Exceptions;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -67,28 +60,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default configuration data of a typical UPnP stack.
+ * Configuration data of a typical UPnP stack on OSGi.
  * <p>
  * This configuration utilizes the default network transport implementation found in {@link org.jupnp.transport.impl}.
  * </p>
  * <p>
- * This configuration utilizes the DOM default descriptor binders found in {@link org.jupnp.binding.xml}.
+ * This configuration utilizes the SAX default descriptor binders found in {@link org.jupnp.binding.xml}.
  * </p>
  * <p>
  * The thread <code>Executor</code> is an <code>Executors.newCachedThreadPool()</code> with a custom
- * {@link JUPnPThreadFactory} (it only sets a thread name).
- * </p>
- * <p>
- * Note that this pool is effectively unlimited, so the number of threads will grow (and shrink) as needed - or
- * restricted by your JVM.
+ * {@link QueueingThreadFactory}.
  * </p>
  * <p>
  * The default {@link org.jupnp.model.Namespace} is configured without any base path or prefix.
  * </p>
- * 
+ *
  * @author Christian Bauer
  * @author Kai Kreuzer - introduced bounded thread pool and http service streaming server
- * @author Jochen Hiller - increased thread pool size to 200
  */
 public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
@@ -96,18 +84,16 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
     private Logger log = LoggerFactory.getLogger(OSGiUpnpServiceConfiguration.class);
 
-    /** we will use a core pool size of 1 as long as we allow to timeout core threads. */
-    final private static int CORE_THREAD_POOL_SIZE = 1;
-
     // configurable properties
-    private int threadPoolSize = 200;
-    private int threadQueueSize = 1000;
+    private int threadPoolSize = 20;
+    private int asyncThreadPoolSize = 20;
     private int multicastResponsePort;
     private int httpProxyPort = -1;
     private int streamListenPort = 8080;
     private Namespace callbackURI = new Namespace("http://localhost/upnpcallback");
 
-    private ExecutorService defaultExecutorService;
+    private ExecutorService mainExecutorService;
+    private ExecutorService asyncExecutorService;
 
     private DatagramProcessor datagramProcessor;
     private SOAPActionProcessor soapActionProcessor;
@@ -162,7 +148,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
         createConfiguration(configProps);
 
-        defaultExecutorService = createDefaultExecutorService();
+        createExecutorServices();
 
         datagramProcessor = createDatagramProcessor();
         soapActionProcessor = createSOAPActionProcessor();
@@ -186,34 +172,41 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
         shutdown();
     }
 
+    @Override
     public DatagramProcessor getDatagramProcessor() {
         return datagramProcessor;
     }
 
+    @Override
     public SOAPActionProcessor getSoapActionProcessor() {
         return soapActionProcessor;
     }
 
+    @Override
     public GENAEventProcessor getGenaEventProcessor() {
         return genaEventProcessor;
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public StreamClient createStreamClient() {
         return new StreamClientImpl(new StreamClientConfigurationImpl(getSyncProtocolExecutorService()));
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public MulticastReceiver createMulticastReceiver(NetworkAddressFactory networkAddressFactory) {
         return new MulticastReceiverImpl(new MulticastReceiverConfigurationImpl(
                 networkAddressFactory.getMulticastGroup(), networkAddressFactory.getMulticastPort()));
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public DatagramIO createDatagramIO(NetworkAddressFactory networkAddressFactory) {
         return new DatagramIOImpl(new DatagramIOConfigurationImpl());
     }
 
+    @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public StreamServer createStreamServer(NetworkAddressFactory networkAddressFactory) {
         ServiceReference serviceReference = context.getServiceReference(HttpService.class.getName());
@@ -239,26 +232,32 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
     }
 
+    @Override
     public ExecutorService getMulticastReceiverExecutor() {
-        return getDefaultExecutorService();
+        return getMainExecutorService();
     }
 
+    @Override
     public ExecutorService getDatagramIOExecutor() {
-        return getDefaultExecutorService();
+        return getMainExecutorService();
     }
 
+    @Override
     public ExecutorService getStreamServerExecutorService() {
-        return getDefaultExecutorService();
+        return getMainExecutorService();
     }
 
+    @Override
     public DeviceDescriptorBinder getDeviceDescriptorBinderUDA10() {
         return deviceDescriptorBinderUDA10;
     }
 
+    @Override
     public ServiceDescriptorBinder getServiceDescriptorBinderUDA10() {
         return serviceDescriptorBinderUDA10;
     }
 
+    @Override
     public ServiceType[] getExclusiveServiceTypes() {
         return new ServiceType[0];
     }
@@ -266,14 +265,17 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
     /**
      * @return Defaults to <code>false</code>.
      */
+    @Override
     public boolean isReceivedSubscriptionTimeoutIgnored() {
         return false;
     }
 
+    @Override
     public UpnpHeaders getDescriptorRetrievalHeaders(RemoteDeviceIdentity identity) {
         return null;
     }
 
+    @Override
     public UpnpHeaders getEventSubscriptionHeaders(RemoteService service) {
         return null;
     }
@@ -281,6 +283,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
     /**
      * @return Defaults to 1000 milliseconds.
      */
+    @Override
     public int getRegistryMaintenanceIntervalMillis() {
         return 1000;
     }
@@ -288,45 +291,61 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
     /**
      * @return Defaults to zero, disabling ALIVE flooding.
      */
+    @Override
     public int getAliveIntervalMillis() {
         return 0;
     }
 
+    @Override
     public Integer getRemoteDeviceMaxAgeSeconds() {
         return null;
     }
 
+    @Override
     public ExecutorService getAsyncProtocolExecutor() {
-        return getDefaultExecutorService();
+        return asyncExecutorService;
     }
 
+    @Override
     public ExecutorService getSyncProtocolExecutorService() {
-        return getDefaultExecutorService();
+        return getMainExecutorService();
     }
 
+    @Override
     public Namespace getNamespace() {
         return namespace;
     }
 
+    @Override
     public Executor getRegistryMaintainerExecutor() {
-        return getDefaultExecutorService();
+        return getMainExecutorService();
     }
 
+    @Override
     public Executor getRegistryListenerExecutor() {
-        return getDefaultExecutorService();
+        return getMainExecutorService();
     }
 
+    @Override
     public NetworkAddressFactory createNetworkAddressFactory() {
         return createNetworkAddressFactory(streamListenPort, multicastResponsePort);
     }
 
+    @Override
     public void shutdown() {
-        if (getDefaultExecutorService() != null) {
-            log.debug("Shutting down default executor service");
-            getDefaultExecutorService().shutdownNow();
+        log.debug("Shutting down executor services");
+        shutdownExecutorServices();
 
-            // create the executor again ready for reuse in case the runtime is started up again.
-            defaultExecutorService = createDefaultExecutorService();
+        // create the executor again ready for reuse in case the runtime is started up again.
+        createExecutorServices();
+    }
+
+    protected void shutdownExecutorServices() {
+        if (mainExecutorService != null) {
+            mainExecutorService.shutdownNow();
+        }
+        if (asyncExecutorService != null) {
+            asyncExecutorService.shutdownNow();
         }
     }
 
@@ -358,84 +377,27 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
         return callbackURI;
     }
 
-    protected ExecutorService getDefaultExecutorService() {
-        return defaultExecutorService;
+    protected ExecutorService getMainExecutorService() {
+        return mainExecutorService;
     }
 
-    protected ExecutorService createDefaultExecutorService() {
-        return new JUPnPExecutor();
+    private void createExecutorServices() {
+        mainExecutorService = createMainExecutorService();
+        asyncExecutorService = createAsyncProtocolExecutorService();
     }
 
-    public class JUPnPExecutor extends ThreadPoolExecutor {
-
-        public JUPnPExecutor() {
-            this(new JUPnPThreadFactory(), new ThreadPoolExecutor.DiscardPolicy() {
-                // The pool is bounded and rejections will happen during shutdown
-                @Override
-                public void rejectedExecution(Runnable runnable, ThreadPoolExecutor threadPoolExecutor) {
-                    // Log and discard
-                    log.warn("Thread pool rejected execution of " + runnable.getClass());
-                    super.rejectedExecution(runnable, threadPoolExecutor);
-                }
-            });
-        }
-
-        public JUPnPExecutor(ThreadFactory threadFactory, RejectedExecutionHandler rejectedHandler) {
-            // This is the same as Executors.newCachedThreadPool
-            super(CORE_THREAD_POOL_SIZE, threadPoolSize, 10L, TimeUnit.SECONDS,
-                    new ArrayBlockingQueue<Runnable>(threadQueueSize), threadFactory, rejectedHandler);
-            allowCoreThreadTimeOut(true);
-        }
-
-        @Override
-        protected void afterExecute(Runnable runnable, Throwable throwable) {
-            super.afterExecute(runnable, throwable);
-            if (throwable != null) {
-                Throwable cause = Exceptions.unwrap(throwable);
-                if (cause instanceof InterruptedException) {
-                    // Ignore this, might happen when we shutdownNow() the executor. We can't
-                    // log at this point as the logging system might be stopped already (e.g.
-                    // if it's a CDI component).
-                    return;
-                }
-                // Log only
-                log.warn("Thread terminated " + runnable + " abruptly with exception: " + throwable);
-                log.warn("Root cause: " + cause);
-            }
-        }
-
-        @Override
-        public void shutdown() {
-            super.shutdown();
-        }
+    protected ExecutorService createMainExecutorService() {
+        return QueueingThreadPoolExecutor.createInstance("upnp-main", threadPoolSize);
     }
 
-    // Executors.DefaultThreadFactory is package visibility (...no touching, you unworthy JDK user!)
-    public static class JUPnPThreadFactory implements ThreadFactory {
-
-        protected final ThreadGroup group;
-        protected final AtomicInteger threadNumber = new AtomicInteger(1);
-        protected final String namePrefix = "jupnp-";
-
-        public JUPnPThreadFactory() {
-            SecurityManager s = System.getSecurityManager();
-            group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
-        }
-
-        public Thread newThread(Runnable r) {
-            Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
-            if (t.isDaemon())
-                t.setDaemon(false);
-            if (t.getPriority() != Thread.NORM_PRIORITY)
-                t.setPriority(Thread.NORM_PRIORITY);
-
-            return t;
-        }
+    private ExecutorService createAsyncProtocolExecutorService() {
+        return QueueingThreadPoolExecutor.createInstance("upnp-async", asyncThreadPoolSize);
     }
 
     private void createConfiguration(Map<String, Object> properties) throws ConfigurationException {
-        if (properties == null)
+        if (properties == null) {
             return;
+        }
 
         Object prop = properties.get("threadPoolSize");
         if (prop instanceof String) {
@@ -448,15 +410,16 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
             threadPoolSize = (Integer) prop;
         }
 
-        prop = properties.get("threadQueueSize");
+        prop = properties.get("asyncThreadPoolSize");
         if (prop instanceof String) {
             try {
-                threadQueueSize = Integer.valueOf((String) prop);
+                asyncThreadPoolSize = Integer.valueOf((String) prop);
             } catch (NumberFormatException e) {
-                log.error("Invalid value '{}' for threadQueueSize - using default value '{}'", prop, threadQueueSize);
+                log.error("Invalid value '{}' for asyncThreadPoolSize - using default value '{}'", prop,
+                        asyncThreadPoolSize);
             }
         } else if (prop instanceof Integer) {
-            threadQueueSize = (Integer) prop;
+            asyncThreadPoolSize = (Integer) prop;
         }
 
         prop = properties.get("multicastResponsePort");
