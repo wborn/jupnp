@@ -45,6 +45,7 @@ public class SearchCommand {
 		// This will create necessary network resources for UPnP right away
 		logger.debug("Starting jUPnP search...");
 		UpnpService upnpService = tool.createUpnpService();
+		upnpService.startup();
 
 		SearchResultPrinter printer = new SearchResultPrinter(sortBy, verbose);
 		if (!hasToSort(sortBy)) {
@@ -53,7 +54,6 @@ public class SearchCommand {
 							new SearchRegistryListener(printer, sortBy, filter,
 									verbose));
 		}
-		upnpService.startup();
 		printer.printHeader();
 
 		// Send a search message to all devices and services, they should
