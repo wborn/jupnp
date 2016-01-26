@@ -22,6 +22,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.naming.OperationNotSupportedException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,6 +98,9 @@ public class QueueingThreadPoolExecutor extends ThreadPoolExecutor {
      * @return the {@link QueueingThreadPoolExecutor} instance
      */
     public static QueueingThreadPoolExecutor createInstance(String name, int threadPoolSize) {
+        if(name==null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("A thread pool name must be provided!");
+        }
         return new QueueingThreadPoolExecutor(name, new CommonThreadFactory(name), threadPoolSize,
                 new QueueingThreadPoolExecutor.QueueingRejectionHandler());
     }
@@ -128,6 +133,16 @@ public class QueueingThreadPoolExecutor extends ThreadPoolExecutor {
         }
     }
 
+    /**
+     * This implementation does not allow setting a custom handler.
+     * 
+     * @throws UnsupportedOperationException if called.
+     */
+    @Override
+    public void setRejectedExecutionHandler(RejectedExecutionHandler handler) {
+        throw new UnsupportedOperationException();
+    }
+    
     @Override
     public BlockingQueue<Runnable> getQueue() {
         return taskQueue;
@@ -209,10 +224,8 @@ public class QueueingThreadPoolExecutor extends ThreadPoolExecutor {
         @Override
         public void rejectedExecution(Runnable runnable, ThreadPoolExecutor threadPoolExecutor) {
             if (!threadPoolExecutor.isShutdown()) {
-                if (threadPoolExecutor instanceof QueueingThreadPoolExecutor) {
-                    QueueingThreadPoolExecutor queueingThreadPoolExecutor = (QueueingThreadPoolExecutor) threadPoolExecutor;
-                    queueingThreadPoolExecutor.addToQueue(runnable);
-                }
+                QueueingThreadPoolExecutor queueingThreadPoolExecutor = (QueueingThreadPoolExecutor) threadPoolExecutor;
+                queueingThreadPoolExecutor.addToQueue(runnable);
             }
         }
     }
