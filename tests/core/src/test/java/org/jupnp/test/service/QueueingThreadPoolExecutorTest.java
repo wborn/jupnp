@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
 
 import org.jupnp.QueueingThreadPoolExecutor;
@@ -77,25 +78,10 @@ public class QueueingThreadPoolExecutorTest {
 
 	/**
 	 * Tests what happens when poolName == null.
-	 * 
-	 * @TODO should QTPE raise an IllegalArgumentException in that case?
 	 */
-	@Test
+    @Test(expectedExceptions = IllegalArgumentException.class)
 	public void testCreateInstanceInvalidArgsPoolNameNull() throws InterruptedException {
-		String poolName = "null";
-		ThreadPoolExecutor pool = QueueingThreadPoolExecutor.createInstance(null, 1);
-		pool.execute(createRunnableFast());
-		assertTrue(isPoolThreadActive(poolName, 1));
-		pool.execute(createRunnableFast());
-		pool.execute(createRunnableFast());
-		pool.execute(createRunnableFast());
-		assertTrue(isQueueThreadActive(poolName));
-
-		// needs to wait CORE_POOL_TIMEOUT + 2sec-queue-thread + x until all
-		// threads are down again
-		pool.shutdown();
-		Thread.sleep(CORE_POOL_TIMEOUT + 3000);
-		assertFalse(areThreadsFromPoolRunning(poolName));
+		QueueingThreadPoolExecutor.createInstance(null, 1);
 	}
 
 	@Test(expectedExceptions = IllegalArgumentException.class)
@@ -161,12 +147,12 @@ public class QueueingThreadPoolExecutorTest {
 		basicTestForPoolName("testPoolWithWellDefinedPoolName");
 	}
 
-	@Test
+    @Test(expectedExceptions = IllegalArgumentException.class)
 	public void testPoolWithBlankPoolName() throws InterruptedException {
 		basicTestForPoolName(" ");
 	}
 
-	@Test
+    @Test(expectedExceptions = IllegalArgumentException.class)
 	public void testPoolWithEmptyPoolName() throws InterruptedException {
 		basicTestForPoolName("");
 	}
@@ -429,33 +415,12 @@ public class QueueingThreadPoolExecutorTest {
 
 	/**
 	 * Tests what happens when wrong rejected execution handler will be used.
-	 * 
-	 * @TODO better to override setRejectedExecutionHandler to NOT allow wrong
-	 *       one?
 	 */
-	@Test
+    @Test(expectedExceptions = UnsupportedOperationException.class)
 	public void testSetInvalidRejectionHandler() throws InterruptedException {
 		String poolName = "testShutdownNoEntriesIntoQueueAnymore";
 		ThreadPoolExecutor pool = QueueingThreadPoolExecutor.createInstance(poolName, 2);
-
-		pool.execute(createRunnable100ms());
-		pool.execute(createRunnable100ms());
-		pool.execute(createRunnable100ms());
-		pool.execute(createRunnable100ms());
-		assertEquals(pool.getActiveCount(), 2);
-		assertEquals(pool.getQueue().size(), 2);
-
-		// with wrong execution handler, further entries will be ignored
 		pool.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
-		pool.execute(createRunnableFast());
-		pool.execute(createRunnableFast());
-		assertEquals(pool.getQueue().size(), 2);
-
-		// needs to wait CORE_POOL_TIMEOUT + 2sec-queue-thread + x until all
-		// threads are down again
-		// pool yet shutdown here
-		Thread.sleep(CORE_POOL_TIMEOUT + 3000);
-		assertFalse(areThreadsFromPoolRunning(poolName));
 	}
 
 	/**
