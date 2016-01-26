@@ -38,8 +38,8 @@ public class CommandLineArgs {
 	public Integer multicastResponsePort = 0;
 
 	@Parameter(names = { "--pool",
-			"-p" }, description = "Configure thread pools and enable pool statistic (corePoolsize,maxPoolSize,queueSize,timeout[,stats]) ", validateWith = MainCommandPoolConfigurationValidator.class)
-	public String poolConfig = "100,200,100,1000ms";
+			"-p" }, description = "Configure thread pools and enable pool statistic (mainPoolSize,asyncPoolSize[,stats]) ", validateWith = MainCommandPoolConfigurationValidator.class)
+	public String poolConfig = "20,40";
 	public static final String POOL_CONFIG_STATS_OPTION = "stats";
 
 	@Parameter(names = { "--verbose", "-v" }, description = "Enable verbose messages")
@@ -58,7 +58,7 @@ public class CommandLineArgs {
 class SearchCommandArgs {
 
 	@Parameter(names = { "--timeout", "-t" }, description = "The timeout when search will be finished")
-	public Integer timeout = 10;
+	public Integer timeout = 20;
 
 	@Parameter(names = { "--sort",
 			"-s" }, description = "Sort using {none|ip|model|serialNumber|manufacturer|udn}", validateWith = SearchCommandSortByValidator.class)
