@@ -39,7 +39,7 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
             throws DescriptorBindingException, ValidationException {
 
         D device = null;
-        DescriptorBindingException originalException;
+        DescriptorBindingException originalException = null;
         try {
 
             try {
@@ -49,18 +49,21 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
                 fixedXml = fixWrongNamespaces(fixedXml);
                 fixedXml = fixWemoMakerUDN(fixedXml);
                 device = super.describe(undescribedDevice, fixedXml);
+                
+                // Ignore Sonos group device since they have the same UDN as the corresponding player device
+                // and contains useless device details and services. The group device will be announced first
+                // after pairing the player to Sonos and therefore it will be stored in the registry instead of the
+                // player.
+                if (isSonosGroupDevice(device)) {
+                	throw new IllegalArgumentException("Ignore Sonos group devices due to invalid descriptor content.");
+                }
                 return device;
+                
             } catch (DescriptorBindingException ex) {
                 log.warning("Regular parsing failed: " + Exceptions.unwrap(ex).getMessage());
                 originalException = ex;
-            }
-            
-            // Ignore Sonos group device since they have the same UDN as the corresponding player device
-            // and contains useless device details and services. The group device will be announced first
-            // after pairing the player to Sonos and therefore it will be stored in the registry instead of the
-            // player.
-            if (isSonosGroupDevice(device)) {
-            	handleInvalidDescriptor(descriptorXml, new DescriptorBindingException("Ignore Sonos group devices due to invalid descriptor content."));
+            } catch (IllegalArgumentException e) {
+            	handleInvalidDescriptor(descriptorXml, new DescriptorBindingException(e.getMessage()));
             }
             
             String fixedXml;
