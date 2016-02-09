@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 
 import org.jupnp.model.ValidationException;
 import org.jupnp.model.meta.Device;
+import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.util.Exceptions;
 import org.jupnp.xml.ParserException;
 import org.xml.sax.SAXParseException;
@@ -27,6 +28,7 @@ import org.xml.sax.SAXParseException;
 /**
  * @author Michael Pujos
  * @author Kai Kreuzer - added faulty descriptors as found by Belkin WeMo
+ * @author Roland Edelhoff - avoid description of Sonos group devices
  */
 public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescriptorBinderImpl {
 
@@ -52,7 +54,15 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
                 log.warning("Regular parsing failed: " + Exceptions.unwrap(ex).getMessage());
                 originalException = ex;
             }
-
+            
+            // Ignore Sonos group device since they have the same UDN as the corresponding player device
+            // and contains useless device details and services. The group device will be announced first
+            // after pairing the player to Sonos and therefore it will be stored in the registry instead of the
+            // player.
+            if (isSonosGroupDevice(device)) {
+            	handleInvalidDescriptor(descriptorXml, new DescriptorBindingException("Ignore Sonos group devices due to invalid descriptor content."));
+            }
+            
             String fixedXml;
             // The following modifications are not cumulative!
 
@@ -119,19 +129,19 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
     private String fixGarbageLeadingChars(String descriptorXml) {
         /*
          * Recover this:
-         * 
+         *
          * HTTP/1.1 200 OK
          * Content-Length: 4268
          * Content-Type: text/xml; charset="utf-8"
          * Server: Microsoft-Windows/6.2 UPnP/1.0 UPnP-Device-Host/1.0 Microsoft-HTTPAPI/2.0
          * Date: Sun, 07 Apr 2013 02:11:30 GMT
-         * 
+         *
          * @7:5 in java.io.StringReader@407f6b00) : HTTP/1.1 200 OK
          * Content-Length: 4268
          * Content-Type: text/xml; charset="utf-8"
          * Server: Microsoft-Windows/6.2 UPnP/1.0 UPnP-Device-Host/1.0 Microsoft-HTTPAPI/2.0
          * Date: Sun, 07 Apr 2013 02:11:30 GMT
-         * 
+         *
          * <?xml version="1.0"?>...
          */
 
@@ -279,5 +289,23 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
     protected <D extends Device> D handleInvalidDevice(String xml, D device, ValidationException exception)
             throws ValidationException {
         throw exception;
+    }
+
+    private <D extends Device> boolean isSonosGroupDevice(D device) {
+        if (device instanceof RemoteDevice) {
+            RemoteDevice rd = (RemoteDevice) device;
+            return isGroupInformationAvailable(rd)
+                    && rd.getDetails().getManufacturerDetails().getManufacturer().toLowerCase().contains("sonos")
+                    && rd.getType().toString().contains("urn:smartspeaker-audio:device:SpeakerGroup")
+                    && rd.getIdentity().getDescriptorURL().toString().endsWith("group_description.xml");
+        }
+        return false;
+    }
+
+    private boolean isGroupInformationAvailable(RemoteDevice rd) {
+        return rd != null && rd.getType() != null && rd.getIdentity() != null && rd.getDetails() != null
+                && rd.getDetails().getManufacturerDetails() != null
+                && rd.getDetails().getManufacturerDetails().getManufacturer() != null
+                && rd.getIdentity().getDescriptorURL() != null;
     }
 }
