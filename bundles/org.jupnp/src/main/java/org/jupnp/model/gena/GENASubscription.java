@@ -14,8 +14,8 @@
 
 package org.jupnp.model.gena;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jupnp.model.UserConstants;
 import org.jupnp.model.meta.Service;
@@ -34,12 +34,12 @@ import org.jupnp.model.types.UnsignedIntegerFourBytes;
  */
 public abstract class GENASubscription<S extends Service> {
 
-    protected S service;
-    protected String subscriptionId;
-    protected int requestedDurationSeconds = UserConstants.DEFAULT_SUBSCRIPTION_DURATION_SECONDS;
-    protected int actualDurationSeconds;
-    protected UnsignedIntegerFourBytes currentSequence;
-    protected Map<String, StateVariableValue<S>> currentValues = new LinkedHashMap();
+    protected final S service;
+    protected volatile String subscriptionId;
+    protected volatile int requestedDurationSeconds = UserConstants.DEFAULT_SUBSCRIPTION_DURATION_SECONDS;
+    protected volatile int actualDurationSeconds;
+    protected volatile UnsignedIntegerFourBytes currentSequence;
+    protected Map<String, StateVariableValue<S>> currentValues = new ConcurrentHashMap();
 
     /**
      * Defaults to {@link org.jupnp.model.UserConstants#DEFAULT_SUBSCRIPTION_DURATION_SECONDS}.
@@ -53,35 +53,35 @@ public abstract class GENASubscription<S extends Service> {
         this.requestedDurationSeconds = requestedDurationSeconds;
     }
 
-    synchronized public S getService() {
+    public S getService() {
         return service;
     }
 
-    synchronized public String getSubscriptionId() {
+    public String getSubscriptionId() {
         return subscriptionId;
     }
 
-    synchronized public void setSubscriptionId(String subscriptionId) {
+    public void setSubscriptionId(String subscriptionId) {
         this.subscriptionId = subscriptionId;
     }
 
-    synchronized public int getRequestedDurationSeconds() {
+    public int getRequestedDurationSeconds() {
         return requestedDurationSeconds;
     }
 
-    synchronized public int getActualDurationSeconds() {
+    public int getActualDurationSeconds() {
         return actualDurationSeconds;
     }
 
-    synchronized public void setActualSubscriptionDurationSeconds(int seconds) {
+    public void setActualSubscriptionDurationSeconds(int seconds) {
         this.actualDurationSeconds = seconds;
     }
 
-    synchronized public UnsignedIntegerFourBytes getCurrentSequence() {
+    public UnsignedIntegerFourBytes getCurrentSequence() {
         return currentSequence;
     }
 
-    synchronized public Map<String, StateVariableValue<S>> getCurrentValues() {
+    public Map<String, StateVariableValue<S>> getCurrentValues() {
         return currentValues;
     }
 

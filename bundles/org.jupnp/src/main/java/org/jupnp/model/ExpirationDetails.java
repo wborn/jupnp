@@ -25,6 +25,8 @@ public class ExpirationDetails {
 
     private int maxAgeSeconds = UNLIMITED_AGE;
     private long lastRefreshTimestampSeconds = getCurrentTimestampSeconds();
+    
+    private int renewAttempts;
 
     public ExpirationDetails() {
     }
@@ -51,6 +53,14 @@ public class ExpirationDetails {
 
     public boolean hasExpired() {
         return hasExpired(false);
+    }
+    
+    public void renewAttempted() {
+        renewAttempts++;
+    }
+    
+    public int getRenewAttempts() {
+        return renewAttempts;
     }
 
     /**
