@@ -22,8 +22,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.naming.OperationNotSupportedException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,6 +145,25 @@ public class QueueingThreadPoolExecutor extends ThreadPoolExecutor {
     public BlockingQueue<Runnable> getQueue() {
         return taskQueue;
     }
+    
+    
+
+    @Override
+    public void execute(Runnable command) {
+        // make sure that rejected tasks are executed before any new concurrently incoming tasks
+        if(taskQueue.isEmpty()) {
+            super.execute(command);
+        } else {
+            if (command == null) {
+                throw new NullPointerException();
+            }
+            
+            // ignore incoming tasks when the executor is shutdown 
+            if(!isShutdown()) {
+                addToQueue(command);
+            }
+        }
+    }
 
     private Thread createNewQueueThread() {
         Thread thread = getThreadFactory().newThread(new Runnable() {
@@ -162,7 +179,7 @@ public class QueueingThreadPoolExecutor extends ThreadPoolExecutor {
                             Runnable runnable = taskQueue.poll(2, TimeUnit.SECONDS);
                             if (runnable != null) {
                                 logger.debug("Executing queued task of thread pool '{}'.", threadPoolName);
-                                QueueingThreadPoolExecutor.this.execute(runnable);
+                                QueueingThreadPoolExecutor.super.execute(runnable);
                             } else {
                                 break;
                             }
@@ -178,7 +195,7 @@ public class QueueingThreadPoolExecutor extends ThreadPoolExecutor {
                         }
                     }
                 }
-                logger.info("Queue for thread pool '{}' fully processed - terminating queue thread.", threadPoolName);
+                logger.debug("Queue for thread pool '{}' fully processed - terminating queue thread.", threadPoolName);
             }
         });
         thread.setName(threadPoolName + "-queue");

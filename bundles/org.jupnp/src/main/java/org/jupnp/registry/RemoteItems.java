@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jupnp.model.ExpirationDetails;
 import org.jupnp.model.gena.CancelReason;
 import org.jupnp.model.gena.RemoteGENASubscription;
 import org.jupnp.model.meta.DeviceDetails;
@@ -285,8 +286,10 @@ class RemoteItems extends RegistryItems<RemoteDevice, RemoteGENASubscription> {
         // Renew outgoing subscriptions
         Set<RemoteGENASubscription> expiredOutgoingSubscriptions = new HashSet();
         for (RegistryItem<String, RemoteGENASubscription> item : getSubscriptionItems()) {
-            if (item.getExpirationDetails().hasExpired(true)) {
+            ExpirationDetails expirationDetails = item.getExpirationDetails();
+            if (expirationDetails.getRenewAttempts() < 1 && expirationDetails.hasExpired(true)) {
                 expiredOutgoingSubscriptions.add(item.getItem());
+                expirationDetails.renewAttempted();
             }
         }
         for (RemoteGENASubscription subscription : expiredOutgoingSubscriptions) {
