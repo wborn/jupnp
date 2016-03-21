@@ -14,19 +14,20 @@
 
 package org.jupnp.model.action;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.jupnp.model.meta.ActionArgument;
 import org.jupnp.model.meta.LocalService;
 import org.jupnp.model.profile.RemoteClientInfo;
 import org.jupnp.model.state.StateVariableAccessor;
 import org.jupnp.model.types.ErrorCode;
 import org.jupnp.util.Reflections;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Invokes methods on a service implementation instance with reflection.
@@ -42,7 +43,7 @@ import java.util.logging.Logger;
  */
 public class MethodActionExecutor extends AbstractActionExecutor {
 
-    private Logger log = Logger.getLogger(MethodActionExecutor.class.getName());
+    private Logger log = LoggerFactory.getLogger(MethodActionExecutor.class);
 
     protected Method method;
 
@@ -67,31 +68,31 @@ public class MethodActionExecutor extends AbstractActionExecutor {
 
         // Simple case: no output arguments
         if (!actionInvocation.getAction().hasOutputArguments()) {
-            log.fine("Calling local service method with no output arguments: " + method);
+            log.trace("Calling local service method with no output arguments: " + method);
             Reflections.invoke(method, serviceImpl, inputArgumentValues);
             return;
         }
 
         boolean isVoid = method.getReturnType().equals(Void.TYPE);
 
-        log.fine("Calling local service method with output arguments: " + method);
+        log.trace("Calling local service method with output arguments: " + method);
         Object result;
         boolean isArrayResultProcessed = true;
         if (isVoid) {
 
-            log.fine("Action method is void, calling declared accessors(s) on service instance to retrieve ouput argument(s)");
+            log.trace("Action method is void, calling declared accessors(s) on service instance to retrieve ouput argument(s)");
             Reflections.invoke(method, serviceImpl, inputArgumentValues);
             result = readOutputArgumentValues(actionInvocation.getAction(), serviceImpl);
 
         } else if (isUseOutputArgumentAccessors(actionInvocation)) {
 
-            log.fine("Action method is not void, calling declared accessor(s) on returned instance to retrieve ouput argument(s)");
+            log.trace("Action method is not void, calling declared accessor(s) on returned instance to retrieve ouput argument(s)");
             Object returnedInstance = Reflections.invoke(method, serviceImpl, inputArgumentValues);
             result = readOutputArgumentValues(actionInvocation.getAction(), returnedInstance);
 
         } else {
 
-            log.fine("Action method is not void, using returned value as (single) output argument");
+            log.trace("Action method is not void, using returned value as (single) output argument");
             result = Reflections.invoke(method, serviceImpl, inputArgumentValues);
             isArrayResultProcessed = false; // We never want to process e.g. byte[] as individual variable values
         }
@@ -100,7 +101,7 @@ public class MethodActionExecutor extends AbstractActionExecutor {
 
         if (isArrayResultProcessed && result instanceof Object[]) {
             Object[] results = (Object[]) result;
-            log.fine("Accessors returned Object[], setting output argument values: " + results.length);
+            log.trace("Accessors returned Object[], setting output argument values: " + results.length);
             for (int i = 0; i < outputArgs.length; i++) {
                 setOutputArgumentValue(actionInvocation, outputArgs[i], results[i]);
             }
@@ -156,12 +157,12 @@ public class MethodActionExecutor extends AbstractActionExecutor {
             if (inputCallValueString.length() > 0 && service.isStringConvertibleType(methodParameterType) && !methodParameterType.isEnum()) {
                 try {
                     Constructor<String> ctor = methodParameterType.getConstructor(String.class);
-                    log.finer("Creating new input argument value instance with String.class constructor of type: " + methodParameterType);
+                    log.trace("Creating new input argument value instance with String.class constructor of type: " + methodParameterType);
                     Object o = ctor.newInstance(inputCallValueString);
                     values.add(i++, o);
                 } catch (Exception ex) {
-                    log.warning("Error preparing action method call: " + method);
-                    log.warning("Can't convert input argument string to desired type of '" + argument.getName() + "': " + ex);
+                    log.warn("Error preparing action method call: " + method);
+                    log.warn("Can't convert input argument string to desired type of '" + argument.getName() + "': " + ex);
                     throw new ActionException(
                             ErrorCode.ARGUMENT_VALUE_INVALID, "Can't convert input argument string to desired type of '" + argument.getName() + "': " + ex
                     );
@@ -176,7 +177,7 @@ public class MethodActionExecutor extends AbstractActionExecutor {
             && RemoteClientInfo.class.isAssignableFrom(method.getParameterTypes()[method.getParameterTypes().length-1])) {
             if (actionInvocation instanceof RemoteActionInvocation &&
                 ((RemoteActionInvocation)actionInvocation).getRemoteClientInfo() != null) {
-                log.finer("Providing remote client info as last action method input argument: " + method);
+                log.trace("Providing remote client info as last action method input argument: " + method);
                 values.add(i, ((RemoteActionInvocation)actionInvocation).getRemoteClientInfo());
             } else {
                 // Local call, no client info available

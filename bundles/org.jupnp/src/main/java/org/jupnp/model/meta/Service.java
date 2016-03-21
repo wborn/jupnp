@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.jupnp.model.ServiceReference;
 import org.jupnp.model.ValidationError;
@@ -26,6 +25,8 @@ import org.jupnp.model.ValidationException;
 import org.jupnp.model.types.Datatype;
 import org.jupnp.model.types.ServiceId;
 import org.jupnp.model.types.ServiceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The metadata of a service, with actions and state variables.
@@ -34,7 +35,7 @@ import org.jupnp.model.types.ServiceType;
  */
 public abstract class Service<D extends Device, S extends Service> {
 
-	final private Logger log = Logger.getLogger(Service.class.getName());
+	final private Logger log = LoggerFactory.getLogger(Service.class);
 
     final private ServiceType serviceType;
     final private ServiceId serviceId;
@@ -187,9 +188,9 @@ public abstract class Service<D extends Device, S extends Service> {
                 List<ValidationError> actionErrors = action.validate();
             	if(actionErrors.size() > 0) {
                     actions.remove(action.getName()); // Remove it
-                    log.warning("Discarding invalid action of service '" + getServiceId() + "': " + action.getName());
+                    log.warn("Discarding invalid action of service '" + getServiceId() + "': " + action.getName());
                     for (ValidationError actionError : actionErrors) {
-                        log.warning("Invalid action '" + action.getName() + "': " + actionError);
+                        log.warn("Invalid action '" + action.getName() + "': " + actionError);
                     }
             	}
             }

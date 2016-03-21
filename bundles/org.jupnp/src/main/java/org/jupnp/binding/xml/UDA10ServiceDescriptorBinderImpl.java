@@ -14,11 +14,24 @@
 
 package org.jupnp.binding.xml;
 
+import static org.jupnp.model.XMLUtil.appendNewElement;
+import static org.jupnp.model.XMLUtil.appendNewElementIfNotNull;
+
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.jupnp.binding.staging.MutableAction;
 import org.jupnp.binding.staging.MutableActionArgument;
 import org.jupnp.binding.staging.MutableAllowedValueRange;
 import org.jupnp.binding.staging.MutableService;
 import org.jupnp.binding.staging.MutableStateVariable;
+import org.jupnp.binding.xml.Descriptor.Service.ATTRIBUTE;
+import org.jupnp.binding.xml.Descriptor.Service.ELEMENT;
 import org.jupnp.model.ValidationException;
 import org.jupnp.model.XMLUtil;
 import org.jupnp.model.meta.Action;
@@ -30,6 +43,8 @@ import org.jupnp.model.meta.StateVariable;
 import org.jupnp.model.meta.StateVariableEventDetails;
 import org.jupnp.model.types.CustomDatatype;
 import org.jupnp.model.types.Datatype;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -39,20 +54,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.logging.Logger;
-
-import static org.jupnp.binding.xml.Descriptor.Service.ATTRIBUTE;
-import static org.jupnp.binding.xml.Descriptor.Service.ELEMENT;
-import static org.jupnp.model.XMLUtil.appendNewElement;
-import static org.jupnp.model.XMLUtil.appendNewElementIfNotNull;
-
 /**
  * Implementation based on JAXP DOM.
  *
@@ -60,7 +61,7 @@ import static org.jupnp.model.XMLUtil.appendNewElementIfNotNull;
  */
 public class UDA10ServiceDescriptorBinderImpl implements ServiceDescriptorBinder, ErrorHandler {
 
-    private Logger log = Logger.getLogger(ServiceDescriptorBinder.class.getName());
+    private Logger log = LoggerFactory.getLogger(ServiceDescriptorBinder.class);
 
     public <S extends Service> S describe(S undescribedService, String descriptorXml) throws DescriptorBindingException, ValidationException {
         if (descriptorXml == null || descriptorXml.length() == 0) {
@@ -68,7 +69,7 @@ public class UDA10ServiceDescriptorBinderImpl implements ServiceDescriptorBinder
         }
 
         try {
-            log.fine("Populating service from XML descriptor: " + undescribedService);
+            log.trace("Populating service from XML descriptor: " + undescribedService);
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -93,7 +94,7 @@ public class UDA10ServiceDescriptorBinderImpl implements ServiceDescriptorBinder
 
     public <S extends Service> S describe(S undescribedService, Document dom) throws DescriptorBindingException, ValidationException {
         try {
-            log.fine("Populating service from DOM: " + undescribedService);
+            log.trace("Populating service from DOM: " + undescribedService);
 
             // Read the XML into a mutable descriptor graph
             MutableService descriptor = new MutableService();
@@ -155,7 +156,7 @@ public class UDA10ServiceDescriptorBinderImpl implements ServiceDescriptorBinder
             } else if (ELEMENT.serviceStateTable.equals(rootChild)) {
                 hydrateServiceStateTableList(descriptor, rootChild);
             } else {
-                log.finer("Ignoring unknown element: " + rootChild.getNodeName());
+                log.trace("Ignoring unknown element: " + rootChild.getNodeName());
             }
         }
 
@@ -246,7 +247,7 @@ public class UDA10ServiceDescriptorBinderImpl implements ServiceDescriptorBinder
                     actionArgument.direction = ActionArgument.Direction.valueOf(directionString.toUpperCase(Locale.ENGLISH));
                 } catch (IllegalArgumentException ex) {
                     // TODO: UPNP VIOLATION: Pelco SpectraIV-IP uses illegal value INOUT
-                    log.warning("UPnP specification violation: Invalid action argument direction, assuming 'IN': " + directionString);
+                    log.warn("UPnP specification violation: Invalid action argument direction, assuming 'IN': " + directionString);
                     actionArgument.direction = ActionArgument.Direction.IN;
                 }
             } else if (ELEMENT.relatedStateVariable.equals(argumentNodeChild)) {
@@ -349,7 +350,7 @@ public class UDA10ServiceDescriptorBinderImpl implements ServiceDescriptorBinder
 
     public String generate(Service service) throws DescriptorBindingException {
         try {
-            log.fine("Generating XML descriptor from service model: " + service);
+            log.trace("Generating XML descriptor from service model: " + service);
 
             return XMLUtil.documentToString(buildDOM(service));
 
@@ -361,7 +362,7 @@ public class UDA10ServiceDescriptorBinderImpl implements ServiceDescriptorBinder
     public Document buildDOM(Service service) throws DescriptorBindingException {
 
         try {
-            log.fine("Generting XML descriptor from service model: " + service);
+            log.trace("Generting XML descriptor from service model: " + service);
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -426,7 +427,7 @@ public class UDA10ServiceDescriptorBinderImpl implements ServiceDescriptorBinder
         appendNewElementIfNotNull(descriptor, actionArgumentElement, ELEMENT.direction, actionArgument.getDirection().toString().toLowerCase(Locale.ENGLISH));
         if (actionArgument.isReturnValue()) {
             // TODO: UPNP VIOLATION: WMP12 will discard RenderingControl service if it contains <retval> tags
-            log.warning("UPnP specification violation: Not producing <retval> element to be compatible with WMP12: " + actionArgument);
+            log.warn("UPnP specification violation: Not producing <retval> element to be compatible with WMP12: " + actionArgument);
             // appendNewElement(descriptor, actionArgumentElement, ELEMENT.retval);
         }
         appendNewElementIfNotNull(descriptor, actionArgumentElement, ELEMENT.relatedStateVariable, actionArgument.getRelatedStateVariableName());
@@ -490,7 +491,7 @@ public class UDA10ServiceDescriptorBinderImpl implements ServiceDescriptorBinder
     }
 
     public void warning(SAXParseException e) throws SAXException {
-        log.warning(e.toString());
+        log.warn(e.toString());
     }
 
     public void error(SAXParseException e) throws SAXException {

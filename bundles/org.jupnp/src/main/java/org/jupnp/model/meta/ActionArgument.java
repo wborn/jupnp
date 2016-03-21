@@ -14,14 +14,15 @@
 
 package org.jupnp.model.meta;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jupnp.model.ModelUtil;
 import org.jupnp.model.Validatable;
 import org.jupnp.model.ValidationError;
 import org.jupnp.model.types.Datatype;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Describes a single action argument, either input or output.
@@ -33,7 +34,7 @@ import java.util.logging.Logger;
  */
 public class ActionArgument<S extends Service> implements Validatable {
 
-    final private Logger log = Logger.getLogger(ActionArgument.class.getName());
+    final private Logger log = LoggerFactory.getLogger(ActionArgument.class);
 
     public enum Direction {
         IN, OUT
@@ -120,11 +121,11 @@ public class ActionArgument<S extends Service> implements Validatable {
                     "Argument without name of: " + getAction()
             ));
         } else if (!ModelUtil.isValidUDAName(getName())) {
-            log.warning("UPnP specification violation of: " + getAction().getService().getDevice());
-            log.warning("Invalid argument name: " + this);
+            log.warn("UPnP specification violation of: " + getAction().getService().getDevice());
+            log.warn("Invalid argument name: " + this);
         } else if (getName().length() > 32) {
-            log.warning("UPnP specification violation of: " + getAction().getService().getDevice());
-            log.warning("Argument name should be less than 32 characters: " + this);
+            log.warn("UPnP specification violation of: " + getAction().getService().getDevice());
+            log.warn("Argument name should be less than 32 characters: " + this);
         }
 
         if (getDirection() == null) {

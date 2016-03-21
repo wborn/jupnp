@@ -20,13 +20,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.jupnp.model.meta.Device;
 import org.jupnp.model.meta.Icon;
 import org.jupnp.model.meta.Service;
 import org.jupnp.model.resource.Resource;
 import org.jupnp.util.URIUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Enforces path conventions for all locally offered resources (descriptors, icons, etc.)
@@ -57,7 +58,7 @@ import org.jupnp.util.URIUtil;
  */
 public class Namespace {
 
-    final private Logger log = Logger.getLogger(Namespace.class.getName());
+    final private Logger log = LoggerFactory.getLogger(Namespace.class);
 
     public static final String DEVICE = "/dev";
     public static final String SERVICE = "/svc";
@@ -157,12 +158,12 @@ public class Namespace {
         Set<Resource> resources = new HashSet<Resource>();
         List<ValidationError> errors = new ArrayList<ValidationError>();
 
-        log.fine("Discovering local resources of device graph");
+        log.trace("Discovering local resources of device graph");
         Resource[] discoveredResources = device.discoverResources(this);
         for (Resource resource : discoveredResources) {
-            log.finer("Discovered: " + resource);
+            log.trace("Discovered: " + resource);
             if (!resources.add(resource)) {
-                log.finer("Local resource already exists, queueing validation error");
+                log.trace("Local resource already exists, queueing validation error");
                 errors.add(new ValidationError(
                     getClass(),
                     "resources",

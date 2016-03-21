@@ -22,7 +22,6 @@ package org.jupnp.osgi.present;
  */
 
 import java.util.Dictionary;
-import java.util.logging.Logger;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -35,9 +34,11 @@ import org.osgi.service.upnp.UPnPDevice;
 import org.osgi.service.upnp.UPnPEventListener;
 import org.osgi.service.upnp.UPnPService;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class UPnPEventHandler implements EventHandler {
-    private static final Logger logger = Logger.getLogger(UPnPEventHandler.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(UPnPEventHandler.class);
 	private ServiceTracker tracker;
 	
 	public UPnPEventHandler(BundleContext context) {
@@ -50,14 +51,14 @@ class UPnPEventHandler implements EventHandler {
 			tracker = new ServiceTracker(context, filter, null);
 			tracker.open();
 		} catch (InvalidSyntaxException e) {
-			logger.severe("Cannot create UPnPEventListener tracker.");
-			logger.severe(e.getMessage());
+			logger.error("Cannot create UPnPEventListener tracker.");
+			logger.error(e.getMessage());
 		}
 	}
 
 	@Override
 	public void handleEvent(Event event) {
-		logger.entering(this.getClass().getName(), "handleEvent", new Object[] { event });
+		logger.trace("ENTRY {}.{}: {}", this.getClass().getName(), "handleEvent", event);
 		
 		ServiceReference[] references = tracker.getServiceReferences();
 		if (references != null) {

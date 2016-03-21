@@ -14,10 +14,10 @@
 
 package org.jupnp.model;
 
-import java.util.logging.Logger;
-
 import org.jupnp.model.types.Datatype;
 import org.jupnp.model.types.InvalidValueException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates a variable or argument value, validates and transforms it from/to a string representaion.
@@ -26,7 +26,7 @@ import org.jupnp.model.types.InvalidValueException;
  */
 public class VariableValue {
 
-    final private Logger log = Logger.getLogger(VariableValue.class.getName());
+    final private Logger log = LoggerFactory.getLogger(VariableValue.class);
 
     final private Datatype datatype;
     final private Object value;
@@ -96,7 +96,7 @@ public class VariableValue {
                     (cp >= 0x20 && cp <= 0xD7FF) ||
                     (cp >= 0xE000 && cp <= 0xFFFD) ||
                     (cp >= 0x10000 && cp <= 0x10FFFF))) {
-           		log.warning("Found invalid XML char code: " + cp);
+           		log.warn("Found invalid XML char code: " + cp);
             }
             i += Character.charCount(cp);
         }

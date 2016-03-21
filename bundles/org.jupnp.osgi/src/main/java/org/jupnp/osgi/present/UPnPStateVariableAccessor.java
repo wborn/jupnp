@@ -14,17 +14,17 @@
 
 package org.jupnp.osgi.present;
 
-import org.osgi.service.upnp.UPnPStateVariable;
 import org.jupnp.model.state.StateVariableAccessor;
-
-import java.util.logging.Logger;
+import org.osgi.service.upnp.UPnPStateVariable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Bruce Green
  */
 class UPnPStateVariableAccessor extends StateVariableAccessor {
 
-    final private static Logger log = Logger.getLogger(UPnPStateVariableAccessor.class.getName());
+    final private static Logger log = LoggerFactory.getLogger(UPnPStateVariableAccessor.class);
 
     private UPnPStateVariable variable;
 
@@ -34,13 +34,13 @@ class UPnPStateVariableAccessor extends StateVariableAccessor {
 
     @Override
     public Class<?> getReturnType() {
-        log.entering(this.getClass().getName(), "getReturnType", new Object[]{});
+    	log.trace("ENTRY {}.{}: ", this.getClass().getName(), "getReturnType"); 
         return variable.getJavaDataType();
     }
 
     @Override
     public Object read(Object serviceImpl) throws Exception {
-        log.entering(this.getClass().getName(), "read", new Object[]{serviceImpl});
+		log.trace("ENTRY {}.{}: {}", this.getClass().getName(), "read", serviceImpl);
         return null;
     }
 }

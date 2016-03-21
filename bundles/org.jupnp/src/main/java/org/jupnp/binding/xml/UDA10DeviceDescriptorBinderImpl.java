@@ -20,7 +20,6 @@ import static org.jupnp.model.XMLUtil.appendNewElementIfNotNull;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URL;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -49,6 +48,8 @@ import org.jupnp.model.types.ServiceType;
 import org.jupnp.model.types.UDN;
 import org.jupnp.util.Exceptions;
 import org.jupnp.util.MimeType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -65,7 +66,7 @@ import org.xml.sax.SAXParseException;
  */
 public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, ErrorHandler {
 
-    private Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
+    private Logger log = LoggerFactory.getLogger(DeviceDescriptorBinder.class);
 
     public <D extends Device> D describe(D undescribedDevice, String descriptorXml) throws DescriptorBindingException, ValidationException {
 
@@ -74,7 +75,7 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
         }
 
         try {
-            log.fine("Populating device from XML descriptor: " + undescribedDevice);
+            log.trace("Populating device from XML descriptor: " + undescribedDevice);
             // We can not validate the XML document. There is no possible XML schema (maybe RELAX NG) that would properly
             // constrain the UDA 1.0 device descriptor documents: Any unknown element or attribute must be ignored, order of elements
             // is not guaranteed. Try to write a schema for that! No combination of <xsd:any namespace="##any"> and <xsd:choice>
@@ -106,7 +107,7 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
 
     public <D extends Device> D describe(D undescribedDevice, Document dom) throws DescriptorBindingException, ValidationException {
         try {
-            log.fine("Populating device from DOM: " + undescribedDevice);
+            log.trace("Populating device from DOM: " + undescribedDevice);
 
             // Read the XML into a mutable descriptor graph
             MutableDevice descriptor = new MutableDevice();
@@ -130,7 +131,7 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
     protected void hydrateRoot(MutableDevice descriptor, Element rootElement) throws DescriptorBindingException {
 
         if (rootElement.getNamespaceURI() == null || !rootElement.getNamespaceURI().equals(Descriptor.Device.NAMESPACE_URI)) {
-            log.warning("Wrong XML namespace declared on root element: " + rootElement.getNamespaceURI());
+            log.warn("Wrong XML namespace declared on root element: " + rootElement.getNamespaceURI());
         }
 
         if (!rootElement.getNodeName().equals(ELEMENT.root.name())) {
@@ -165,7 +166,7 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
                     throw new DescriptorBindingException("Found multiple <device> elements in <root>");
                 deviceNode = rootChild;
             } else {
-                log.finer("Ignoring unknown element: " + rootChild.getNodeName());
+                log.trace("Ignoring unknown element: " + rootChild.getNodeName());
             }
         }
 
@@ -187,14 +188,14 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
             if (ELEMENT.major.equals(specVersionChild)) {
                 String version = XMLUtil.getTextContent(specVersionChild).trim();
                 if (!version.equals("1")) {
-                    log.warning("Unsupported UDA major version, ignoring: " + version);
+                    log.warn("Unsupported UDA major version, ignoring: " + version);
                     version = "1";
                 }
                 descriptor.udaVersion.major = Integer.valueOf(version);
             } else if (ELEMENT.minor.equals(specVersionChild)) {
                 String version = XMLUtil.getTextContent(specVersionChild).trim();
                 if (!version.equals("0")) {
-                    log.warning("Unsupported UDA minor version, ignoring: " + version);
+                    log.warn("Unsupported UDA minor version, ignoring: " + version);
                     version = "0";
                 }
                 descriptor.udaVersion.minor = Integer.valueOf(version);
@@ -288,7 +289,7 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
                         try {
                             icon.depth = (Integer.valueOf(depth));
                        	} catch(NumberFormatException ex) {
-                       		log.warning("Invalid icon depth '" + depth + "', using 16 as default: " + ex);
+                       		log.warn("Invalid icon depth '" + depth + "', using 16 as default: " + ex);
                        		icon.depth = 16;
                        	}
                     } else if (ELEMENT.url.equals(iconChild)) {
@@ -298,7 +299,7 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
                             icon.mimeType = XMLUtil.getTextContent(iconChild);
                             MimeType.valueOf(icon.mimeType);
                         } catch(IllegalArgumentException ex) {
-                            log.warning("Ignoring invalid icon mime type: " + icon.mimeType);
+                            log.warn("Ignoring invalid icon mime type: " + icon.mimeType);
                             icon.mimeType = "";
                         }
                     }
@@ -348,7 +349,7 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
 
                     descriptor.services.add(service);
                 } catch (InvalidValueException ex) {
-                    log.warning(
+                    log.warn(
                         "UPnP specification violation, skipping invalid service declaration. " + ex.getMessage()
                     );
                 }
@@ -377,7 +378,7 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
 
     public String generate(Device deviceModel, RemoteClientInfo info, Namespace namespace) throws DescriptorBindingException {
         try {
-            log.fine("Generating XML descriptor from device model: " + deviceModel);
+            log.trace("Generating XML descriptor from device model: " + deviceModel);
 
             return XMLUtil.documentToString(buildDOM(deviceModel, info, namespace));
 
@@ -389,7 +390,7 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
     public Document buildDOM(Device deviceModel, RemoteClientInfo info, Namespace namespace) throws DescriptorBindingException {
 
         try {
-            log.fine("Generating DOM from device model: " + deviceModel);
+            log.trace("Generating DOM from device model: " + deviceModel);
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -562,7 +563,7 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
     }
 
     public void warning(SAXParseException e) throws SAXException {
-        log.warning(e.toString());
+        log.warn(e.toString());
     }
 
     public void error(SAXParseException e) throws SAXException {
@@ -574,7 +575,7 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
     }
 
     static protected URI parseURI(String uri) {
-    	Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
+    	Logger log = LoggerFactory.getLogger(DeviceDescriptorBinder.class);
     	
         // TODO: UPNP VIOLATION: Netgear DG834 uses a non-URI: 'www.netgear.com'
         if (uri.startsWith("www.")) {
@@ -604,7 +605,7 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
         	        	 	at java.net.URI.<init>(URI.java:87)
         	        		at java.net.URI.create(URI.java:968)
             */
-            log.fine("Illegal URI, trying with ./ prefix: " + Exceptions.unwrap(ex));
+            log.trace("Illegal URI, trying with ./ prefix: " + Exceptions.unwrap(ex));
             // Ignore
         }
         try {
@@ -617,7 +618,7 @@ public class UDA10DeviceDescriptorBinderImpl implements DeviceDescriptorBinder, 
             //
             return URI.create("./" + uri);
         } catch (IllegalArgumentException ex) {
-            log.warning("Illegal URI '" + uri + "', ignoring value: " + Exceptions.unwrap(ex));
+            log.warn("Illegal URI '" + uri + "', ignoring value: " + Exceptions.unwrap(ex));
             // Ignore
         }
         return null;

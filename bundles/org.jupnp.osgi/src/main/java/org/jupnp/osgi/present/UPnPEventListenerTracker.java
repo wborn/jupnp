@@ -19,8 +19,8 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * For debugging purposes, ServiceTracker is sufficient in a production environment.
@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  */
 class UPnPEventListenerTracker extends ServiceTracker  {
 
-    final private static Logger log = Logger.getLogger(UPnPEventListenerTracker.class.getName());
+    final private static Logger log = LoggerFactory.getLogger(UPnPEventListenerTracker.class);
 	
 	public UPnPEventListenerTracker(BundleContext context, Filter filter, ServiceTrackerCustomizer customizer) {
 		super(context, filter, null);
@@ -37,7 +37,7 @@ class UPnPEventListenerTracker extends ServiceTracker  {
 	
 	@Override
 	public Object addingService(ServiceReference reference) {
-		log.entering(this.getClass().getName(), "addingService", new Object[] { reference });
+		log.trace("ENTRY {}.{}: {}", this.getClass().getName(), "addingService", reference);
 
         return super.addingService(reference);
 	}

@@ -51,7 +51,8 @@
 							org.osgi.service.event,
 							org.osgi.service.upnp,
 							org.osgi.service.device,
-							org.osgi.util.tracker
+							org.osgi.util.tracker,
+							org.slf4j
 						</Import-Package>
 						<Export-Package>
 						</Export-Package>
@@ -91,5 +92,11 @@
             <scope>compile</scope>
 		</dependency>
 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

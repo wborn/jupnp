@@ -59,7 +59,7 @@ public class BlockingServlet extends HttpServlet {
 
         final long startTime = System.currentTimeMillis();
         final int counter = mCounter++;
-        log.trace(String.format("HttpServlet.service(): id: %3d, request URI: %s", counter, req.getRequestURI()));
+        log.trace("{}", String.format("HttpServlet.service(): id: %3d, request URI: %s", counter, req.getRequestURI()));
         log.trace("Handling Servlet request synchronously: " + req);
 
         FauxAsyncContext asyncContext = new FauxAsyncContext(req, resp);
@@ -81,12 +81,12 @@ public class BlockingServlet extends HttpServlet {
         long duration = System.currentTimeMillis() - startTime;
 
         if (asyncContext.isCompleted()) {
-            log.trace(String.format("BlockingServlet completed: id: %3d, duration: %,4d", counter, duration));
+            log.trace("{}", String.format("BlockingServlet completed: id: %3d, duration: %,4d", counter, duration));
         } else {
             // set internal server error as response code when timeout
             // as per AsyncContext specification
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            log.warn(String.format("BlockingServlet timed out: id: %3d, duration: %,4d, request: %s", counter,
+            log.warn("{}", String.format("BlockingServlet timed out: id: %3d, duration: %,4d, request: %s", counter,
                     duration, req));
         }
 

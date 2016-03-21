@@ -14,10 +14,10 @@
 
 package org.jupnp.osgi.impl;
 
-import java.util.logging.Logger;
-
 import org.jupnp.model.meta.ActionArgument;
 import org.jupnp.osgi.util.UPnPTypeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO: This class is unused?
@@ -26,7 +26,7 @@ import org.jupnp.osgi.util.UPnPTypeUtil;
  */
 public class UPnPActionArgumentImpl extends UPnPStateVariableImpl {
 
-    final private static Logger log = Logger.getLogger(UPnPActionArgumentImpl.class.getName());
+    final private static Logger log = LoggerFactory.getLogger(UPnPActionArgumentImpl.class);
 
     private ActionArgument<?> argument;
 
@@ -45,7 +45,7 @@ public class UPnPActionArgumentImpl extends UPnPStateVariableImpl {
         String type = argument.getDatatype().getBuiltin().getDescriptorName();
         Class clazz = UPnPTypeUtil.getUPnPClass(type);
         if (clazz == null) {
-            log.warning(String.format("Cannot covert UPnP type %s to UPnP Java type", type));
+            log.warn("Cannot covert UPnP type {} to UPnP Java type", type);
         }
         return clazz != null ? clazz : argument.getDatatype().getClass();
     }

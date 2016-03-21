@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MulticastReceiverImpl implements MulticastReceiver<MulticastReceiverConfigurationImpl> {
 
-    private Logger log = LoggerFactory.getLogger(MulticastReceiver.class.getName());
+    private Logger log = LoggerFactory.getLogger(MulticastReceiver.class);
 
     final protected MulticastReceiverConfigurationImpl configuration;
 

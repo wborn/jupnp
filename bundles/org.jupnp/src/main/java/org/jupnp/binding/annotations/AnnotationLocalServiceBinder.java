@@ -14,6 +14,18 @@
 
 package org.jupnp.binding.annotations;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.net.URI;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
 import org.jupnp.binding.LocalServiceBinder;
 import org.jupnp.binding.LocalServiceBindingException;
 import org.jupnp.model.ValidationError;
@@ -33,19 +45,8 @@ import org.jupnp.model.types.UDAServiceId;
 import org.jupnp.model.types.UDAServiceType;
 import org.jupnp.model.types.csv.CSV;
 import org.jupnp.util.Reflections;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.net.URI;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Reads {@link org.jupnp.model.meta.LocalService} metadata from annotations.
@@ -54,10 +55,10 @@ import java.util.logging.Logger;
  */
 public class AnnotationLocalServiceBinder implements LocalServiceBinder {
 
-    private Logger log = Logger.getLogger(AnnotationLocalServiceBinder.class.getName());
+    private Logger log = LoggerFactory.getLogger(AnnotationLocalServiceBinder.class);
 
     public LocalService read(Class<?> clazz) throws LocalServiceBindingException {
-        log.fine("Reading and binding annotations of service implementation class: " + clazz);
+        log.trace("Reading and binding annotations of service implementation class: " + clazz);
 
         // Read the service ID and service type from the annotation
         if (clazz.isAnnotationPresent(UpnpService.class)) {
@@ -105,9 +106,9 @@ public class AnnotationLocalServiceBinder implements LocalServiceBinder {
             return new LocalService(type, id, actions, stateVariables, stringConvertibleTypes, supportsQueryStateVariables);
 
         } catch (ValidationException ex) {
-            log.severe("Could not validate device model: " + ex.toString());
+            log.error("Could not validate device model: " + ex.toString());
             for (ValidationError validationError : ex.getErrors()) {
-                log.severe(validationError.toString());
+                log.error(validationError.toString());
             }
             throw new LocalServiceBindingException("Validation of model failed, check the log");
         }
@@ -167,7 +168,7 @@ public class AnnotationLocalServiceBinder implements LocalServiceBinder {
                 } else if (getter != null) {
                     accessor = new GetterStateVariableAccessor(getter);
                 } else {
-                    log.finer("No field or getter found for state variable, skipping accessor: " + v.name());
+                    log.trace("No field or getter found for state variable, skipping accessor: " + v.name());
                 }
 
                 StateVariable stateVar =

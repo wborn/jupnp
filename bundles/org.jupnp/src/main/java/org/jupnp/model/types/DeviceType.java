@@ -14,11 +14,12 @@
 
 package org.jupnp.model.types;
 
-import org.jupnp.model.Constants;
-
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.jupnp.model.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a device type, for example <code>urn:my-domain-namespace:device:MyDevice:1</code>.
@@ -75,7 +76,7 @@ public class DeviceType {
      */
     public static DeviceType valueOf(String s) throws InvalidValueException {
 
-        final Logger log = Logger.getLogger(DeviceType.class.getName());
+        final Logger log = LoggerFactory.getLogger(DeviceType.class);
 
         DeviceType deviceType = null;
 
@@ -103,7 +104,7 @@ public class DeviceType {
             // urn:schemas-upnp-org:device::1
             matcher = Pattern.compile("urn:(" + Constants.REGEX_NAMESPACE + "):device::([0-9]+).*").matcher(s);
             if (matcher.matches() && matcher.groupCount() >= 2) {
-                log.warning("UPnP specification violation, no device type token, defaulting to " + UNKNOWN + ": " + s);
+                log.warn("UPnP specification violation, no device type token, defaulting to " + UNKNOWN + ": " + s);
                 return new DeviceType(matcher.group(1), UNKNOWN, Integer.valueOf(matcher.group(2)));
             }
 
@@ -112,7 +113,7 @@ public class DeviceType {
             matcher = Pattern.compile("urn:(" + Constants.REGEX_NAMESPACE + "):device:(.+?):([0-9]+).*").matcher(s);
             if (matcher.matches() && matcher.groupCount() >= 3) {
                 String cleanToken = matcher.group(2).replaceAll("[^a-zA-Z_0-9\\-]", "-");
-                log.warning(
+                log.warn(
                     "UPnP specification violation, replacing invalid device type token '"
                         + matcher.group(2)
                         + "' with: "

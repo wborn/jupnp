@@ -14,11 +14,12 @@
 
 package org.jupnp.model.types;
 
-import org.jupnp.model.Constants;
-
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.jupnp.model.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service identifier with a fixed <code>upnp-org</code> namespace.
@@ -46,7 +47,7 @@ public class UDAServiceId extends ServiceId {
 
     public static UDAServiceId valueOf(String s) throws InvalidValueException {
     	
-    	final Logger log = Logger.getLogger(UDAServiceId.class.getName());
+    	final Logger log = LoggerFactory.getLogger(UDAServiceId.class);
 
     	Matcher matcher = UDAServiceId.PATTERN.matcher(s);
         if (matcher.matches() && matcher.groupCount() >= 1) {
@@ -61,7 +62,7 @@ public class UDAServiceId extends ServiceId {
         // TODO: UPNP VIOLATION: Handle garbage sent by Eyecon Android app
         matcher = Pattern.compile("urn:upnp-orgerviceId:urnchemas-upnp-orgervice:(" + Constants.REGEX_ID + ")").matcher(s);
         if (matcher.matches()) {
-            log.warning("UPnP specification violation, recovering from Eyecon garbage: " + s);
+            log.warn("UPnP specification violation, recovering from Eyecon garbage: " + s);
             return new UDAServiceId(matcher.group(1));
         }
 
@@ -70,7 +71,7 @@ public class UDAServiceId extends ServiceId {
            "ConnectionManager".equals(s) ||
            "RenderingControl".equals(s) ||
            "AVTransport".equals(s)) {
-            log.warning("UPnP specification violation, fixing broken Service ID: " + s);
+            log.warn("UPnP specification violation, fixing broken Service ID: " + s);
             return new UDAServiceId(s);
         }
 

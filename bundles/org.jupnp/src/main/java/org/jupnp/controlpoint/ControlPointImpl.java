@@ -16,7 +16,6 @@ package org.jupnp.controlpoint;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.logging.Logger;
 
 import org.jupnp.UpnpServiceConfiguration;
 import org.jupnp.controlpoint.event.ExecuteAction;
@@ -26,6 +25,8 @@ import org.jupnp.model.message.header.STAllHeader;
 import org.jupnp.model.message.header.UpnpHeader;
 import org.jupnp.protocol.ProtocolFactory;
 import org.jupnp.registry.Registry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation.
@@ -38,7 +39,7 @@ import org.jupnp.registry.Registry;
  */
 public class ControlPointImpl implements ControlPoint {
 
-    private Logger log = Logger.getLogger(ControlPointImpl.class.getName());
+    private Logger log = LoggerFactory.getLogger(ControlPointImpl.class);
 
     protected UpnpServiceConfiguration configuration;
     protected ProtocolFactory protocolFactory;
@@ -48,7 +49,7 @@ public class ControlPointImpl implements ControlPoint {
     }
 
     public ControlPointImpl(UpnpServiceConfiguration configuration, ProtocolFactory protocolFactory, Registry registry) {
-        log.fine("Creating ControlPoint: " + getClass().getName());
+        log.trace("Creating ControlPoint: " + getClass().getName());
         
         this.configuration = configuration;
         this.protocolFactory = protocolFactory;
@@ -84,7 +85,7 @@ public class ControlPointImpl implements ControlPoint {
     }
 
     public void search(UpnpHeader searchType, int mxSeconds) {
-        log.fine("Sending asynchronous search for: " + searchType.getString());
+        log.trace("Sending asynchronous search for: " + searchType.getString());
         getConfiguration().getAsyncProtocolExecutor().execute(
                 getProtocolFactory().createSendingSearch(searchType, mxSeconds)
         );
@@ -95,14 +96,14 @@ public class ControlPointImpl implements ControlPoint {
     }
 
     public Future execute(ActionCallback callback) {
-        log.fine("Invoking action in background: " + callback);
+        log.trace("Invoking action in background: " + callback);
         callback.setControlPoint(this);
         ExecutorService executor = getConfiguration().getSyncProtocolExecutorService();
         return executor.submit(callback);
     }
 
     public void execute(SubscriptionCallback callback) {
-        log.fine("Invoking subscription in background: " + callback);
+        log.trace("Invoking subscription in background: " + callback);
         callback.setControlPoint(this);
         getConfiguration().getSyncProtocolExecutorService().execute(callback);
     }

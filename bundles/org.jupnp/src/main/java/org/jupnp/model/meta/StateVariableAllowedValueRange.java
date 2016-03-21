@@ -14,12 +14,13 @@
 
 package org.jupnp.model.meta;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jupnp.model.Validatable;
 import org.jupnp.model.ValidationError;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Integrity rule for a state variable, restricting its values to a range with steps.
@@ -30,7 +31,7 @@ import java.util.logging.Logger;
  */
 public class StateVariableAllowedValueRange implements Validatable {
 
-    final private Logger log = Logger.getLogger(StateVariableAllowedValueRange.class.getName());
+    final private Logger log = LoggerFactory.getLogger(StateVariableAllowedValueRange.class);
 
     final private long minimum;
     final private long maximum;
@@ -42,7 +43,7 @@ public class StateVariableAllowedValueRange implements Validatable {
 
     public StateVariableAllowedValueRange(long minimum, long maximum, long step) {
         if (minimum > maximum) {
-            log.warning("UPnP specification violation, allowed value range minimum '" + minimum
+            log.warn("UPnP specification violation, allowed value range minimum '" + minimum
                                 + "' is greater than maximum '" + maximum + "', switching values.");
             this.minimum = maximum;
             this.maximum = minimum;

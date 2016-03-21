@@ -17,9 +17,8 @@ package org.jupnp.protocol;
 import org.jupnp.UpnpService;
 import org.jupnp.transport.RouterException;
 import org.jupnp.util.Exceptions;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Supertype for all synchronously executing protocols, sending UPnP messages.
@@ -36,7 +35,7 @@ import java.util.logging.Logger;
  */
 public abstract class SendingAsync implements Runnable {
 
-    final private Logger log = Logger.getLogger(UpnpService.class.getName());
+    final private Logger log = LoggerFactory.getLogger(UpnpService.class);
 
     private final UpnpService upnpService;
 
@@ -54,7 +53,7 @@ public abstract class SendingAsync implements Runnable {
         } catch (Exception ex) {
             Throwable cause = Exceptions.unwrap(ex);
             if (cause instanceof InterruptedException) {
-                log.log(Level.INFO, "Interrupted protocol '" + getClass().getSimpleName() + "': " + ex, cause);
+                log.info("Interrupted protocol '" + getClass().getSimpleName() + "': " + ex, cause);
             } else {
                 throw new RuntimeException(
                     "Fatal error while executing protocol '" + getClass().getSimpleName() + "': " + ex, ex

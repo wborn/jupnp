@@ -14,7 +14,6 @@
 
 package org.jupnp.binding.xml;
 
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +22,8 @@ import org.jupnp.model.meta.Device;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.util.Exceptions;
 import org.jupnp.xml.ParserException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -32,7 +33,7 @@ import org.xml.sax.SAXParseException;
  */
 public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescriptorBinderImpl {
 
-    private Logger log = Logger.getLogger(RecoveringUDA10DeviceDescriptorBinderImpl.class.getName());
+    private Logger log = LoggerFactory.getLogger(RecoveringUDA10DeviceDescriptorBinderImpl.class);
 
     @Override
     public <D extends Device> D describe(D undescribedDevice, String descriptorXml)
@@ -60,7 +61,7 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
                 return device;
                 
             } catch (DescriptorBindingException ex) {
-                log.warning("Regular parsing failed: " + Exceptions.unwrap(ex).getMessage());
+                log.warn("Regular parsing failed: " + Exceptions.unwrap(ex).getMessage());
                 originalException = ex;
             } catch (IllegalArgumentException e) {
             	handleInvalidDescriptor(descriptorXml, new DescriptorBindingException(e.getMessage()));
@@ -75,7 +76,7 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
                     device = super.describe(undescribedDevice, fixedXml);
                     return device;
                 } catch (DescriptorBindingException ex) {
-                    log.warning("Removing leading garbage didn't work: " + Exceptions.unwrap(ex).getMessage());
+                    log.warn("Removing leading garbage didn't work: " + Exceptions.unwrap(ex).getMessage());
                 }
             }
 
@@ -85,7 +86,7 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
                     device = super.describe(undescribedDevice, fixedXml);
                     return device;
                 } catch (DescriptorBindingException ex) {
-                    log.warning("Removing trailing garbage didn't work: " + Exceptions.unwrap(ex).getMessage());
+                    log.warn("Removing trailing garbage didn't work: " + Exceptions.unwrap(ex).getMessage());
                 }
             }
 
@@ -99,7 +100,7 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
                         device = super.describe(undescribedDevice, fixedXml);
                         return device;
                     } catch (DescriptorBindingException ex) {
-                        log.warning("Fixing namespace prefix didn't work: " + Exceptions.unwrap(ex).getMessage());
+                        log.warn("Fixing namespace prefix didn't work: " + Exceptions.unwrap(ex).getMessage());
                         lastException = ex;
                     }
                 } else {
@@ -115,7 +116,7 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
             // device = super.describe(undescribedDevice, fixedXml);
             // return device;
             // } catch (DescriptorBindingException ex) {
-            // log.warning("Fixing XML entities didn't work: " + Exceptions.unwrap(ex).getMessage());
+            // log.warn("Fixing XML entities didn't work: " + Exceptions.unwrap(ex).getMessage());
             // }
             // }
 
@@ -157,11 +158,11 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
     protected String fixGarbageTrailingChars(String descriptorXml, DescriptorBindingException ex) {
         int index = descriptorXml.indexOf("</root>");
         if (index == -1) {
-            log.warning("No closing </root> element in descriptor");
+            log.warn("No closing </root> element in descriptor");
             return null;
         }
         if (descriptorXml.length() != index + "</root>".length()) {
-            log.warning("Detected garbage characters after <root> node, removing");
+            log.warn("Detected garbage characters after <root> node, removing");
             return descriptorXml.substring(0, index) + "</root>";
         }
         return null;
@@ -169,7 +170,7 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
 
     protected String fixMimeTypes(String descriptorXml) {
         if (descriptorXml.contains("<mimetype>jpg</mimetype>")) {
-            log.warning("Detected invalid mimetype 'jpg', replacing it with 'image/jpeg'");
+            log.warn("Detected invalid mimetype 'jpg', replacing it with 'image/jpeg'");
             return descriptorXml.replaceAll("<mimetype>jpg</mimetype>", "<mimetype>image/jpeg</mimetype>");
         }
         return descriptorXml;
@@ -177,7 +178,7 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
 
     protected String fixWrongNamespaces(String descriptorXml) {
         if (descriptorXml.contains("<root xmlns=\"urn:Belkin:device-1-0\">")) {
-            log.warning("Detected invalid root namespace 'urn:Belkin', replacing it with 'urn:schemas-upnp-org'");
+            log.warn("Detected invalid root namespace 'urn:Belkin', replacing it with 'urn:schemas-upnp-org'");
             return descriptorXml.replaceAll("<root xmlns=\"urn:Belkin:device-1-0\">",
                     "<root xmlns=\"urn:schemas-upnp-org:device-1-0\">");
         }
@@ -209,24 +210,24 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
         }
 
         String missingNS = matcher.group(1);
-        log.warning("Fixing missing namespace declaration for: " + missingNS);
+        log.warn("Fixing missing namespace declaration for: " + missingNS);
 
         // Extract <root> attributes
         pattern = Pattern.compile("<root([^>]*)");
         matcher = pattern.matcher(descriptorXml);
         if (!matcher.find() || matcher.groupCount() != 1) {
-            log.fine("Could not find <root> element attributes");
+            log.trace("Could not find <root> element attributes");
             return null;
         }
 
         String rootAttributes = matcher.group(1);
-        log.fine("Preserving existing <root> element attributes/namespace declarations: " + matcher.group(0));
+        log.trace("Preserving existing <root> element attributes/namespace declarations: " + matcher.group(0));
 
         // Extract <root> body
         pattern = Pattern.compile("<root[^>]*>(.*)</root>", Pattern.DOTALL);
         matcher = pattern.matcher(descriptorXml);
         if (!matcher.find() || matcher.groupCount() != 1) {
-            log.fine("Could not extract body of <root> element");
+            log.trace("Could not extract body of <root> element");
             return null;
         }
 
@@ -244,7 +245,7 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
     // Belkin WeMo Maker contains illegal strings in UDN values
     protected String fixWemoMakerUDN(String descriptorXml) {
         if (descriptorXml.contains(":sensor:switch")) {
-            log.warning("Detected invalid UDN value ':sensor:switch', replacing it");
+            log.warn("Detected invalid UDN value ':sensor:switch', replacing it");
             descriptorXml = descriptorXml.replaceAll(":sensor:switch", "");
             return descriptorXml.replaceAll(":sensor:switch", "");
         }

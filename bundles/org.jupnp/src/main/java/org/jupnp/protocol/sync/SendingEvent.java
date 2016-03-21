@@ -14,7 +14,7 @@
 
 package org.jupnp.protocol.sync;
 
-import java.util.logging.Logger;
+import java.net.URL;
 
 import org.jupnp.UpnpService;
 import org.jupnp.model.gena.LocalGENASubscription;
@@ -23,8 +23,8 @@ import org.jupnp.model.message.gena.OutgoingEventRequestMessage;
 import org.jupnp.model.types.UnsignedIntegerFourBytes;
 import org.jupnp.protocol.SendingSync;
 import org.jupnp.transport.RouterException;
-
-import java.net.URL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sending GENA event messages to remote subscribers.
@@ -40,7 +40,7 @@ import java.net.URL;
  */
 public class SendingEvent extends SendingSync<OutgoingEventRequestMessage, StreamResponseMessage> {
 
-    final private Logger log = Logger.getLogger(SendingEvent.class.getName());
+    final private Logger log = LoggerFactory.getLogger(SendingEvent.class);
 
     final protected String subscriptionId;
     final protected OutgoingEventRequestMessage[] requestMessages;
@@ -70,22 +70,22 @@ public class SendingEvent extends SendingSync<OutgoingEventRequestMessage, Strea
 
     protected StreamResponseMessage executeSync() throws RouterException {
 
-        log.fine("Sending event for subscription: " + subscriptionId);
+        log.trace("Sending event for subscription: " + subscriptionId);
 
         StreamResponseMessage lastResponse = null;
 
         for (OutgoingEventRequestMessage requestMessage : requestMessages) {
 
             if (currentSequence.getValue() == 0) {
-                log.fine("Sending initial event message to callback URL: " + requestMessage.getUri());
+                log.trace("Sending initial event message to callback URL: " + requestMessage.getUri());
             } else {
-                log.fine("Sending event message '"+currentSequence+"' to callback URL: " + requestMessage.getUri());
+                log.trace("Sending event message '"+currentSequence+"' to callback URL: " + requestMessage.getUri());
             }
 
 
             // Send request
             lastResponse = getUpnpService().getRouter().send(requestMessage);
-            log.fine("Received event callback response: " + lastResponse);
+            log.trace("Received event callback response: " + lastResponse);
 
         }
 

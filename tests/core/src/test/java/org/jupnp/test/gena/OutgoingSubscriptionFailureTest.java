@@ -93,7 +93,7 @@ public class OutgoingSubscriptionFailureTest {
                                   UpnpResponse responseStatus,
                                   Exception exception,
                                   String defaultMsg) {
-                // Should fail without response and exception (only FINE log message)
+                // Should fail without response and exception (only TRACE log message)
                 assert responseStatus == null;
                 assert exception == null;
                 testAssertions.add(true);

@@ -14,6 +14,13 @@
 
 package org.jupnp.transport.impl.apache;
 
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
+
 import org.apache.http.HttpRequestFactory;
 import org.apache.http.impl.DefaultHttpServerConnection;
 import org.apache.http.params.BasicHttpParams;
@@ -24,15 +31,8 @@ import org.jupnp.transport.Router;
 import org.jupnp.transport.spi.InitializationException;
 import org.jupnp.transport.spi.StreamServer;
 import org.jupnp.transport.spi.UpnpStream;
-
-import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation based on <a href="http://hc.apache.org/">Apache HTTP Components 4.2</a>.
@@ -45,7 +45,7 @@ import java.util.logging.Logger;
  */
 public class StreamServerImpl implements StreamServer<StreamServerConfigurationImpl> {
 
-    final private Logger log = Logger.getLogger(StreamServer.class.getName());
+    final private Logger log = LoggerFactory.getLogger(StreamServer.class);
 
     final protected StreamServerConfigurationImpl configuration;
 
@@ -98,13 +98,13 @@ public class StreamServerImpl implements StreamServer<StreamServerConfigurationI
         try {
             serverSocket.close();
         } catch (IOException ex) {
-            log.fine("Exception closing streaming server socket: " + ex);
+            log.trace("Exception closing streaming server socket: " + ex);
         }
     }
 
     public void run() {
 
-        log.fine("Entering blocking receiving loop, listening for HTTP stream requests on: " + serverSocket.getLocalSocketAddress());
+        log.trace("Entering blocking receiving loop, listening for HTTP stream requests on: " + serverSocket.getLocalSocketAddress());
         while (!stopped) {
 
             try {
@@ -120,7 +120,7 @@ public class StreamServerImpl implements StreamServer<StreamServerConfigurationI
                     }
                 };
 
-                log.fine("Incoming connection from: " + clientSocket.getInetAddress());
+                log.trace("Incoming connection from: " + clientSocket.getInetAddress());
                 httpServerConnection.bind(clientSocket, globalParams);
 
                 // Wrap the processing of the request in a UpnpStream
@@ -142,26 +142,26 @@ public class StreamServerImpl implements StreamServer<StreamServerConfigurationI
                 router.received(connectionStream);
 
             } catch (InterruptedIOException ex) {
-                log.fine("I/O has been interrupted, stopping receiving loop, bytes transfered: " + ex.bytesTransferred);
+                log.trace("I/O has been interrupted, stopping receiving loop, bytes transfered: " + ex.bytesTransferred);
                 break;
             } catch (SocketException ex) {
                 if (!stopped) {
                     // That's not good, could be anything
-                    log.fine("Exception using server socket: " + ex.getMessage());
+                    log.trace("Exception using server socket: " + ex.getMessage());
                 } else {
                     // Well, it's just been stopped so that's totally fine and expected
                 }
                 break;
             } catch (IOException ex) {
-                log.fine("Exception initializing receiving loop: " + ex.getMessage());
+                log.trace("Exception initializing receiving loop: " + ex.getMessage());
                 break;
             }
         }
 
         try {
-            log.fine("Receiving loop stopped");
+            log.trace("Receiving loop stopped");
             if (!serverSocket.isClosed()) {
-                log.fine("Closing streaming server socket");
+                log.trace("Closing streaming server socket");
                 serverSocket.close();
             }
         } catch (Exception ex) {
@@ -183,15 +183,13 @@ public class StreamServerImpl implements StreamServer<StreamServerConfigurationI
     }
 
     protected boolean isConnectionOpen(Socket socket, byte[] heartbeat) {
-        if (log.isLoggable(Level.FINE))
-            log.fine("Checking if client connection is still open on: " + socket.getRemoteSocketAddress());
+        log.trace("Checking if client connection is still open on: " + socket.getRemoteSocketAddress());
         try {
             socket.getOutputStream().write(heartbeat);
             socket.getOutputStream().flush();
             return true;
         } catch (IOException ex) {
-            if (log.isLoggable(Level.FINE))
-                log.fine("Client connection has been closed: " + socket.getRemoteSocketAddress());
+            log.trace("Client connection has been closed: " + socket.getRemoteSocketAddress());
             return false;
         }
     }
