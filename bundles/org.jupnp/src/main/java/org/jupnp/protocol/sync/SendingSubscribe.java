@@ -14,6 +14,8 @@
 
 package org.jupnp.protocol.sync;
 
+import java.util.List;
+
 import org.jupnp.UpnpService;
 import org.jupnp.model.NetworkAddress;
 import org.jupnp.model.gena.RemoteGENASubscription;
@@ -22,9 +24,8 @@ import org.jupnp.model.message.gena.IncomingSubscribeResponseMessage;
 import org.jupnp.model.message.gena.OutgoingSubscribeRequestMessage;
 import org.jupnp.protocol.SendingSync;
 import org.jupnp.transport.RouterException;
-
-import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Establishing a GENA event subscription with a remote host.
@@ -45,7 +46,7 @@ import java.util.logging.Logger;
  */
 public class SendingSubscribe extends SendingSync<OutgoingSubscribeRequestMessage, IncomingSubscribeResponseMessage> {
 
-    final private Logger log = Logger.getLogger(SendingSubscribe.class.getName());
+    final private Logger log = LoggerFactory.getLogger(SendingSubscribe.class);
 
     final protected RemoteGENASubscription subscription;
 
@@ -70,7 +71,7 @@ public class SendingSubscribe extends SendingSync<OutgoingSubscribeRequestMessag
     protected IncomingSubscribeResponseMessage executeSync() throws RouterException {
 
         if (!getInputMessage().hasCallbackURLs()) {
-            log.fine("Subscription failed, no active local callback URLs available (network disabled?)");
+            log.trace("Subscription failed, no active local callback URLs available (network disabled?)");
             getUpnpService().getConfiguration().getRegistryListenerExecutor().execute(
                 new Runnable() {
                     public void run() {
@@ -81,7 +82,7 @@ public class SendingSubscribe extends SendingSync<OutgoingSubscribeRequestMessag
             return null;
         }
 
-        log.fine("Sending subscription request: " + getInputMessage());
+        log.trace("Sending subscription request: " + getInputMessage());
 
         try {
             // register this pending Subscription to bloc if the notification is received before the
@@ -104,7 +105,7 @@ public class SendingSubscribe extends SendingSync<OutgoingSubscribeRequestMessag
             final IncomingSubscribeResponseMessage responseMessage = new IncomingSubscribeResponseMessage(response);
 
             if (response.getOperation().isFailed()) {
-                log.fine("Subscription failed, response was: " + responseMessage);
+                log.trace("Subscription failed, response was: " + responseMessage);
                 getUpnpService().getConfiguration().getRegistryListenerExecutor().execute(
                     new Runnable() {
                         public void run() {
@@ -113,7 +114,7 @@ public class SendingSubscribe extends SendingSync<OutgoingSubscribeRequestMessag
                     }
                 );
             } else if (!responseMessage.isValidHeaders()) {
-                log.severe("Subscription failed, invalid or missing (SID, Timeout) response headers");
+                log.error("Subscription failed, invalid or missing (SID, Timeout) response headers");
                 getUpnpService().getConfiguration().getRegistryListenerExecutor().execute(
                     new Runnable() {
                         public void run() {
@@ -123,7 +124,7 @@ public class SendingSubscribe extends SendingSync<OutgoingSubscribeRequestMessag
                 );
             } else {
 
-                log.fine("Subscription established, adding to registry, response was: " + response);
+                log.trace("Subscription established, adding to registry, response was: " + response);
                 subscription.setSubscriptionId(responseMessage.getSubscriptionId());
                 subscription.setActualSubscriptionDurationSeconds(responseMessage.getSubscriptionDurationSeconds());
 
@@ -145,7 +146,7 @@ public class SendingSubscribe extends SendingSync<OutgoingSubscribeRequestMessag
     }
 
     protected void onSubscriptionFailure() {
-        log.fine("Subscription failed");
+        log.trace("Subscription failed");
         getUpnpService().getConfiguration().getRegistryListenerExecutor().execute(
             new Runnable() {
                 public void run() {

@@ -16,14 +16,15 @@ package org.jupnp.model.meta;
 
 
 
-import org.jupnp.model.Validatable;
-import org.jupnp.model.ValidationError;
-import org.jupnp.model.types.Datatype;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.jupnp.model.Validatable;
+import org.jupnp.model.ValidationError;
+import org.jupnp.model.types.Datatype;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Type of a state variable, its default value, and integrity rules for allowed values and ranges.
@@ -32,7 +33,7 @@ import java.util.logging.Logger;
  */
 public class StateVariableTypeDetails implements Validatable {
 
-    final private Logger log = Logger.getLogger(StateVariableTypeDetails.class.getName());
+    final private Logger log = LoggerFactory.getLogger(StateVariableTypeDetails.class);
 
     final private Datatype datatype;
     final private String defaultValue;
@@ -115,12 +116,12 @@ public class StateVariableTypeDetails implements Validatable {
 
             for (String s : getAllowedValues()) {
                 if (s.length() > 31) {
-                    log.warning("UPnP specification violation, allowed value string must be less than 32 chars: " + s);
+                    log.warn("UPnP specification violation, allowed value string must be less than 32 chars: " + s);
                 }
             }
 
             if(!foundDefaultInAllowedValues(defaultValue, allowedValues)) {
-                log.warning("UPnP specification violation, allowed string values " +
+                log.warn("UPnP specification violation, allowed string values " +
                                     "don't contain default value: " + defaultValue
                 );
             }

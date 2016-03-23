@@ -24,8 +24,8 @@ import org.jupnp.model.message.gena.OutgoingEventResponseMessage;
 import org.jupnp.model.resource.ServiceEventCallbackResource;
 import org.jupnp.protocol.ReceivingSync;
 import org.jupnp.transport.RouterException;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles incoming GENA event messages.
@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  */
 public class ReceivingEvent extends ReceivingSync<StreamRequestMessage, OutgoingEventResponseMessage> {
 
-    final private Logger log = Logger.getLogger(ReceivingEvent.class.getName());
+    final private Logger log = LoggerFactory.getLogger(ReceivingEvent.class);
 
     public ReceivingEvent(UpnpService upnpService, StreamRequestMessage inputMessage) {
         super(upnpService, inputMessage);
@@ -50,7 +50,7 @@ public class ReceivingEvent extends ReceivingSync<StreamRequestMessage, Outgoing
     protected OutgoingEventResponseMessage executeSync() throws RouterException{
 
         if (!getInputMessage().isContentTypeTextUDA()) {
-            log.warning("Received without or with invalid Content-Type: " + getInputMessage());
+            log.warn("Received without or with invalid Content-Type: " + getInputMessage());
             // We continue despite the invalid UPnP message because we can still hope to convert the content
             // return new StreamResponseMessage(new UpnpResponse(UpnpResponse.Status.UNSUPPORTED_MEDIA_TYPE));
         }
@@ -62,7 +62,7 @@ public class ReceivingEvent extends ReceivingSync<StreamRequestMessage, Outgoing
                 );
 
         if (resource == null) {
-            log.fine("No local resource found: " + getInputMessage());
+            log.trace("No local resource found: " + getInputMessage());
             return new OutgoingEventResponseMessage(new UpnpResponse(UpnpResponse.Status.NOT_FOUND));
         }
 
@@ -71,22 +71,22 @@ public class ReceivingEvent extends ReceivingSync<StreamRequestMessage, Outgoing
 
         // Error conditions UDA 1.0 section 4.2.1
         if (requestMessage.getSubscrptionId() == null) {
-            log.fine("Subscription ID missing in event request: " + getInputMessage());
+            log.trace("Subscription ID missing in event request: " + getInputMessage());
             return new OutgoingEventResponseMessage(new UpnpResponse(UpnpResponse.Status.PRECONDITION_FAILED));
         }
 
         if (!requestMessage.hasValidNotificationHeaders()) {
-            log.fine("Missing NT and/or NTS headers in event request: " + getInputMessage());
+            log.trace("Missing NT and/or NTS headers in event request: " + getInputMessage());
             return new OutgoingEventResponseMessage(new UpnpResponse(UpnpResponse.Status.BAD_REQUEST));
         }
 
         if (!requestMessage.hasValidNotificationHeaders()) {
-            log.fine("Invalid NT and/or NTS headers in event request: " + getInputMessage());
+            log.trace("Invalid NT and/or NTS headers in event request: " + getInputMessage());
             return new OutgoingEventResponseMessage(new UpnpResponse(UpnpResponse.Status.PRECONDITION_FAILED));
         }
 
         if (requestMessage.getSequence() == null) {
-            log.fine("Sequence missing in event request: " + getInputMessage());
+            log.trace("Sequence missing in event request: " + getInputMessage());
             return new OutgoingEventResponseMessage(new UpnpResponse(UpnpResponse.Status.PRECONDITION_FAILED));
         }
 
@@ -95,7 +95,7 @@ public class ReceivingEvent extends ReceivingSync<StreamRequestMessage, Outgoing
             getUpnpService().getConfiguration().getGenaEventProcessor().readBody(requestMessage);
 
 		} catch (final UnsupportedDataException ex) {
-            log.fine("Can't read event message request body, " + ex);
+            log.trace("Can't read event message request body, " + ex);
 
             // Pass the parsing failure on to any listeners, so they can take action if necessary
             final RemoteGENASubscription subscription =
@@ -119,14 +119,14 @@ public class ReceivingEvent extends ReceivingSync<StreamRequestMessage, Outgoing
                 getUpnpService().getRegistry().getWaitRemoteSubscription(requestMessage.getSubscrptionId());
 
         if (subscription == null) {
-            log.severe("Invalid subscription ID, no active subscription: " + requestMessage);
+            log.error("Invalid subscription ID, no active subscription: " + requestMessage);
             return new OutgoingEventResponseMessage(new UpnpResponse(UpnpResponse.Status.PRECONDITION_FAILED));
         }
 
         getUpnpService().getConfiguration().getRegistryListenerExecutor().execute(
                 new Runnable() {
                     public void run() {
-                        log.fine("Calling active subscription with event state variable values");
+                        log.trace("Calling active subscription with event state variable values");
                         subscription.receive(
                                 requestMessage.getSequence(),
                                 requestMessage.getStateVariableValues()

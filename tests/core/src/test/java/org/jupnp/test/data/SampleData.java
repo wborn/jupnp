@@ -14,6 +14,13 @@
 
 package org.jupnp.test.data;
 
+import java.lang.reflect.Constructor;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.UnknownHostException;
+
 import org.jupnp.DefaultUpnpServiceConfiguration;
 import org.jupnp.binding.LocalServiceBinder;
 import org.jupnp.binding.annotations.AnnotationLocalServiceBinder;
@@ -29,26 +36,19 @@ import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.model.meta.RemoteDeviceIdentity;
 import org.jupnp.model.meta.RemoteService;
 import org.jupnp.model.meta.StateVariable;
+import org.jupnp.model.profile.DeviceDetailsProvider;
 import org.jupnp.model.types.DeviceType;
 import org.jupnp.model.types.ServiceId;
 import org.jupnp.model.types.ServiceType;
 import org.jupnp.transport.impl.NetworkAddressFactoryImpl;
 import org.jupnp.transport.spi.DatagramProcessor;
-
-import java.lang.reflect.Constructor;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.logging.Logger;
-
-import org.jupnp.model.profile.DeviceDetailsProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SampleData {
 
-    private static Logger log = Logger.getLogger(SampleData.class.getName());
+    private static Logger log = LoggerFactory.getLogger(SampleData.class);
 
     /* ###################################################################################### */
 
@@ -251,7 +251,7 @@ public class SampleData {
             if (cause instanceof ValidationException) {
                 ValidationException ex = (ValidationException) cause;
                 for (ValidationError validationError : ex.getErrors()) {
-                    log.severe(validationError.toString());
+                    log.error(validationError.toString());
                 }
             }
 */

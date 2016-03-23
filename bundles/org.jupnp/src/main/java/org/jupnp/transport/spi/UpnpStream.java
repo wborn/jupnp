@@ -21,8 +21,8 @@ import org.jupnp.protocol.ProtocolCreationException;
 import org.jupnp.protocol.ProtocolFactory;
 import org.jupnp.protocol.ReceivingSync;
 import org.jupnp.util.Exceptions;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A runnable representation of a single HTTP request/response procedure.
@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  */
 public abstract class UpnpStream implements Runnable {
 
-    private Logger log = Logger.getLogger(UpnpStream.class.getName());
+    private Logger log = LoggerFactory.getLogger(UpnpStream.class);
 
     protected final ProtocolFactory protocolFactory;
     protected ReceivingSync syncProtocol;
@@ -66,18 +66,18 @@ public abstract class UpnpStream implements Runnable {
      * @return The TCP (HTTP) stream response message, or <code>null</code> if a 404 should be send to the client.
      */
     public StreamResponseMessage process(StreamRequestMessage requestMsg) {
-        log.fine("Processing stream request message: " + requestMsg);
+        log.trace("Processing stream request message: " + requestMsg);
 
         try {
             // Try to get a protocol implementation that matches the request message
             syncProtocol = getProtocolFactory().createReceivingSync(requestMsg);
         } catch (ProtocolCreationException ex) {
-            log.warning("Processing stream request failed - " + Exceptions.unwrap(ex).toString());
+            log.warn("Processing stream request failed - " + Exceptions.unwrap(ex).toString());
             return new StreamResponseMessage(UpnpResponse.Status.NOT_IMPLEMENTED);
         }
 
         // Run it
-        log.fine("Running protocol for synchronous message processing: " + syncProtocol);
+        log.trace("Running protocol for synchronous message processing: " + syncProtocol);
         syncProtocol.run();
 
         // ... then grab the response
@@ -85,10 +85,10 @@ public abstract class UpnpStream implements Runnable {
 
         if (responseMsg == null) {
             // That's ok, the caller is supposed to handle this properly (e.g. convert it to HTTP 404)
-            log.finer("Protocol did not return any response message");
+            log.trace("Protocol did not return any response message");
             return null;
         }
-        log.finer("Protocol returned response: " + responseMsg);
+        log.trace("Protocol returned response: " + responseMsg);
         return responseMsg;
     }
 

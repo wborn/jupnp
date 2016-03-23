@@ -21,8 +21,8 @@ import org.jupnp.model.message.StreamResponseMessage;
 import org.jupnp.model.message.gena.OutgoingUnsubscribeRequestMessage;
 import org.jupnp.protocol.SendingSync;
 import org.jupnp.transport.RouterException;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Disconnecting a GENA event subscription with a remote host.
@@ -37,7 +37,7 @@ import java.util.logging.Logger;
  */
 public class SendingUnsubscribe extends SendingSync<OutgoingUnsubscribeRequestMessage, StreamResponseMessage> {
 
-    final private Logger log = Logger.getLogger(SendingUnsubscribe.class.getName());
+    final private Logger log = LoggerFactory.getLogger(SendingUnsubscribe.class);
 
     final protected RemoteGENASubscription subscription;
 
@@ -54,7 +54,7 @@ public class SendingUnsubscribe extends SendingSync<OutgoingUnsubscribeRequestMe
 
     protected StreamResponseMessage executeSync() throws RouterException {
 
-        log.fine("Sending unsubscribe request: " + getInputMessage());
+        log.trace("Sending unsubscribe request: " + getInputMessage());
 
         StreamResponseMessage response = null;
         try {
@@ -73,13 +73,13 @@ public class SendingUnsubscribe extends SendingSync<OutgoingUnsubscribeRequestMe
             new Runnable() {
                 public void run() {
                     if (response == null) {
-                        log.fine("Unsubscribe failed, no response received");
+                        log.trace("Unsubscribe failed, no response received");
                         subscription.end(CancelReason.UNSUBSCRIBE_FAILED, null);
                     } else if (response.getOperation().isFailed()) {
-                        log.fine("Unsubscribe failed, response was: " + response);
+                        log.trace("Unsubscribe failed, response was: " + response);
                         subscription.end(CancelReason.UNSUBSCRIBE_FAILED, response.getOperation());
                     } else {
-                        log.fine("Unsubscribe successful, response was: " + response);
+                        log.trace("Unsubscribe successful, response was: " + response);
                         subscription.end(null, response.getOperation());
                     }
                 }

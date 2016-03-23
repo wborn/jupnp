@@ -14,10 +14,10 @@
 
 package org.jupnp.binding.xml;
 
-import java.util.logging.Logger;
-
 import org.jupnp.model.ValidationException;
 import org.jupnp.model.meta.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This binder does not enforce strict UPnP spec conformance - it rather ignores services that are not correctly declared.
@@ -26,7 +26,7 @@ import org.jupnp.model.meta.Service;
  */
 public class RecoveringUDA10ServiceDescriptorBinderImpl extends UDA10ServiceDescriptorBinderImpl {
 
-    private Logger log = Logger.getLogger(ServiceDescriptorBinder.class.getName());
+    private Logger log = LoggerFactory.getLogger(ServiceDescriptorBinder.class);
 
     @Override
     public <S extends Service> S describe(S undescribedService, String descriptorXml) throws DescriptorBindingException, ValidationException {
@@ -34,14 +34,14 @@ public class RecoveringUDA10ServiceDescriptorBinderImpl extends UDA10ServiceDesc
     		String fixedXml = fixWrongNamespaces(descriptorXml);
     		return super.describe(undescribedService, fixedXml);
     	} catch(DescriptorBindingException e) {
-    		log.warning(e.getMessage());
+    		log.warn(e.getMessage());
     	}
     	return null;
     }
     
     protected String fixWrongNamespaces(String descriptorXml) {
     	if(descriptorXml.contains("<scpd xmlns=\"urn:Belkin:service-1-0\">")) {
-            log.warning("Detected invalid scpd namespace 'urn:Belkin', replacing it with 'urn:schemas-upnp-org'");
+            log.warn("Detected invalid scpd namespace 'urn:Belkin', replacing it with 'urn:schemas-upnp-org'");
     		return descriptorXml.replaceAll("<scpd xmlns=\"urn:Belkin:service-1-0\">", "<scpd xmlns=\"urn:schemas-upnp-org:service-1-0\">");
     	}
     	return descriptorXml;

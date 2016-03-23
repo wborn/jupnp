@@ -14,7 +14,7 @@
 
 package org.jupnp.model.message.control;
 
-import java.util.logging.Logger;
+import java.net.URL;
 
 import org.jupnp.model.action.ActionInvocation;
 import org.jupnp.model.action.RemoteActionInvocation;
@@ -27,15 +27,15 @@ import org.jupnp.model.message.header.UserAgentHeader;
 import org.jupnp.model.meta.Action;
 import org.jupnp.model.meta.QueryStateVariableAction;
 import org.jupnp.model.types.SoapActionType;
-
-import java.net.URL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Christian Bauer
  */
 public class OutgoingActionRequestMessage extends StreamRequestMessage implements ActionRequestMessage {
 
-    private Logger log = Logger.getLogger(OutgoingActionRequestMessage.class.getName());
+    private Logger log = LoggerFactory.getLogger(OutgoingActionRequestMessage.class);
 
     final private String actionNamespace;
 
@@ -67,7 +67,7 @@ public class OutgoingActionRequestMessage extends StreamRequestMessage implement
 
         SoapActionHeader soapActionHeader;
         if (action instanceof QueryStateVariableAction) {
-            log.fine("Adding magic control SOAP action header for state variable query action");
+            log.trace("Adding magic control SOAP action header for state variable query action");
             soapActionHeader = new SoapActionHeader(
                     new SoapActionType(
                             SoapActionType.MAGIC_CONTROL_NS, SoapActionType.MAGIC_CONTROL_TYPE, null, action.getName()
@@ -88,7 +88,7 @@ public class OutgoingActionRequestMessage extends StreamRequestMessage implement
         if (getOperation().getMethod().equals(UpnpRequest.Method.POST)) {
 
             getHeaders().add(UpnpHeader.Type.SOAPACTION, soapActionHeader);
-            log.fine("Added SOAP action header: " + soapActionHeader);
+            log.trace("Added SOAP action header: " + soapActionHeader);
 
         /* TODO: Finish the M-POST crap (or not)
         } else if (getOperation().getMethod().equals(UpnpRequest.Method.MPOST)) {
@@ -97,7 +97,7 @@ public class OutgoingActionRequestMessage extends StreamRequestMessage implement
 
             getHeaders().add(UpnpHeader.Type.SOAPACTION, soapActionHeader);
             getHeaders().setPrefix(UpnpHeader.Type.SOAPACTION, "01");
-            log.fine("Added SOAP action header with prefix '01': " + getHeaders().getFirstHeader(UpnpHeader.Type.SOAPACTION).getString());
+            log.trace("Added SOAP action header with prefix '01': " + getHeaders().getFirstHeader(UpnpHeader.Type.SOAPACTION).getString());
             */
 
         } else {

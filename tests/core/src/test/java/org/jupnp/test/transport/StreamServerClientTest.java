@@ -14,6 +14,14 @@
 
 package org.jupnp.test.transport;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
+
+import java.net.InetAddress;
+import java.net.URI;
+
 import org.jupnp.UpnpServiceConfiguration;
 import org.jupnp.mock.MockProtocolFactory;
 import org.jupnp.mock.MockRouter;
@@ -27,20 +35,16 @@ import org.jupnp.protocol.ReceivingSync;
 import org.jupnp.transport.spi.StreamClient;
 import org.jupnp.transport.spi.StreamServer;
 import org.jupnp.transport.spi.UpnpStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.net.InetAddress;
-import java.net.URI;
-import java.util.logging.Logger;
-
-import static org.testng.Assert.*;
-
 abstract public class StreamServerClientTest {
 
-    final private static Logger log = Logger.getLogger(StreamServerClientTest.class.getName());
+    final private static Logger log = LoggerFactory.getLogger(StreamServerClientTest.class);
 
     public static final String TEST_HOST = "localhost";
     public static final int TEST_PORT = 8081;

@@ -14,16 +14,18 @@
 
 package org.jupnp.xml;
 
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
@@ -44,19 +46,19 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * Condensed API for parsing of XML into DOM with (optional) XML schema validation.
@@ -71,7 +73,7 @@ import java.util.regex.Pattern;
  */
 public abstract class DOMParser<D extends DOM> implements ErrorHandler, EntityResolver {
 
-    private Logger log = Logger.getLogger(DOMParser.class.getName());
+    private Logger log = LoggerFactory.getLogger(DOMParser.class);
 
     public static final URL XML_SCHEMA_RESOURCE =
             Thread.currentThread().getContextClassLoader().getResource("org.jupnp/schemas/xml.xsd");
@@ -271,13 +273,13 @@ public abstract class DOMParser<D extends DOM> implements ErrorHandler, EntityRe
 
     public void validate(URL url) throws ParserException {
         if (url == null) throw new IllegalArgumentException("Can't validate null URL");
-        log.fine("Validating XML of URL: " + url);
+        log.trace("Validating XML of URL: " + url);
         validate(new StreamSource(url.toString()));
     }
 
     public void validate(String string) throws ParserException {
         if (string == null) throw new IllegalArgumentException("Can't validate null string");
-        log.fine("Validating XML string characters: " + string.length());
+        log.trace("Validating XML string characters: " + string.length());
         validate(new SAXSource(new InputSource(new StringReader(string))));
     }
 
@@ -327,7 +329,7 @@ public abstract class DOMParser<D extends DOM> implements ErrorHandler, EntityRe
 
     public Object getXPathResult(Node context, XPath xpath, String expr, QName result) {
         try {
-            log.fine("Evaluating xpath query: " + expr);
+            log.trace("Evaluating xpath query: " + expr);
             return xpath.evaluate(expr, context, result);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -451,7 +453,7 @@ public abstract class DOMParser<D extends DOM> implements ErrorHandler, EntityRe
     // =================================================================================================
 
     public void warning(SAXParseException e) throws SAXException {
-        log.warning(e.toString());
+        log.warn(e.toString());
     }
 
     public void error(SAXParseException e) throws SAXException {

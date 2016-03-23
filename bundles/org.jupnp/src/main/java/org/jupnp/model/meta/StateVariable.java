@@ -15,14 +15,15 @@
 package org.jupnp.model.meta;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jupnp.model.ModelUtil;
 import org.jupnp.model.Validatable;
 import org.jupnp.model.ValidationError;
 import org.jupnp.model.types.Datatype;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The metadata of a named state variable.
@@ -31,7 +32,7 @@ import java.util.logging.Logger;
  */
 public class StateVariable<S extends Service> implements Validatable {
 
-    final private Logger log = Logger.getLogger(StateVariable.class.getName());
+    final private Logger log = LoggerFactory.getLogger(StateVariable.class);
 
     final private String name;
     final private StateVariableTypeDetails type;
@@ -82,8 +83,8 @@ public class StateVariable<S extends Service> implements Validatable {
                     "StateVariable without name of: " + getService()
             ));
         } else if (!ModelUtil.isValidUDAName(getName())) {
-            log.warning("UPnP specification violation of: " + getService().getDevice());
-            log.warning("Invalid state variable name: " + this);
+            log.warn("UPnP specification violation of: " + getService().getDevice());
+            log.warn("Invalid state variable name: " + this);
         }
 
         errors.addAll(getTypeDetails().validate());

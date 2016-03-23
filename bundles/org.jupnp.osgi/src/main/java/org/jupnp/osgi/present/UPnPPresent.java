@@ -14,6 +14,10 @@
 
 package org.jupnp.osgi.present;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
+import org.jupnp.UpnpService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
@@ -21,11 +25,8 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.upnp.UPnPDevice;
-import org.jupnp.UpnpService;
-
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 111.2.1 UPnP Base Driver
@@ -55,7 +56,7 @@ import java.util.logging.Logger;
  */
 public class UPnPPresent {
 
-    final private static Logger log = Logger.getLogger(UPnPPresent.class.getName());
+    final private static Logger log = LoggerFactory.getLogger(UPnPPresent.class);
 
     private static final String UPNP_EVENT_TOPIC = "org/osgi/service/upnp/UPnPEvent";
     private UPnPDeviceTracker deviceTracker;
@@ -73,9 +74,9 @@ public class UPnPPresent {
             deviceTracker = new UPnPDeviceTracker(context, upnpService, filter);
             deviceTracker.open();
         } catch (InvalidSyntaxException e) {
-            log.severe("Cannot create UPnPDevice tracker.");
-            log.severe("Cannot export UPnPDevices.");
-            log.severe(e.getMessage());
+            log.error("Cannot create UPnPDevice tracker.");
+            log.error("Cannot export UPnPDevices.");
+            log.error(e.getMessage());
         }
 
         /*

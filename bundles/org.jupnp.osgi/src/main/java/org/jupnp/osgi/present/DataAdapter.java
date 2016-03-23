@@ -14,22 +14,23 @@
 
 package org.jupnp.osgi.present;
 
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.List;
+
+import org.jupnp.internal.compat.java.beans.PropertyChangeSupport;
+import org.jupnp.model.meta.LocalDevice;
+import org.jupnp.model.meta.LocalService;
+import org.jupnp.osgi.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.upnp.UPnPDevice;
 import org.osgi.service.upnp.UPnPEventListener;
 import org.osgi.service.upnp.UPnPService;
-import org.jupnp.internal.compat.java.beans.PropertyChangeSupport;
-import org.jupnp.model.meta.LocalDevice;
-import org.jupnp.model.meta.LocalService;
-import org.jupnp.osgi.Activator;
-
-import java.util.Collections;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Bruce Green
@@ -37,7 +38,7 @@ import java.util.logging.Logger;
  */
 public class DataAdapter implements UPnPEventListener {
 
-    final private static Logger log = Logger.getLogger(DataAdapter.class.getName());
+    final private static Logger log = LoggerFactory.getLogger(DataAdapter.class);
 
     private PropertyChangeSupport propertyChangeSupport;
 
@@ -53,7 +54,7 @@ public class DataAdapter implements UPnPEventListener {
                 UPnPDevice.UDN, device.getIdentity().getUdn().getIdentifierString(),
                 UPnPService.ID, service.getServiceId()
         );
-        log.finer(String.format("filter: %s", string));
+        log.trace("filter: {}", string);
 
         try {
             BundleContext context = Activator.getPlugin().getContext();
@@ -63,14 +64,15 @@ public class DataAdapter implements UPnPEventListener {
             properties.put(UPnPEventListener.UPNP_FILTER, filter);
             context.registerService(UPnPEventListener.class.getName(), this, properties);
         } catch (InvalidSyntaxException e) {
-            log.severe(String.format("Cannot create DataAdapter (%s).", service.getServiceId()));
-            log.severe(e.getMessage());
+            log.error("Cannot create DataAdapter ({}).", service.getServiceId());
+            log.error(e.getMessage());
         }
     }
 
     @Override
     public void notifyUPnPEvent(String deviceId, String serviceId, Dictionary events) {
-        log.entering(this.getClass().getName(), "notifyUPnPEvent", new Object[]{deviceId, serviceId, events});
+		log.trace("ENTRY {}.{}: {} {} {}", this.getClass().getName(), "notifyUPnPEvent", deviceId, serviceId,
+				events);
 
         for (String key : (List<String>) Collections.list(events.keys())) {
             Object value = events.get(key);

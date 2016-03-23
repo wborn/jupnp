@@ -14,16 +14,21 @@
 
 package org.jupnp.osgi.present;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Filter;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.upnp.UPnPAction;
-import org.osgi.service.upnp.UPnPDevice;
-import org.osgi.service.upnp.UPnPIcon;
-import org.osgi.service.upnp.UPnPLocalStateVariable;
-import org.osgi.service.upnp.UPnPService;
-import org.osgi.service.upnp.UPnPStateVariable;
-import org.osgi.util.tracker.ServiceTracker;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 import org.jupnp.UpnpService;
 import org.jupnp.model.DefaultServiceManager;
 import org.jupnp.model.ValidationException;
@@ -47,37 +52,32 @@ import org.jupnp.model.types.InvalidValueException;
 import org.jupnp.model.types.ServiceId;
 import org.jupnp.model.types.ServiceType;
 import org.jupnp.model.types.UDN;
-import org.jupnp.util.io.IO;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Logger;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Filter;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.upnp.UPnPAction;
+import org.osgi.service.upnp.UPnPDevice;
+import org.osgi.service.upnp.UPnPIcon;
+import org.osgi.service.upnp.UPnPLocalStateVariable;
+import org.osgi.service.upnp.UPnPService;
+import org.osgi.service.upnp.UPnPStateVariable;
+import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Bruce Green
  */
 class UPnPDeviceTracker extends ServiceTracker {
 
-    final private static Logger log = Logger.getLogger(UPnPDeviceTracker.class.getName());
+    final private static Logger log = LoggerFactory.getLogger(UPnPDeviceTracker.class);
 
     private UpnpService upnpService;
     private Map<UPnPDevice, LocalDevice> registrations = new Hashtable<UPnPDevice, LocalDevice>();
 
     public UPnPDeviceTracker(BundleContext context, UpnpService upnpService, Filter filter) {
         super(context, filter, null);
-        log.entering(this.getClass().getName(), "<init>", new Object[]{context, upnpService, filter});
+		log.trace("ENTRY {}.{}: {} {} {}", this.getClass().getName(), "<init>", context, upnpService, filter);
         this.upnpService = upnpService;
     }
 
@@ -268,9 +268,9 @@ class UPnPDeviceTracker extends ServiceTracker {
 
     @Override
     public Object addingService(ServiceReference reference) {
-        log.entering(this.getClass().getName(), "addingService", new Object[]{reference});
+		log.trace("ENTRY {}.{}: {}", this.getClass().getName(), "addingService", reference);
         UPnPDevice device = (UPnPDevice) super.addingService(reference);
-        log.finer(device.toString());
+        log.trace(device.toString());
 
         try {
             LocalDevice local = createDevice(device);
@@ -292,7 +292,7 @@ class UPnPDeviceTracker extends ServiceTracker {
 
     @Override
     public void removedService(ServiceReference reference, Object device) {
-        log.entering(this.getClass().getName(), "removedService", new Object[]{reference, device});
+		log.trace("ENTRY {}.{}: {} {}", this.getClass().getName(), "removedService", reference, device);
 
         LocalDevice local = registrations.get(device);
         if (local != null) {

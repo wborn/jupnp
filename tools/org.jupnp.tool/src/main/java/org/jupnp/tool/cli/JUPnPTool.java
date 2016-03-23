@@ -24,7 +24,6 @@ import org.jupnp.UpnpService;
 import org.jupnp.UpnpServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -41,6 +40,7 @@ import ch.qos.logback.core.util.StatusPrinter;
  * @author Jochen Hiller - Initial contribution
  * @author Jochen Hiller - Added pool configuration arguments, added
  *         jul-over-slf4j logging
+ * @author Jochen Hiller - removed jul-over-slf4j bride, as slf4j is now primary API
  */
 public class JUPnPTool {
 
@@ -87,12 +87,6 @@ public class JUPnPTool {
 	}
 
 	public int doMain(String[] args) {
-		// Configure java.util.logging to log via slf4j
-		java.util.logging.LogManager.getLogManager().reset();
-		SLF4JBridgeHandler.removeHandlersForRootLogger();
-		SLF4JBridgeHandler.install();
-		java.util.logging.Logger.getLogger("global").setLevel(java.util.logging.Level.FINEST);
-
 		// parse command line arguments with jCommander
 		JCommander commander = new JCommander(new CommandLineArgs());
 		commander.addCommand(COMMAND_SEARCH, new SearchCommandArgs());

@@ -18,8 +18,8 @@ import org.jupnp.UpnpService;
 import org.jupnp.model.meta.LocalDevice;
 import org.jupnp.model.types.NotificationSubtype;
 import org.jupnp.transport.RouterException;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sending <em>ALIVE</em> notification messages for a registered local device.
@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  */
 public class SendingNotificationAlive extends SendingNotification {
 
-    final private Logger log = Logger.getLogger(SendingNotification.class.getName());
+    final private Logger log = LoggerFactory.getLogger(SendingNotification.class);
 
     public SendingNotificationAlive(UpnpService upnpService, LocalDevice device) {
         super(upnpService, device);
@@ -36,7 +36,7 @@ public class SendingNotificationAlive extends SendingNotification {
 
     @Override
     protected void execute() throws RouterException {
-        log.fine("Sending alive messages ("+getBulkRepeat()+" times) for: " + getDevice());
+        log.trace("Sending alive messages ("+getBulkRepeat()+" times) for: " + getDevice());
         super.execute();
     }
 

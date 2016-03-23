@@ -30,7 +30,7 @@ public class CommandLineArgs {
 	public Boolean doHelp = Boolean.FALSE;
 
 	@Parameter(names = { "--loglevel",
-			"-l" }, description = "Set LogLevel to {DEBUG|INFO|WARN|ERROR|OFF}", validateWith = MainCommandLogLevelValidator.class)
+			"-l" }, description = "Set LogLevel to {OFF|ERROR|WARN|INFO|DEBUG|TRACE}", validateWith = MainCommandLogLevelValidator.class)
 	public String logLevel = "DISABLED";
 
 	@Parameter(names = { "--multicastResponsePort",

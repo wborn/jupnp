@@ -387,13 +387,13 @@ public class RouterImpl implements Router {
                     multicastReceivers.put(networkInterface, multicastReceiver);
                 } catch (InitializationException ex) {
                     /* TODO: What are some recoverable exceptions for this?
-                    log.warning(
+                    log.warn(
                         "Ignoring network interface '"
                             + networkInterface.getDisplayName()
                             + "' init failure of MulticastReceiver: " + ex.toString());
-                    if (log.isLoggable(Level.FINE))
+                    if (log.isTraceEnabled())
                         log.log(Level.FINE, "Initialization exception root cause", Exceptions.unwrap(ex));
-                    log.warning("Removing unusable interface " + interface);
+                    log.warn("Removing unusable interface " + interface);
                     it.remove();
                     continue; // Don't need to try anything else on this interface
                     */
@@ -448,10 +448,10 @@ public class RouterImpl implements Router {
                     /* TODO: What are some recoverable exceptions for this?
                     Throwable cause = Exceptions.unwrap(ex);
                     if (cause instanceof BindException) {
-                        log.warning("Failed to init datagram I/O: " + cause);
-                        if (log.isLoggable(Level.FINE))
+                        log.warn("Failed to init datagram I/O: " + cause);
+                        if (log.isTraceEnabled())
                             log.log(Level.FINE, "Initialization exception root cause", cause);
-                        log.warning("Removing unusable address: " + address);
+                        log.warn("Removing unusable address: " + address);
                         addresses.remove();
                         continue; // Don't try anything else with this address
                     }

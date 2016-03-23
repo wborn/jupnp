@@ -14,13 +14,13 @@
 
 package org.jupnp.model.message.header;
 
-import org.jupnp.util.Exceptions;
-
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map;
+
+import org.jupnp.util.Exceptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Transforms known and standardized UPnP/HTTP headers from/to string representation.
@@ -159,24 +159,24 @@ public abstract class UpnpHeader<T> {
      * @return The best matching header subtype instance, or <code>null</code> if no subtype can be found.
      */
     public static UpnpHeader newInstance(UpnpHeader.Type type, String headerValue) {
-        final Logger log = Logger.getLogger(UpnpHeader.class.getName());
+        final Logger log = LoggerFactory.getLogger(UpnpHeader.class);
 
         // Try all the UPnP headers and see if one matches our value parsers
         UpnpHeader upnpHeader = null;
         for (int i = 0; i < type.getHeaderTypes().length && upnpHeader == null; i++) {
             Class<? extends UpnpHeader> headerClass = type.getHeaderTypes()[i];
             try {
-                log.finest("Trying to parse '" + type + "' with class: " + headerClass.getSimpleName());
+                log.trace("Trying to parse '{}' with class: {}", type, headerClass.getSimpleName());
                 upnpHeader = headerClass.newInstance();
                 if (headerValue != null) {
                     upnpHeader.setString(headerValue);
                 }
             } catch (InvalidHeaderException ex) {
-                log.finest("Invalid header value for tested type: " + headerClass.getSimpleName() + " - " + ex.getMessage());
+                log.trace("Invalid header value for tested type: {} - {}", headerClass.getSimpleName(), ex.getMessage());
                 upnpHeader = null;
             } catch (Exception ex) {
-                log.severe("Error instantiating header of type '" + type + "' with value: " + headerValue);
-                log.log(Level.SEVERE, "Exception root cause: ", Exceptions.unwrap(ex));
+                log.error("Error instantiating header of type '" + type + "' with value: " + headerValue);
+                log.error("Exception root cause: ", Exceptions.unwrap(ex));
             }
 
         }

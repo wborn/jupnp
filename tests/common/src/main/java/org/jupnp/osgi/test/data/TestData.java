@@ -17,10 +17,12 @@ package org.jupnp.osgi.test.data;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TestData {
-    private static final Logger logger = Logger.getLogger(TestData.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(TestData.class);
 	private String file;
 	private Properties properties;
 	
@@ -33,14 +35,14 @@ public class TestData {
 			properties = new Properties();
 			InputStream in = this.getClass().getResourceAsStream(file);
 			if (in == null) {
-				logger.severe(String.format("No test data file %s.", file));
+				log.error("No test data file {}.", file);
 			}
 			else {
 				try {
 					properties.load(in);
 					in.close();
 				} catch (IOException e) {
-					logger.severe(String.format("Cannot read test data file %s.", file));
+					log.error("Cannot read test data file {}.", file);
 				}
 			}
 		}
@@ -53,7 +55,7 @@ public class TestData {
 		
 		value = getProperties().getProperty(name);
 		if (value == null) {
-			logger.severe(String.format("No test data for type %s.", name));
+			log.error("No test data for type {}.", name);
 		}
 		
 		return value;

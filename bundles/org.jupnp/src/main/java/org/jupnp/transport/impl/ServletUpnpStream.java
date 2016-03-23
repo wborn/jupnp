@@ -21,8 +21,6 @@ import java.net.URI;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,6 +35,8 @@ import org.jupnp.protocol.ProtocolFactory;
 import org.jupnp.transport.spi.UpnpStream;
 import org.jupnp.util.Exceptions;
 import org.jupnp.util.io.IO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract implementation of a {@link UpnpStream}. This class is extended for each servlet implementations (blocking
@@ -49,7 +49,7 @@ public abstract class ServletUpnpStream extends UpnpStream {
 
     protected StreamResponseMessage responseMessage;
 
-    final protected Logger log = Logger.getLogger(UpnpStream.class.getName());
+    final protected Logger log = LoggerFactory.getLogger(UpnpStream.class);
 
     public ServletUpnpStream(ProtocolFactory protocolFactory) {
         super(protocolFactory);
@@ -59,30 +59,25 @@ public abstract class ServletUpnpStream extends UpnpStream {
     public void run() {
         try {
             StreamRequestMessage requestMessage = readRequestMessage();
-            if (log.isLoggable(Level.FINER))
-                log.finer("Processing new request message: " + requestMessage);
+            log.trace("Processing new request message: " + requestMessage);
 
             responseMessage = process(requestMessage);
 
             if (responseMessage != null) {
-                if (log.isLoggable(Level.FINER))
-                    log.finer("Preparing HTTP response message: " + responseMessage);
+                log.trace("Preparing HTTP response message: " + responseMessage);
                 writeResponseMessage(responseMessage);
             } else {
                 // If it's null, it's 404
-                if (log.isLoggable(Level.FINER))
-                    log.finer("Sending HTTP response status: " + HttpURLConnection.HTTP_NOT_FOUND);
+                log.trace("Sending HTTP response status: " + HttpURLConnection.HTTP_NOT_FOUND);
                 getResponse().setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
 
         } catch (Throwable t) {
             log.info("Exception occurred during UPnP stream processing: " + t);
             t.printStackTrace();
-            if (log.isLoggable(Level.FINER)) {
-                log.log(Level.FINER, "Cause: " + Exceptions.unwrap(t), Exceptions.unwrap(t));
-            }
+            log.trace("Cause: " + Exceptions.unwrap(t), Exceptions.unwrap(t));
             if (!getResponse().isCommitted()) {
-                log.finer("Response hasn't been committed, returning INTERNAL SERVER ERROR to client");
+                log.trace("Response hasn't been committed, returning INTERNAL SERVER ERROR to client");
                 getResponse().setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             } else {
                 log.info("Could not return INTERNAL SERVER ERROR to client, response was already committed");
@@ -98,8 +93,7 @@ public abstract class ServletUpnpStream extends UpnpStream {
         String requestMethod = getRequest().getMethod();
         String requestURI = getRequest().getRequestURI();
 
-        if (log.isLoggable(Level.FINER))
-            log.finer("Processing HTTP request: " + requestMethod + " " + requestURI);
+        log.trace("Processing HTTP request: " + requestMethod + " " + requestURI);
 
         StreamRequestMessage requestMessage;
         try {
@@ -146,32 +140,25 @@ public abstract class ServletUpnpStream extends UpnpStream {
             if (is != null)
                 is.close();
         }
-        if (log.isLoggable(Level.FINER))
-            log.finer("Reading request body bytes: " + bodyBytes.length);
+        log.trace("Reading request body bytes: " + bodyBytes.length);
 
         if (bodyBytes.length > 0 && requestMessage.isContentTypeMissingOrText()) {
-
-            if (log.isLoggable(Level.FINER))
-                log.finer("Request contains textual entity body, converting then setting string on message");
+            log.trace("Request contains textual entity body, converting then setting string on message");
             requestMessage.setBodyCharacters(bodyBytes);
 
         } else if (bodyBytes.length > 0) {
-
-            if (log.isLoggable(Level.FINER))
-                log.finer("Request contains binary entity body, setting bytes on message");
+            log.trace("Request contains binary entity body, setting bytes on message");
             requestMessage.setBody(UpnpMessage.BodyType.BYTES, bodyBytes);
 
         } else {
-            if (log.isLoggable(Level.FINER))
-                log.finer("Request did not contain entity body");
+            log.trace("Request did not contain entity body");
         }
 
         return requestMessage;
     }
 
     protected void writeResponseMessage(StreamResponseMessage responseMessage) throws IOException {
-        if (log.isLoggable(Level.FINER))
-            log.finer("Sending HTTP response status: " + responseMessage.getOperation().getStatusCode());
+        log.trace("Sending HTTP response status: " + responseMessage.getOperation().getStatusCode());
 
         getResponse().setStatus(responseMessage.getOperation().getStatusCode());
 
@@ -190,7 +177,7 @@ public abstract class ServletUpnpStream extends UpnpStream {
 
         if (contentLength > 0) {
             getResponse().setContentLength(contentLength);
-            log.finer("Response message has body, writing bytes to stream...");
+            log.trace("Response message has body, writing bytes to stream...");
             IO.writeBytes(getResponse().getOutputStream(), responseBodyBytes);
         }
     }

@@ -14,8 +14,11 @@
 
 package org.jupnp.osgi.present;
 
-import org.osgi.service.upnp.UPnPAction;
-import org.osgi.service.upnp.UPnPStateVariable;
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.List;
+
 import org.jupnp.model.action.ActionArgumentValue;
 import org.jupnp.model.action.ActionExecutor;
 import org.jupnp.model.action.ActionInvocation;
@@ -23,19 +26,17 @@ import org.jupnp.model.meta.ActionArgument;
 import org.jupnp.model.meta.LocalService;
 import org.jupnp.model.types.InvalidValueException;
 import org.jupnp.osgi.util.OSGiDataConverter;
-
-import java.util.Collections;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.logging.Logger;
+import org.osgi.service.upnp.UPnPAction;
+import org.osgi.service.upnp.UPnPStateVariable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Bruce Green
  */
 class UPnPActionExecutor implements ActionExecutor {
 
-    final private static Logger log = Logger.getLogger(UPnPActionExecutor.class.getName());
+    final private static Logger log = LoggerFactory.getLogger(UPnPActionExecutor.class);
 
     private UPnPAction action;
 
@@ -45,7 +46,7 @@ class UPnPActionExecutor implements ActionExecutor {
 
     @Override
     public void execute(ActionInvocation<LocalService> actionInvocation) {
-        log.entering(this.getClass().getName(), "execute", new Object[]{actionInvocation});
+		log.trace("ENTRY {}.{}: {}", this.getClass().getName(), "execute", actionInvocation);
 
         ActionArgumentValue<LocalService>[] inputs = actionInvocation.getInput();
 
@@ -71,15 +72,15 @@ class UPnPActionExecutor implements ActionExecutor {
                             //System.out.printf("*** key: %s  value: %s [%s]\n", key, value, value);
                             actionInvocation.setOutput(key, value);
                         } catch (InvalidValueException e) {
-                            log.severe(String.format("Error executing action %s variable %s.", action.getName(), key));
-                            log.severe(e.getMessage());
+                            log.error("Error executing action {} variable {}.", action.getName(), key);
+                            log.error(e.getMessage());
                         }
                     }
                 }
             }
         } catch (Exception e) {
-            log.severe(String.format("Error executing action (%s).", action.getName()));
-            log.severe(e.getMessage());
+            log.error("Error executing action ({}).", action.getName());
+            log.error(e.getMessage());
         }
     }
 }

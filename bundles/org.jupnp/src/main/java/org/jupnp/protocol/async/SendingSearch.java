@@ -21,8 +21,8 @@ import org.jupnp.model.message.header.STAllHeader;
 import org.jupnp.model.message.header.UpnpHeader;
 import org.jupnp.protocol.SendingAsync;
 import org.jupnp.transport.RouterException;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sending search request messages using the supplied search type.
@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  */
 public class SendingSearch extends SendingAsync {
 
-    final private Logger log = Logger.getLogger(SendingSearch.class.getName());
+    final private Logger log = LoggerFactory.getLogger(SendingSearch.class);
 
     private final UpnpHeader searchTarget;
     private final int mxSeconds;
@@ -79,7 +79,7 @@ public class SendingSearch extends SendingAsync {
 
     protected void execute() throws RouterException {
 
-        log.fine("Executing search for target: " + searchTarget.getString() + " with MX seconds: " + getMxSeconds());
+        log.trace("Executing search for target: " + searchTarget.getString() + " with MX seconds: " + getMxSeconds());
 
         OutgoingSearchRequest msg = new OutgoingSearchRequest(searchTarget, getMxSeconds());
         prepareOutgoingSearchRequest(msg);
@@ -90,7 +90,7 @@ public class SendingSearch extends SendingAsync {
                 getUpnpService().getRouter().send(msg);
 
                 // UDA 1.0 is silent about this but UDA 1.1 recommends "a few hundred milliseconds"
-                log.finer("Sleeping " + getBulkIntervalMilliseconds() + " milliseconds");
+                log.trace("Sleeping " + getBulkIntervalMilliseconds() + " milliseconds");
                 Thread.sleep(getBulkIntervalMilliseconds());
 
             } catch (InterruptedException ex) {

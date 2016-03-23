@@ -14,6 +14,9 @@
 
 package org.jupnp.model.action;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jupnp.model.Command;
 import org.jupnp.model.ServiceManager;
 import org.jupnp.model.meta.Action;
@@ -23,11 +26,8 @@ import org.jupnp.model.state.StateVariableAccessor;
 import org.jupnp.model.types.ErrorCode;
 import org.jupnp.model.types.InvalidValueException;
 import org.jupnp.util.Exceptions;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Shared procedures for action executors based on an actual service implementation instance.
@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractActionExecutor implements ActionExecutor {
 
-    private Logger log = Logger.getLogger(AbstractActionExecutor.class.getName());
+    private Logger log = LoggerFactory.getLogger(AbstractActionExecutor.class);
 
     protected Map<ActionArgument<LocalService>, StateVariableAccessor> outputArgumentAccessors =
         new HashMap<ActionArgument<LocalService>, StateVariableAccessor>();
@@ -57,7 +57,7 @@ public abstract class AbstractActionExecutor implements ActionExecutor {
      */
     public void execute(final ActionInvocation<LocalService> actionInvocation) {
 
-        log.fine("Invoking on local service: " + actionInvocation);
+        log.trace("Invoking on local service: " + actionInvocation);
 
         final LocalService service = actionInvocation.getAction().getService();
 
@@ -82,23 +82,17 @@ public abstract class AbstractActionExecutor implements ActionExecutor {
             });
 
         } catch (ActionException ex) {
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("ActionException thrown by service, wrapping in invocation and returning: " + ex);
-                log.log(Level.FINE, "Exception root cause: ", Exceptions.unwrap(ex));
-            }
+            log.trace("ActionException thrown by service, wrapping in invocation and returning: " + ex);
+            log.trace("Exception root cause: ", Exceptions.unwrap(ex));
             actionInvocation.setFailure(ex);
         } catch (InterruptedException ex) {
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("InterruptedException thrown by service, wrapping in invocation and returning: " + ex);
-                log.log(Level.FINE, "Exception root cause: ", Exceptions.unwrap(ex));
-            }
+            log.trace("InterruptedException thrown by service, wrapping in invocation and returning: " + ex);
+            log.trace("Exception root cause: ", Exceptions.unwrap(ex));
             actionInvocation.setFailure(new ActionCancelledException(ex));
         } catch (Throwable t) {
             Throwable rootCause = Exceptions.unwrap(t);
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("Execution has thrown, wrapping root cause in ActionException and returning: " + t);
-                log.log(Level.FINE, "Exception root cause: ", rootCause);
-            }
+            log.trace("Execution has thrown, wrapping root cause in ActionException and returning: " + t);
+            log.trace("Exception root cause: ", rootCause);
             actionInvocation.setFailure(
                 new ActionException(
                     ErrorCode.ACTION_FAILED,
@@ -122,15 +116,15 @@ public abstract class AbstractActionExecutor implements ActionExecutor {
      */
     protected Object readOutputArgumentValues(Action<LocalService> action, Object instance) throws Exception {
         Object[] results = new Object[action.getOutputArguments().length];
-        log.fine("Attempting to retrieve output argument values using accessor: " + results.length);
+        log.trace("Attempting to retrieve output argument values using accessor: " + results.length);
 
         int i = 0;
         for (ActionArgument outputArgument : action.getOutputArguments()) {
-            log.finer("Calling acccessor method for: " + outputArgument);
+            log.trace("Calling acccessor method for: " + outputArgument);
 
             StateVariableAccessor accessor = getOutputArgumentAccessors().get(outputArgument);
             if (accessor != null) {
-                log.fine("Calling accessor to read output argument value: " + accessor);
+                log.trace("Calling accessor to read output argument value: " + accessor);
                 results[i++] = accessor.read(instance);
             } else {
                 throw new IllegalStateException("No accessor bound for: " + outputArgument);
@@ -154,10 +148,10 @@ public abstract class AbstractActionExecutor implements ActionExecutor {
         if (result != null) {
             try {
                 if (service.isStringConvertibleType(result)) {
-                    log.fine("Result of invocation matches convertible type, setting toString() single output argument value");
+                    log.trace("Result of invocation matches convertible type, setting toString() single output argument value");
                     actionInvocation.setOutput(new ActionArgumentValue(argument, result.toString()));
                 } else {
-                    log.fine("Result of invocation is Object, setting single output argument value");
+                    log.trace("Result of invocation is Object, setting single output argument value");
                     actionInvocation.setOutput(new ActionArgumentValue(argument, result));
                 }
             } catch (InvalidValueException ex) {
@@ -169,7 +163,7 @@ public abstract class AbstractActionExecutor implements ActionExecutor {
             }
         } else {
 
-            log.fine("Result of invocation is null, not setting any output argument value(s)");
+            log.trace("Result of invocation is null, not setting any output argument value(s)");
         }
 
     }

@@ -14,15 +14,16 @@
 
 package org.jupnp.xml;
 
-import org.w3c.dom.ls.LSInput;
-import org.w3c.dom.ls.LSResourceResolver;
-
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
 import java.net.URL;
 import java.util.Map;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSResourceResolver;
 
 /**
  * Another namespace-URI-to-whatever (namespace, context, resolver, map) magic thingy.
@@ -37,7 +38,7 @@ import java.util.logging.Logger;
  */
 public class CatalogResourceResolver implements LSResourceResolver {
 
-    private Logger log = Logger.getLogger(CatalogResourceResolver.class.getName());
+    private Logger log = LoggerFactory.getLogger(CatalogResourceResolver.class);
 
     private final Map<URI, URL> catalog;
 
@@ -46,10 +47,10 @@ public class CatalogResourceResolver implements LSResourceResolver {
     }
 
     public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
-        log.finest("Trying to resolve system identifier URI in catalog: " + systemId);
+        log.trace("Trying to resolve system identifier URI in catalog: {}", systemId);
         URL systemURL;
         if ((systemURL = catalog.get(URI.create(systemId))) != null) {
-            log.finest("Loading catalog resource: " + systemURL);
+            log.trace("Loading catalog resource: {}", systemURL);
             try {
                 Input i = new Input(systemURL.openStream());
                 i.setBaseURI(baseURI);

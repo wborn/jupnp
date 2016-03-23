@@ -14,6 +14,18 @@
 
 package org.jupnp.xml;
 
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Source;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
@@ -24,16 +36,6 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
-
-import javax.xml.XMLConstants;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.Source;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.logging.Logger;
 
 /**
  * @author Christian Bauer
@@ -128,7 +130,7 @@ public class SAXParser {
 
     public static class Handler<I> extends DefaultHandler {
 
-        final private Logger log = Logger.getLogger(SAXParser.class.getName());
+        final private Logger log = LoggerFactory.getLogger(SAXParser.class);
 
         protected SAXParser parser;
         protected I instance;
@@ -185,7 +187,7 @@ public class SAXParser {
                                  Attributes attributes) throws SAXException {
             this.characters = new StringBuilder();
             this.attributes = new AttributesImpl(attributes); // see http://docstore.mik.ua/orelly/xml/sax2/ch05_01.htm, section 5.1.1
-            log.finer(getClass().getSimpleName() + " starting: " + localName);
+            log.trace(getClass().getSimpleName() + " starting: " + localName);
         }
 
         @Override
@@ -198,12 +200,12 @@ public class SAXParser {
                                String qName) throws SAXException {
 
             if (isLastElement(uri, localName, qName)) {
-                log.finer(getClass().getSimpleName() + ": last element, switching to parent: " + localName);
+                log.trace(getClass().getSimpleName() + ": last element, switching to parent: " + localName);
                 switchToParent();
                 return;
             }
 
-            log.finer(getClass().getSimpleName() + " ending: " + localName);
+            log.trace(getClass().getSimpleName() + " ending: " + localName);
         }
 
         protected boolean isLastElement(String uri, String localName, String qName) {

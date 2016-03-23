@@ -14,14 +14,14 @@
 
 package org.jupnp.osgi.impl;
 
-import java.util.logging.Logger;
-
 import org.jupnp.model.meta.StateVariable;
 import org.jupnp.osgi.util.UPnPTypeUtil;
 import org.osgi.service.upnp.UPnPStateVariable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UPnPStateVariableImpl implements UPnPStateVariable {
-    private static Logger logger = Logger.getLogger(UPnPStateVariableImpl.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(UPnPStateVariableImpl.class);
 	
 	private StateVariable<?> variable;
 	
@@ -40,7 +40,7 @@ public class UPnPStateVariableImpl implements UPnPStateVariable {
 		Class<?> clazz = UPnPTypeUtil.getUPnPClass(type);
 		
 		if (clazz == null) {
-			logger.warning(String.format("Cannot covert UPnP type %s to UPnP Java type", type));
+			logger.warn("Cannot covert UPnP type {} to UPnP Java type", type);
 		}
 		return clazz != null ? clazz : variable.getTypeDetails().getDatatype().getClass();
 	}

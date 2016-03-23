@@ -23,8 +23,8 @@ import org.jupnp.model.message.gena.IncomingUnsubscribeRequestMessage;
 import org.jupnp.model.resource.ServiceEventSubscriptionResource;
 import org.jupnp.protocol.ReceivingSync;
 import org.jupnp.transport.RouterException;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles reception of GENA event unsubscribe messages.
@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  */
 public class ReceivingUnsubscribe extends ReceivingSync<StreamRequestMessage, StreamResponseMessage> {
 
-    final private Logger log = Logger.getLogger(ReceivingUnsubscribe.class.getName());
+    final private Logger log = LoggerFactory.getLogger(ReceivingUnsubscribe.class);
 
     public ReceivingUnsubscribe(UpnpService upnpService, StreamRequestMessage inputMessage) {
         super(upnpService, inputMessage);
@@ -48,11 +48,11 @@ public class ReceivingUnsubscribe extends ReceivingSync<StreamRequestMessage, St
         );
 
         if (resource == null) {
-            log.fine("No local resource found: " + getInputMessage());
+            log.trace("No local resource found: " + getInputMessage());
             return null;
         }
 
-        log.fine("Found local event subscription matching relative request URI: " + getInputMessage().getUri());
+        log.trace("Found local event subscription matching relative request URI: " + getInputMessage().getUri());
 
         IncomingUnsubscribeRequestMessage requestMessage =
                 new IncomingUnsubscribeRequestMessage(getInputMessage(), resource.getModel());
@@ -60,7 +60,7 @@ public class ReceivingUnsubscribe extends ReceivingSync<StreamRequestMessage, St
         // Error conditions UDA 1.0 section 4.1.3
         if (requestMessage.getSubscriptionId() != null &&
                 (requestMessage.hasNotificationHeader() || requestMessage.hasCallbackHeader())) {
-            log.fine("Subscription ID and NT or Callback in unsubcribe request: " + getInputMessage());
+            log.trace("Subscription ID and NT or Callback in unsubcribe request: " + getInputMessage());
             return new StreamResponseMessage(UpnpResponse.Status.BAD_REQUEST);
         }
 
@@ -68,15 +68,15 @@ public class ReceivingUnsubscribe extends ReceivingSync<StreamRequestMessage, St
                 getUpnpService().getRegistry().getLocalSubscription(requestMessage.getSubscriptionId());
 
         if (subscription == null) {
-            log.fine("Invalid subscription ID for unsubscribe request: " + getInputMessage());
+            log.trace("Invalid subscription ID for unsubscribe request: " + getInputMessage());
             return new StreamResponseMessage(UpnpResponse.Status.PRECONDITION_FAILED);
         }
 
-        log.fine("Unregistering subscription: " + subscription);
+        log.trace("Unregistering subscription: " + subscription);
         if (getUpnpService().getRegistry().removeLocalSubscription(subscription)) {
             subscription.end(null); // No reason, just an unsubscribe
         } else {
-            log.fine("Subscription was already removed from registry");
+            log.trace("Subscription was already removed from registry");
         }
 
         return new StreamResponseMessage(UpnpResponse.Status.OK);

@@ -24,8 +24,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jupnp.binding.xml.DeviceDescriptorBinder;
 import org.jupnp.binding.xml.ServiceDescriptorBinder;
 import org.jupnp.binding.xml.UDA10DeviceDescriptorBinderImpl;
@@ -87,7 +87,7 @@ import org.jupnp.util.Exceptions;
  */
 public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
-    private Logger log = Logger.getLogger(DefaultUpnpServiceConfiguration.class.getName());
+    private Logger log = LoggerFactory.getLogger(DefaultUpnpServiceConfiguration.class);
 
     /** we will use a core pool size of 1 as long as we allow to timeout core threads. */
     final private static int CORE_THREAD_POOL_SIZE = 1;
@@ -270,7 +270,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
     }
 
     public void shutdown() {
-        log.fine("Shutting down default executor service");
+        log.trace("Shutting down default executor service");
         getDefaultExecutorService().shutdownNow();
     }
 
@@ -319,7 +319,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
                      @Override
                      public void rejectedExecution(Runnable runnable, ThreadPoolExecutor threadPoolExecutor) {
                          // Log and discard
-                    	 Logger.getLogger(DefaultUpnpServiceConfiguration.class.getName()).warning("Thread pool rejected execution of " + runnable.getClass());
+                    	 LoggerFactory.getLogger(DefaultUpnpServiceConfiguration.class).warn("Thread pool rejected execution of " + runnable.getClass());
                          super.rejectedExecution(runnable, threadPoolExecutor);
                      }
                  }
@@ -351,8 +351,8 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
                     return;
                 }
                 // Log only
-                Logger.getLogger(DefaultUpnpServiceConfiguration.class.getName()).warning("Thread terminated " + runnable + " abruptly with exception: " + throwable);
-                Logger.getLogger(DefaultUpnpServiceConfiguration.class.getName()).warning("Root cause: " + cause);
+                LoggerFactory.getLogger(DefaultUpnpServiceConfiguration.class).warn("Thread terminated " + runnable + " abruptly with exception: " + throwable);
+                LoggerFactory.getLogger(DefaultUpnpServiceConfiguration.class).warn("Root cause: " + cause);
             }
         }
     }

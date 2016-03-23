@@ -19,10 +19,12 @@ import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TestDataFactory {
-    private static final Logger logger = Logger.getLogger(TestDataFactory.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(TestDataFactory.class);
 	static private String DEFAULT_FILE = "test-data-factory.properties";
 	static private String DEFAULT_KEY = "org.jupnp.osgi.test.data.factory.properties";
 	static public TestDataFactory instance;
@@ -45,14 +47,14 @@ public class TestDataFactory {
 			properties = new Properties();
 			InputStream in = this.getClass().getResourceAsStream(DEFAULT_FILE);
 			if (in == null) {
-				logger.severe(String.format("No test data factory file %s.", file));
+				log.error("No test data factory file {}.", file);
 			}
 			else {
 				try {
 					properties.load(in);
 					in.close();
 				} catch (IOException e) {
-					logger.severe(String.format("Cannot read test data factory file %s.", file));
+					log.error("Cannot read test data factory file {}.", file);
 				}
 			}
 		}

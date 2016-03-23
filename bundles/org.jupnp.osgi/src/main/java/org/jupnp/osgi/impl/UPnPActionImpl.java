@@ -14,8 +14,12 @@
 
 package org.jupnp.osgi.impl;
 
-import org.osgi.service.upnp.UPnPAction;
-import org.osgi.service.upnp.UPnPStateVariable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.List;
+
 import org.jupnp.controlpoint.ActionCallback;
 import org.jupnp.controlpoint.ControlPoint;
 import org.jupnp.model.action.ActionArgumentValue;
@@ -25,20 +29,17 @@ import org.jupnp.model.meta.ActionArgument;
 import org.jupnp.model.meta.StateVariable;
 import org.jupnp.osgi.Activator;
 import org.jupnp.osgi.util.OSGiDataConverter;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.logging.Logger;
+import org.osgi.service.upnp.UPnPAction;
+import org.osgi.service.upnp.UPnPStateVariable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Bruce Green
  */
 public class UPnPActionImpl implements UPnPAction {
 
-    final private static Logger log = Logger.getLogger(UPnPActionImpl.class.getName());
+    final private static Logger log = LoggerFactory.getLogger(UPnPActionImpl.class);
 
     private Action<?> action;
 
@@ -143,11 +144,8 @@ public class UPnPActionImpl implements UPnPAction {
                     Object value = argument.getValue();
 
                     if (value == null) {
-                        log.severe(String.format(
-                                "Received null value for variable %s to OSGi type %s.",
-                                name,
-                                argument.getDatatype().getDisplayString()
-                        ));
+						log.error("Received null value for variable {} to OSGi type {}.", name,
+								argument.getDatatype().getDisplayString());
                         // throw an exception
                     } else {
                         //System.out.printf("name: %s  value: %s (%s)\n", name, value, value.getClass().getName());
@@ -155,11 +153,8 @@ public class UPnPActionImpl implements UPnPAction {
                         value = OSGiDataConverter.toOSGiValue(argument.getDatatype(), value);
 
                         if (value == null) {
-                            log.severe(String.format(
-                                    "Cannot convert variable %s to OSGi type %s.",
-                                    name,
-                                    argument.getDatatype().getDisplayString()
-                            ));
+							log.error("Cannot convert variable {} to OSGi type {}.", name,
+									argument.getDatatype().getDisplayString());
                             // throw an exception
                         }
                         output.put(name, value);

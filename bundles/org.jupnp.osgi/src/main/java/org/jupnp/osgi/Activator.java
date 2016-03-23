@@ -14,21 +14,21 @@
 
 package org.jupnp.osgi;
 
-import java.util.logging.Logger;
-
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
 import org.jupnp.UpnpService;
 import org.jupnp.UpnpServiceImpl;
 import org.jupnp.osgi.discover.UPnPDiscover;
 import org.jupnp.osgi.present.UPnPPresent;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Bruce Green
  */
 public class Activator implements BundleActivator {
 
-    final private static Logger log = Logger.getLogger(Activator.class.getName());
+    final private static Logger log = LoggerFactory.getLogger(Activator.class);
 
     private static Activator plugin;
     private BundleContext context;

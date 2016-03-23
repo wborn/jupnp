@@ -14,25 +14,25 @@
 
 package org.jupnp.osgi.discover;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.Filter;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.upnp.UPnPDevice;
-import org.osgi.service.upnp.UPnPEventListener;
-import org.osgi.util.tracker.ServiceTracker;
+import java.util.Hashtable;
+import java.util.Map;
+
 import org.jupnp.UpnpService;
 import org.jupnp.model.meta.Device;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.osgi.impl.UPnPDeviceImpl;
 import org.jupnp.registry.DefaultRegistryListener;
 import org.jupnp.registry.Registry;
-
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.logging.Logger;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.upnp.UPnPDevice;
+import org.osgi.service.upnp.UPnPEventListener;
+import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Monitors and handles the addition and removal of remote devices.
@@ -56,7 +56,7 @@ import java.util.logging.Logger;
  */
 class JUPnPRegistryListener extends DefaultRegistryListener {
 
-    private static final Logger log = Logger.getLogger(JUPnPRegistryListener.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(JUPnPRegistryListener.class);
 
     private Map<Device, UPnPDeviceBinding> deviceBindings = new Hashtable<Device, UPnPDeviceBinding>();
     private BundleContext context;
@@ -92,7 +92,7 @@ class JUPnPRegistryListener extends DefaultRegistryListener {
       */
     @Override
     public void deviceAdded(Registry registry, @SuppressWarnings("rawtypes") Device device) {
-        log.entering(this.getClass().getName(), "deviceAdded", new Object[]{registry, device});
+		log.trace("ENTRY {}.{}: {} {}", this.getClass().getName(), "deviceAdded", registry, device);
 
         UPnPDeviceImpl upnpDevice = new UPnPDeviceImpl(device);
         if (device instanceof RemoteDevice) {
@@ -107,20 +107,20 @@ class JUPnPRegistryListener extends DefaultRegistryListener {
                 ServiceRegistration registration = context.registerService(UPnPDevice.class.getName(), upnpDevice, upnpDevice.getDescriptions(null));
                 deviceBindings.put(device, new UPnPDeviceBinding(registration, tracker));
             } catch (InvalidSyntaxException e) {
-                log.severe(String.format("Cannot add remote device (%s).", device.getIdentity().getUdn().toString()));
-                log.severe(e.getMessage());
+                log.error("Cannot add remote ({}).", device.getIdentity().getUdn().toString());
+                log.error(e.getMessage());
             }
         }
     }
 
     @Override
     public void deviceRemoved(Registry registry, @SuppressWarnings("rawtypes") Device device) {
-        log.entering(this.getClass().getName(), "deviceRemoved", new Object[]{registry, device});
+		log.trace("ENTRY {}.{}: {} {}", this.getClass().getName(), "deviceRemoved", registry, device);
 
         if (device instanceof RemoteDevice) {
             UPnPDeviceBinding data = deviceBindings.get(device);
             if (data == null) {
-                log.warning(String.format("Unknown device %s removed.", device.getIdentity().getUdn().toString()));
+                log.warn("Unknown device {} removed.", device.getIdentity().getUdn().toString());
             } else {
                 data.getServiceRegistration().unregister();
                 data.getServiceTracker().close();

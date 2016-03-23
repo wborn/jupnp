@@ -60,60 +60,44 @@ public class UPnPEventListenerSubscriptionCallback extends SubscriptionCallback 
 
     @Override
     protected void failed(GENASubscription subscription, UpnpResponse responseStatus, Exception exception, String defaultMsg) {
-        log.severe(String.format("Failed to establish subscription for device %s service %s.",
-                                 getDeviceId(),
-                                 getServiceId()
-        ));
+		log.error("Failed to establish subscription for device {} service {}.", getDeviceId(), getServiceId());
 
         if (responseStatus != null) {
-            log.severe(String.format("Response status code: %d", responseStatus.getStatusCode()));
-            log.severe(String.format("Response status message: %s", responseStatus.getStatusMessage()));
-            log.severe(String.format("Response details: %s", responseStatus.getResponseDetails()));
+            log.error("Response status code: {}", responseStatus.getStatusCode());
+            log.error("Response status message: {}", responseStatus.getStatusMessage());
+            log.error("Response details: {}", responseStatus.getResponseDetails());
         }
         if (exception != null) {
-            log.severe(String.format("Exception: %s", exception.getMessage()));
+            log.error("Exception: {}", exception.getMessage());
         }
-        log.severe(String.format("Default message: %s", defaultMsg));
+        log.error("Default message: {}", defaultMsg);
     }
 
     @Override
     protected void established(GENASubscription subscription) {
-        log.finer(String.format(
-                "Established subscription %s for device %s service %s.",
+        log.trace("Established subscription {} for device {} service {}.",
                 subscription.getSubscriptionId(),
                 getDeviceId(),
                 getServiceId()
-        ));
+        );
     }
 
     @Override
     protected void ended(GENASubscription subscription, CancelReason reason, UpnpResponse responseStatus) {
         if (reason == null) {
-            log.finer(String.format(
-                    "Subscription %s for device %s service %s ended.",
-                    subscription.getSubscriptionId(),
-                    getDeviceId(),
-                    getServiceId()
-            ));
+			log.trace("Subscription {} for device {} service {} ended.", subscription.getSubscriptionId(),
+					getDeviceId(), getServiceId()
+            );
         } else {
-            log.severe(String.format(
-                    "Subscription %s for device %s service %s ended with reason %s.",
-                    subscription.getSubscriptionId(),
-                    getDeviceId(),
-                    getServiceId(),
-                    reason.toString()
-            ));
+			log.error("Subscription {} for device {} service {} ended with reason {}.",
+					subscription.getSubscriptionId(), getDeviceId(), getServiceId(), reason.toString());
         }
     }
 
     @Override
     protected void eventReceived(GENASubscription subscription) {
-        log.finer(String.format(
-                "Subscription %s for device %s service %s received event.",
-                subscription.getSubscriptionId(),
-                getDeviceId(),
-                getServiceId()
-        ));
+		log.trace("Subscription {} for device {} service {} received event.", subscription.getSubscriptionId(),
+				getDeviceId(), getServiceId());
         Map<String, StateVariableValue> values = subscription.getCurrentValues();
         Dictionary dictionary = new Hashtable();
 
@@ -123,11 +107,8 @@ public class UPnPEventListenerSubscriptionCallback extends SubscriptionCallback 
             Object value = OSGiDataConverter.toOSGiValue(variable.getDatatype(), variable.getValue());
 
             if (value == null) {
-                log.severe(String.format(
-                        "Cannot convert variable %s to OSGi type %s.",
-                        variable.getStateVariable().getName(),
-                        variable.getDatatype().getDisplayString())
-                );
+				log.error("Cannot convert variable {} to OSGi type {}.", variable.getStateVariable().getName(),
+						variable.getDatatype().getDisplayString());
                 // TODO: throw an exception
             }
 
@@ -143,24 +124,15 @@ public class UPnPEventListenerSubscriptionCallback extends SubscriptionCallback 
 
     @Override
     protected void eventsMissed(GENASubscription subscription, int numberOfMissedEvents) {
-        log.warning(String.format("Subscription %s for device %s service %s missed %d events.",
-                                  subscription.getSubscriptionId(),
-                                  getDeviceId(),
-                                  getServiceId(),
-                                  numberOfMissedEvents
-        ));
+		log.warn("Subscription {} for device {} service {} missed {} events.", subscription.getSubscriptionId(),
+				getDeviceId(), getServiceId(), numberOfMissedEvents);
     }
 
 
     @Override
     protected void invalidMessage(RemoteGENASubscription subscription,
                                   UnsupportedDataException ex) {
-        log.finer(String.format(
-            "Subscription %s for device %s service %s received invalid XML message causing exception %s.",
-            subscription.getSubscriptionId(),
-            getDeviceId(),
-            getServiceId(),
-            ex.toString()
-        ));
+		log.trace("Subscription {} for device {} service {} received invalid XML message causing exception {}.",
+				subscription.getSubscriptionId(), getDeviceId(), getServiceId(), ex.toString());
     }
 }

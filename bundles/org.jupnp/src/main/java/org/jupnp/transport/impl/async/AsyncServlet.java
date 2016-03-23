@@ -62,7 +62,7 @@ public class AsyncServlet extends HttpServlet {
 
         final long startTime = System.currentTimeMillis();
         final int counter = mCounter++;
-        log.info(String.format("HttpServlet.service(): id: %3d, request URI: %s", counter, req.getRequestURI()));
+        log.info("{}", String.format("HttpServlet.service(): id: %3d, request URI: %s", counter, req.getRequestURI()));
         log.debug("Handling Servlet request asynchronously: " + req);
 
         AsyncContext async = req.startAsync();
@@ -73,28 +73,28 @@ public class AsyncServlet extends HttpServlet {
             @Override
             public void onTimeout(AsyncEvent arg0) throws IOException {
                 long duration = System.currentTimeMillis() - startTime;
-                log.debug(String.format("AsyncListener.onTimeout(): id: %3d, duration: %,4d, request: %s", counter,
+                log.debug("{}", String.format("AsyncListener.onTimeout(): id: %3d, duration: %,4d, request: %s", counter,
                         duration, arg0.getSuppliedRequest()));
             }
 
             @Override
             public void onStartAsync(AsyncEvent arg0) throws IOException {
                 // useless
-                log.debug(String.format("AsyncListener.onStartAsync(): id: %3d, request: %s", counter,
+                log.debug("{}", String.format("AsyncListener.onStartAsync(): id: %3d, request: %s", counter,
                         arg0.getSuppliedRequest()));
             }
 
             @Override
             public void onError(AsyncEvent arg0) throws IOException {
                 long duration = System.currentTimeMillis() - startTime;
-                log.debug(String.format("AsyncListener.onError(): id: %3d, duration: %,4d, response: %s", counter,
+                log.debug("{}", String.format("AsyncListener.onError(): id: %3d, duration: %,4d, response: %s", counter,
                         duration, arg0.getSuppliedResponse()));
             }
 
             @Override
             public void onComplete(AsyncEvent arg0) throws IOException {
                 long duration = System.currentTimeMillis() - startTime;
-                log.debug(String.format("AsyncListener.onComplete(): id: %3d, duration: %,4d, response: %s", counter,
+                log.debug("{}", String.format("AsyncListener.onComplete(): id: %3d, duration: %,4d, response: %s", counter,
                         duration, arg0.getSuppliedResponse()));
             }
 

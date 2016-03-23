@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
 
 import org.jupnp.UpnpService;
 import org.jupnp.binding.xml.DescriptorBindingException;

@@ -15,10 +15,12 @@
 package org.jupnp.osgi.upnp.test.device.simple.model;
 
 import java.util.Observable;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TestVariable extends Observable {
-    private static Logger logger = Logger.getLogger(TestVariable.class.getName());
+    private static Logger log = LoggerFactory.getLogger(TestVariable.class);
 	private Object value;
 
 	public TestVariable(Object value) {
@@ -26,9 +28,9 @@ public class TestVariable extends Observable {
 	}
 	
 	public void setValue(Object value) {
-		logger.entering(this.getClass().getName(), "setValue", new Object[] { value });
+		log.trace("ENTRY {}.{}: {}", this.getClass().getName(), "setValue", value);
 		if (this.value == null || !this.value.equals(value)) {
-			logger.finer(String.format("old: %s  new: %s", this.value, value));
+			log.trace("old: {} new: {}", this.value, value);
 			
 			this.value = value;
 			setChanged();

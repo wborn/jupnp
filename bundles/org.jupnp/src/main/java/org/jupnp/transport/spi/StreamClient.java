@@ -47,7 +47,7 @@ public interface StreamClient<C extends StreamClientConfiguration> {
      * The rules for logging are:
      * </p>
      * <ul>
-     *     <li>If the caller interrupts the calling thread, log at <code>FINE</code>.</li>
+     *     <li>If the caller interrupts the calling thread, log at <code>TRACE</code>.</li>
      *     <li>If the request expires because the timeout has been reached, log at <code>INFO</code> level.</li>
      *     <li>If another error occurs, log at <code>WARNING</code> level</li>
      * </ul>

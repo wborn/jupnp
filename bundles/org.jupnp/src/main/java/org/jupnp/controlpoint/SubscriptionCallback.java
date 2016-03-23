@@ -14,6 +14,8 @@
 
 package org.jupnp.controlpoint;
 
+import java.util.Collections;
+
 import org.jupnp.model.UnsupportedDataException;
 import org.jupnp.model.UserConstants;
 import org.jupnp.model.gena.CancelReason;
@@ -27,10 +29,8 @@ import org.jupnp.model.meta.Service;
 import org.jupnp.protocol.ProtocolCreationException;
 import org.jupnp.protocol.sync.SendingSubscribe;
 import org.jupnp.util.Exceptions;
-
-import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Subscribe and receive events from a service through GENA.
@@ -73,7 +73,7 @@ import java.util.logging.Logger;
  */
 public abstract class SubscriptionCallback implements Runnable {
 
-    protected Logger log = Logger.getLogger(SubscriptionCallback.class.getName());
+    protected Logger log = LoggerFactory.getLogger(SubscriptionCallback.class);
 
     protected final Service service;
     protected final Integer requestedDurationSeconds;
@@ -126,7 +126,7 @@ public abstract class SubscriptionCallback implements Runnable {
     private void establishLocalSubscription(LocalService service) {
 
         if (getControlPoint().getRegistry().getLocalDevice(service.getDevice().getIdentity().getUdn(), false) == null) {
-            log.fine("Local device service is currently not registered, failing subscription immediately");
+            log.trace("Local device service is currently not registered, failing subscription immediately");
             failed(null, null, new IllegalStateException("Local device is not registered"));
             return;
         }
@@ -163,29 +163,29 @@ public abstract class SubscriptionCallback implements Runnable {
 
                         public void eventReceived() {
                             synchronized (SubscriptionCallback.this) {
-                                log.fine("Local service state updated, notifying callback, sequence is: " + getCurrentSequence());
+                                log.trace("Local service state updated, notifying callback, sequence is: " + getCurrentSequence());
                                 SubscriptionCallback.this.eventReceived(this);
                                 incrementSequence();
                             }
                         }
                     };
 
-            log.fine("Local device service is currently registered, also registering subscription");
+            log.trace("Local device service is currently registered, also registering subscription");
             getControlPoint().getRegistry().addLocalSubscription(localSubscription);
 
-            log.fine("Notifying subscription callback of local subscription availablity");
+            log.trace("Notifying subscription callback of local subscription availablity");
             localSubscription.establish();
 
-            log.fine("Simulating first initial event for local subscription callback, sequence: " + localSubscription.getCurrentSequence());
+            log.trace("Simulating first initial event for local subscription callback, sequence: " + localSubscription.getCurrentSequence());
             eventReceived(localSubscription);
             localSubscription.incrementSequence();
 
-            log.fine("Starting to monitor state changes of local service");
+            log.trace("Starting to monitor state changes of local service");
             localSubscription.registerOnService();
 
         } catch (Exception ex) {
-            log.fine("Local callback creation failed: " + ex.toString());
-            log.log(Level.FINE, "Exception root cause: ", Exceptions.unwrap(ex));
+            log.trace("Local callback creation failed: " + ex.toString());
+            log.trace("Exception root cause: ", Exceptions.unwrap(ex));
             if (localSubscription != null)
                 getControlPoint().getRegistry().removeLocalSubscription(localSubscription);
             failed(localSubscription, null, ex);
@@ -256,13 +256,13 @@ public abstract class SubscriptionCallback implements Runnable {
     }
 
     private void endLocalSubscription(LocalGENASubscription subscription) {
-        log.fine("Removing local subscription and ending it in callback: " + subscription);
+        log.trace("Removing local subscription and ending it in callback: " + subscription);
         getControlPoint().getRegistry().removeLocalSubscription(subscription);
         subscription.end(null); // No reason, on controlpoint request
     }
 
     private void endRemoteSubscription(RemoteGENASubscription subscription) {
-        log.fine("Ending remote subscription: " + subscription);
+        log.trace("Ending remote subscription: " + subscription);
         getControlPoint().getConfiguration().getSyncProtocolExecutorService().execute(
                 getControlPoint().getProtocolFactory().createSendingUnsubscribe(subscription)
         );
@@ -349,7 +349,7 @@ public abstract class SubscriptionCallback implements Runnable {
      * </p>
      * <p>
      * The default implementation will log the exception at <code>INFO</code> level, and
-     * the invalid XML at <code>FINE</code> level.
+     * the invalid XML at <code>TRACE</code> level.
      * </p>
      *
      * @param remoteGENASubscription The established subscription.
@@ -358,10 +358,10 @@ public abstract class SubscriptionCallback implements Runnable {
 	protected void invalidMessage(RemoteGENASubscription remoteGENASubscription,
                                   UnsupportedDataException ex) {
         log.info("Invalid event message received, causing: " + ex);
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("------------------------------------------------------------------------------");
-            log.fine(ex.getData() != null ? ex.getData().toString() : "null");
-            log.fine("------------------------------------------------------------------------------");
+        if (log.isTraceEnabled()) {
+            log.trace("------------------------------------------------------------------------------");
+            log.trace(ex.getData() != null ? ex.getData().toString() : "null");
+            log.trace("------------------------------------------------------------------------------");
         }
     }
 

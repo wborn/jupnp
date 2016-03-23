@@ -14,11 +14,12 @@
 
 package org.jupnp.model.types;
 
-import org.jupnp.model.Constants;
-
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.jupnp.model.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a service type, for example <code>urn:my-domain-namespace:service:MyService:1</code>.
@@ -78,7 +79,7 @@ public class ServiceType {
      */
     public static ServiceType valueOf(String s) throws InvalidValueException {
 
-        final Logger log = Logger.getLogger(ServiceType.class.getName());
+        final Logger log = LoggerFactory.getLogger(ServiceType.class);
 
         if (s == null)
             throw new InvalidValueException("Can't parse null string");
@@ -115,7 +116,7 @@ public class ServiceType {
             matcher = Pattern.compile("urn:(" + Constants.REGEX_NAMESPACE + "):service:(.+?):([0-9]+).*").matcher(s);
             if (matcher.matches() && matcher.groupCount() >= 3) {
                 String cleanToken = matcher.group(2).replaceAll("[^a-zA-Z_0-9\\-]", "-");
-                log.warning(
+                log.warn(
                     "UPnP specification violation, replacing invalid service type token '"
                         + matcher.group(2)
                         + "' with: "
@@ -129,7 +130,7 @@ public class ServiceType {
             matcher = Pattern.compile("urn:(" + Constants.REGEX_NAMESPACE + "):serviceId:(.+?):([0-9]+).*").matcher(s);
             if (matcher.matches() && matcher.groupCount() >= 3) {
                 String cleanToken = matcher.group(2).replaceAll("[^a-zA-Z_0-9\\-]", "-");
-                log.warning(
+                log.warn(
                     "UPnP specification violation, replacing invalid service type token '"
                     + matcher.group(2)
                     + "' with: "

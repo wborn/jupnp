@@ -14,6 +14,13 @@
 
 package org.jupnp.model.meta;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
 import org.jupnp.model.Namespace;
 import org.jupnp.model.Validatable;
 import org.jupnp.model.ValidationError;
@@ -24,15 +31,8 @@ import org.jupnp.model.types.DeviceType;
 import org.jupnp.model.types.ServiceId;
 import org.jupnp.model.types.ServiceType;
 import org.jupnp.model.types.UDN;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Describes either a root or embedded device.
@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  */
 public abstract class Device<DI extends DeviceIdentity, D extends Device, S extends Service> implements Validatable {
 
-    final private Logger log = Logger.getLogger(Device.class.getName());
+    final private Logger log = LoggerFactory.getLogger(Device.class);
 
     final private DI identity;
 
@@ -89,7 +89,7 @@ public abstract class Device<DI extends DeviceIdentity, D extends Device, S exte
                     if(iconErrors.isEmpty()) {
                         validIcons.add(icon);
                     } else {
-                        log.warning("Discarding invalid '" + icon + "': " + iconErrors);
+                        log.warn("Discarding invalid '" + icon + "': " + iconErrors);
                     }
                 }
             }
@@ -120,9 +120,9 @@ public abstract class Device<DI extends DeviceIdentity, D extends Device, S exte
 
         List<ValidationError> errors = validate();
         if (errors.size() > 0) {
-            if (log.isLoggable(Level.FINEST)) {
+            if (log.isTraceEnabled()) {
                 for (ValidationError error : errors) {
-                    log.finest(error.toString());
+                    log.trace(error.toString());
                 }
             }
             throw new ValidationException("Validation of device graph failed, call getErrors() on exception", errors);

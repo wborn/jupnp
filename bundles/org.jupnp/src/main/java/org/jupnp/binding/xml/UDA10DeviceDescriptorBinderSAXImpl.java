@@ -14,12 +14,18 @@
 
 package org.jupnp.binding.xml;
 
+import java.io.StringReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.jupnp.binding.staging.MutableDevice;
 import org.jupnp.binding.staging.MutableIcon;
 import org.jupnp.binding.staging.MutableService;
 import org.jupnp.binding.staging.MutableUDAVersion;
+import org.jupnp.binding.xml.Descriptor.Device.ELEMENT;
 import org.jupnp.model.ValidationException;
-import org.jupnp.model.XMLUtil;
 import org.jupnp.model.meta.Device;
 import org.jupnp.model.types.DLNACaps;
 import org.jupnp.model.types.DLNADoc;
@@ -29,18 +35,11 @@ import org.jupnp.model.types.ServiceType;
 import org.jupnp.model.types.UDN;
 import org.jupnp.util.MimeType;
 import org.jupnp.xml.SAXParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import java.io.StringReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-
-import static org.jupnp.binding.xml.Descriptor.Device.ELEMENT;
 
 /**
  * A JAXP SAX parser implementation, which is actually slower than the DOM implementation (on desktop and on Android)!
@@ -49,7 +48,7 @@ import static org.jupnp.binding.xml.Descriptor.Device.ELEMENT;
  */
 public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBinderImpl {
 
-    private Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
+    private Logger log = LoggerFactory.getLogger(DeviceDescriptorBinder.class);
 
     @Override
     public <D extends Device> D describe(D undescribedDevice, String descriptorXml) throws DescriptorBindingException, ValidationException {
@@ -59,7 +58,7 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
         }
 
         try {
-            log.fine("Populating device from XML descriptor: " + undescribedDevice);
+            log.trace("Populating device from XML descriptor: " + undescribedDevice);
 
             // Read the XML into a mutable descriptor graph
 
@@ -128,7 +127,7 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
 
         public static final ELEMENT EL = ELEMENT.specVersion;
 
-        Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
+        Logger log = LoggerFactory.getLogger(DeviceDescriptorBinder.class);
         
         public SpecVersionHandler(MutableUDAVersion instance, DeviceDescriptorHandler parent) {
             super(instance, parent);
@@ -140,7 +139,7 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
                 case major:
                     String majorVersion = getCharacters().trim();
                     if (!majorVersion.equals("1")) {
-                        log.warning("Unsupported UDA major version, ignoring: " + majorVersion);
+                        log.warn("Unsupported UDA major version, ignoring: " + majorVersion);
                         majorVersion = "1";
                     }
                     getInstance().major = Integer.valueOf(majorVersion);
@@ -148,7 +147,7 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
                 case minor:
                     String minorVersion = getCharacters().trim();
                     if (!minorVersion.equals("0")) {
-                        log.warning("Unsupported UDA minor version, ignoring: " + minorVersion);
+                        log.warn("Unsupported UDA minor version, ignoring: " + minorVersion);
                         minorVersion = "0";
                     }
                     getInstance().minor = Integer.valueOf(minorVersion);
@@ -166,7 +165,7 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
 
         public static final ELEMENT EL = ELEMENT.device;
 
-        Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
+        Logger log = LoggerFactory.getLogger(DeviceDescriptorBinder.class);
         
         public DeviceHandler(MutableDevice instance, DeviceDescriptorHandler parent) {
             super(instance, parent);
@@ -280,7 +279,7 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
 
         public static final ELEMENT EL = ELEMENT.icon;
 
-        private Logger log = Logger.getLogger(DeviceDescriptorBinder.class.getName());
+        private Logger log = LoggerFactory.getLogger(DeviceDescriptorBinder.class);
         
         public IconHandler(MutableIcon instance, DeviceDescriptorHandler parent) {
             super(instance, parent);
@@ -299,7 +298,7 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
                 	try {
                 		getInstance().depth = Integer.valueOf(getCharacters());
                 	} catch(NumberFormatException ex) {
-                		log.warning("Invalid icon depth '" + getCharacters() + "', using 16 as default: " + ex);
+                		log.warn("Invalid icon depth '" + getCharacters() + "', using 16 as default: " + ex);
                 		getInstance().depth = 16;
                 	}
                     break;
@@ -311,7 +310,7 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
                         getInstance().mimeType = getCharacters();
                         MimeType.valueOf(getInstance().mimeType);
                     } catch(IllegalArgumentException ex) {
-                        log.warning("Ignoring invalid icon mime type: " + getInstance().mimeType);
+                        log.warn("Ignoring invalid icon mime type: " + getInstance().mimeType);
                         getInstance().mimeType = "";
                     }
                     break;
@@ -385,7 +384,7 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
                         break;
                 }
             } catch (InvalidValueException ex) {
-                Logger.getLogger(DeviceDescriptorBinder.class.getName()).warning(
+                LoggerFactory.getLogger(DeviceDescriptorBinder.class).warn(
                     "UPnP specification violation, skipping invalid service declaration. " + ex.getMessage()
                 );
             }

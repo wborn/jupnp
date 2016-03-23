@@ -14,11 +14,12 @@
 
 package org.jupnp.model.types;
 
-import org.jupnp.model.Constants;
-
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.jupnp.model.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a service identifier, for example <code>urn:my-domain-namespace:serviceId:MyService123</code>
@@ -61,7 +62,7 @@ public class ServiceId {
 
     public static ServiceId valueOf(String s) throws InvalidValueException {
 
-        final Logger log = Logger.getLogger(ServiceId.class.getName());
+        final Logger log = LoggerFactory.getLogger(ServiceId.class);
 
         ServiceId serviceId = null;
 
@@ -90,14 +91,14 @@ public class ServiceId {
         // urn:upnp-org:serviceId:
         matcher = Pattern.compile("urn:(" + Constants.REGEX_NAMESPACE + "):serviceId:").matcher(s);
         if (matcher.matches() && matcher.groupCount() >= 1) {
-            log.warning("UPnP specification violation, no service ID token, defaulting to " + UNKNOWN + ": " + s);
+            log.warn("UPnP specification violation, no service ID token, defaulting to " + UNKNOWN + ": " + s);
             return new ServiceId(matcher.group(1), UNKNOWN);
         }
 
         // TODO: UPNP VIOLATION: PS Audio Bridge has invalid service IDs
         String tokens[] = s.split("[:]");
         if (tokens.length == 4) {
-            log.warning("UPnP specification violation, trying a simple colon-split of: " + s);
+            log.warn("UPnP specification violation, trying a simple colon-split of: " + s);
             return new ServiceId(tokens[1], tokens[3]);
         }
 

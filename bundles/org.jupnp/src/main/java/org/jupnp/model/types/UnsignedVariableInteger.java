@@ -14,7 +14,8 @@
 
 package org.jupnp.model.types;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A crude solution for unsigned "non-negative" types in UPnP, not usable for any arithmetic.
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  */
 public abstract class UnsignedVariableInteger {
 
-    final private Logger log = Logger.getLogger(UnsignedVariableInteger.class.getName());
+    final private Logger log = LoggerFactory.getLogger(UnsignedVariableInteger.class);
 
     public enum Bits {
         EIGHT(0xffL),
@@ -55,7 +56,7 @@ public abstract class UnsignedVariableInteger {
         if (s.startsWith("-")) {
             // Don't throw exception, just cut it!
             // TODO: UPNP VIOLATION: Twonky Player returns "-1" as the track number
-            log.warning("Invalid negative integer value '" + s + "', assuming value 0!");
+            log.warn("Invalid negative integer value '" + s + "', assuming value 0!");
             s = "0";
         }
         setValue(Long.parseLong(s.trim()));

@@ -14,8 +14,11 @@
 
 package org.jupnp.transport.impl;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.util.Locale;
 
 import org.jupnp.http.Headers;
 import org.jupnp.model.UnsupportedDataException;
@@ -26,12 +29,8 @@ import org.jupnp.model.message.UpnpOperation;
 import org.jupnp.model.message.UpnpRequest;
 import org.jupnp.model.message.UpnpResponse;
 import org.jupnp.transport.spi.DatagramProcessor;
-
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation.
@@ -40,16 +39,16 @@ import java.util.Locale;
  */
 public class DatagramProcessorImpl implements DatagramProcessor {
 
-    private Logger log = Logger.getLogger(DatagramProcessor.class.getName());
+    private Logger log = LoggerFactory.getLogger(DatagramProcessor.class);
 
     public IncomingDatagramMessage read(InetAddress receivedOnAddress, DatagramPacket datagram) throws UnsupportedDataException {
 
         try {
 
-            if (log.isLoggable(Level.FINER)) {
-                log.finer("===================================== DATAGRAM BEGIN ============================================");
-                log.finer(new String(datagram.getData()));
-                log.finer("-===================================== DATAGRAM END =============================================");
+            if (log.isTraceEnabled()) {
+                log.trace("===================================== DATAGRAM BEGIN ============================================");
+                log.trace(new String(datagram.getData()));
+                log.trace("-===================================== DATAGRAM END =============================================");
             }
 
             ByteArrayInputStream is = new ByteArrayInputStream(datagram.getData());
@@ -95,11 +94,11 @@ public class DatagramProcessorImpl implements DatagramProcessor {
 
         messageData.append(message.getHeaders().toString()).append("\r\n");
 
-        if (log.isLoggable(Level.FINER)) {
-            log.finer("Writing message data for: " + message);
-            log.finer("---------------------------------------------------------------------------------");
-            log.finer(messageData.toString().substring(0, messageData.length() - 2)); // Don't print the blank lines
-            log.finer("---------------------------------------------------------------------------------");
+        if (log.isTraceEnabled()) {
+            log.trace("Writing message data for: " + message);
+            log.trace("---------------------------------------------------------------------------------");
+            log.trace(messageData.toString().substring(0, messageData.length() - 2)); // Don't print the blank lines
+            log.trace("---------------------------------------------------------------------------------");
         }
 
         try {
@@ -107,7 +106,7 @@ public class DatagramProcessorImpl implements DatagramProcessor {
             // TODO: Probably should look into escaping rules, too
             byte[] data = messageData.toString().getBytes("US-ASCII");
 
-            log.fine("Writing new datagram packet with " + data.length + " bytes for: " + message);
+            log.trace("Writing new datagram packet with " + data.length + " bytes for: " + message);
             return new DatagramPacket(data, data.length, message.getDestinationAddress(), message.getDestinationPort());
 
         } catch (UnsupportedEncodingException ex) {

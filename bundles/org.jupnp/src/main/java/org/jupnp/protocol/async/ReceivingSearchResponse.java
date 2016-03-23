@@ -26,8 +26,8 @@ import org.jupnp.model.types.UDN;
 import org.jupnp.protocol.ReceivingAsync;
 import org.jupnp.protocol.RetrieveRemoteDescriptors;
 import org.jupnp.transport.RouterException;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles reception of search response messages.
@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  */
 public class ReceivingSearchResponse extends ReceivingAsync<IncomingSearchResponse> {
 
-    final private Logger log = Logger.getLogger(ReceivingSearchResponse.class.getName());
+    final private Logger log = LoggerFactory.getLogger(ReceivingSearchResponse.class);
 
     public ReceivingSearchResponse(UpnpService upnpService, IncomingDatagramMessage<UpnpResponse> inputMessage) {
         super(upnpService, new IncomingSearchResponse(inputMessage));
@@ -50,21 +50,21 @@ public class ReceivingSearchResponse extends ReceivingAsync<IncomingSearchRespon
     protected void execute() throws RouterException {
 
         if (!getInputMessage().isSearchResponseMessage()) {
-            log.fine("Ignoring invalid search response message: " + getInputMessage());
+            log.trace("Ignoring invalid search response message: " + getInputMessage());
             return;
         }
 
         UDN udn = getInputMessage().getRootDeviceUDN();
         if (udn == null) {
-            log.fine("Ignoring search response message without UDN: " + getInputMessage());
+            log.trace("Ignoring search response message without UDN: " + getInputMessage());
             return;
         }
 
         RemoteDeviceIdentity rdIdentity = new RemoteDeviceIdentity(getInputMessage());
-        log.fine("Received device search response: " + rdIdentity);
+        log.trace("Received device search response: " + rdIdentity);
 
         if (getUpnpService().getRegistry().update(rdIdentity)) {
-            log.fine("Remote device was already known: " + udn);
+            log.trace("Remote device was already known: " + udn);
             return;
         }
 
@@ -72,20 +72,20 @@ public class ReceivingSearchResponse extends ReceivingAsync<IncomingSearchRespon
         try {
             rd = new RemoteDevice(rdIdentity);
         } catch (ValidationException ex) {
-            log.warning("Validation errors of device during discovery: " + rdIdentity);
+            log.warn("Validation errors of device during discovery: " + rdIdentity);
             for (ValidationError validationError : ex.getErrors()) {
-                log.warning(validationError.toString());
+                log.warn(validationError.toString());
             }
             return;
         }
 
         if (rdIdentity.getDescriptorURL() == null) {
-            log.finer("Ignoring message without location URL header: " + getInputMessage());
+            log.trace("Ignoring message without location URL header: " + getInputMessage());
             return;
         }
 
         if (rdIdentity.getMaxAgeSeconds() == null) {
-            log.finer("Ignoring message without max-age header: " + getInputMessage());
+            log.trace("Ignoring message without max-age header: " + getInputMessage());
             return;
         }
 

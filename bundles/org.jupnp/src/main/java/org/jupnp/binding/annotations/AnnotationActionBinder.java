@@ -14,6 +14,14 @@
 
 package org.jupnp.binding.annotations;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.jupnp.binding.LocalServiceBindingException;
 import org.jupnp.model.Constants;
 import org.jupnp.model.ModelUtil;
@@ -28,22 +36,15 @@ import org.jupnp.model.state.GetterStateVariableAccessor;
 import org.jupnp.model.state.StateVariableAccessor;
 import org.jupnp.model.types.Datatype;
 import org.jupnp.util.Reflections;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Christian Bauer
  */
 public class AnnotationActionBinder {
 
-    private Logger log = Logger.getLogger(AnnotationLocalServiceBinder.class.getName());
+    private Logger log = LoggerFactory.getLogger(AnnotationLocalServiceBinder.class);
 
     protected UpnpAction annotation;
     protected Method method;
@@ -82,7 +83,7 @@ public class AnnotationActionBinder {
             name = AnnotationLocalServiceBinder.toUpnpActionName(getMethod().getName());
         }
 
-        log.fine("Creating action and executor: " + name);
+        log.trace("Creating action and executor: " + name);
 
         List<ActionArgument> inputArguments = createInputArguments();
         Map<ActionArgument<LocalService>, StateVariableAccessor> outputArguments = createOutputArguments();
@@ -192,7 +193,7 @@ public class AnnotationActionBinder {
                     hasMultipleOutputArguments
             );
 
-            log.finer("Found related state variable for output argument '" + argumentName + "': " + stateVariable);
+            log.trace("Found related state variable for output argument '" + argumentName + "': " + stateVariable);
 
             ActionArgument outputArgument = new ActionArgument(
                     argumentName,
@@ -215,7 +216,7 @@ public class AnnotationActionBinder {
         if (isVoid) {
 
             if (getterName != null && getterName.length() > 0) {
-                log.finer("Action method is void, will use getter method named: " + getterName);
+                log.trace("Action method is void, will use getter method named: " + getterName);
 
                 // Use the same class as the action method
                 Method getter = Reflections.getMethod(getMethod().getDeclaringClass(), getterName);
@@ -229,13 +230,13 @@ public class AnnotationActionBinder {
                 return new GetterStateVariableAccessor(getter);
 
             } else {
-                log.finer("Action method is void, trying to find existing accessor of related: " + stateVariable);
+                log.trace("Action method is void, trying to find existing accessor of related: " + stateVariable);
                 return getStateVariables().get(stateVariable);
             }
 
 
         } else if (getterName != null && getterName.length() > 0) {
-            log.finer("Action method is not void, will use getter method on returned instance: " + getterName);
+            log.trace("Action method is not void, will use getter method on returned instance: " + getterName);
 
             // Use the returned class
             Method getter = Reflections.getMethod(getMethod().getReturnType(), getterName);
@@ -249,7 +250,7 @@ public class AnnotationActionBinder {
             return new GetterStateVariableAccessor(getter);
 
         } else if (!multipleArguments) {
-            log.finer("Action method is not void, will use the returned instance: " + getMethod().getReturnType());
+            log.trace("Action method is not void, will use the returned instance: " + getMethod().getReturnType());
             validateType(stateVariable, getMethod().getReturnType());
         }
 
@@ -267,7 +268,7 @@ public class AnnotationActionBinder {
 
         if (relatedStateVariable == null && argumentName != null && argumentName.length() > 0) {
             String actualName = AnnotationLocalServiceBinder.toUpnpStateVariableName(argumentName);
-            log.finer("Finding related state variable with argument name (converted to UPnP name): " + actualName);
+            log.trace("Finding related state variable with argument name (converted to UPnP name): " + actualName);
             relatedStateVariable = getStateVariable(argumentName);
         }
 
@@ -275,7 +276,7 @@ public class AnnotationActionBinder {
             // Try with A_ARG_TYPE prefix
             String actualName = AnnotationLocalServiceBinder.toUpnpStateVariableName(argumentName);
             actualName = Constants.ARG_TYPE_PREFIX + actualName;
-            log.finer("Finding related state variable with prefixed argument name (converted to UPnP name): " + actualName);
+            log.trace("Finding related state variable with prefixed argument name (converted to UPnP name): " + actualName);
             relatedStateVariable = getStateVariable(actualName);
         }
 
@@ -283,7 +284,7 @@ public class AnnotationActionBinder {
             // TODO: Well, this is often a nice shortcut but sometimes might have false positives
             String methodPropertyName = Reflections.getMethodPropertyName(methodName);
             if (methodPropertyName != null) {
-                log.finer("Finding related state variable with method property name: " + methodPropertyName);
+                log.trace("Finding related state variable with method property name: " + methodPropertyName);
                 relatedStateVariable =
                         getStateVariable(
                                 AnnotationLocalServiceBinder.toUpnpStateVariableName(methodPropertyName)
@@ -304,7 +305,7 @@ public class AnnotationActionBinder {
                         ? Datatype.Default.STRING
                         : Datatype.Default.getByJavaType(type);
 
-        log.finer("Expecting '" + stateVariable + "' to match default mapping: " + expectedDefaultMapping);
+        log.trace("Expecting '" + stateVariable + "' to match default mapping: " + expectedDefaultMapping);
 
         if (expectedDefaultMapping != null &&
                 !stateVariable.getTypeDetails().getDatatype().isHandlingJavaType(expectedDefaultMapping.getJavaType())) {
@@ -322,7 +323,7 @@ public class AnnotationActionBinder {
             );
         }
 
-        log.finer("State variable matches required argument datatype (or can't be validated because it is custom)");
+        log.trace("State variable matches required argument datatype (or can't be validated because it is custom)");
     }
 
     protected StateVariable getStateVariable(String name) {

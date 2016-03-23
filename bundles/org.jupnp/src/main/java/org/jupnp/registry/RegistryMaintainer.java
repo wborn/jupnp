@@ -14,8 +14,8 @@
 
 package org.jupnp.registry;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Runs periodically and calls {@link org.jupnp.registry.RegistryImpl#maintain()}.
@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  */
 public class RegistryMaintainer implements Runnable {
 
-    private Logger log = Logger.getLogger(RegistryMaintainer.class.getName());
+    private Logger log = LoggerFactory.getLogger(RegistryMaintainer.class);
 
     final private RegistryImpl registry;
     final private int sleepIntervalMillis;
@@ -37,15 +37,13 @@ public class RegistryMaintainer implements Runnable {
     }
 
     public void stop() {
-        if (log.isLoggable(Level.FINE))
-            log.fine("Setting stopped status on thread");
+        log.trace("Setting stopped status on thread");
         stopped = true;
     }
 
     public void run() {
         stopped = false;
-        if (log.isLoggable(Level.FINE))
-            log.fine("Running registry maintenance loop every milliseconds: " + sleepIntervalMillis);
+        log.trace("Running registry maintenance loop every milliseconds: " + sleepIntervalMillis);
         while (!stopped) {
 
             try {
@@ -56,7 +54,7 @@ public class RegistryMaintainer implements Runnable {
             }
 
         }
-        log.fine("Stopped status on thread received, ending maintenance loop");
+        log.trace("Stopped status on thread received, ending maintenance loop");
     }
 
 }

@@ -14,10 +14,13 @@
 
 package org.jupnp.http;
 
+import java.util.Enumeration;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Christian Bauer
@@ -154,18 +157,18 @@ public class RequestInfo {
     }
 
     public static void dumpRequestString(long timestamp, HttpServletRequest request) {
-    	Logger.getLogger(RequestInfo.class.getName()).info(getRequestInfoString(timestamp, request));
+    	LoggerFactory.getLogger(RequestInfo.class).info(getRequestInfoString(timestamp, request));
     }
 
     public static void dumpRequestHeaders(long timestamp, String text, HttpServletRequest request) {
-    	Logger log = Logger.getLogger(RequestInfo.class.getName());
+    	Logger log = LoggerFactory.getLogger(RequestInfo.class);
         log.info(text);
         dumpRequestString(timestamp, request);
         Enumeration headers = request.getHeaderNames();
         if (headers != null) {
             while (headers.hasMoreElements()) {
                 String headerName = (String) headers.nextElement();
-                log.info(String.format("%s: %s", headerName, request.getHeader(headerName)));
+                log.info("{}: {}", headerName, request.getHeader(headerName));
             }
         }
         log.info("----------------------------------------");
