@@ -18,11 +18,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError;
-
 import org.jupnp.model.Constants;
 import org.jupnp.model.UnsupportedDataException;
 import org.jupnp.model.XMLUtil;
@@ -53,27 +48,27 @@ import org.xml.sax.SAXParseException;
  *
  * @author Christian Bauer
  */
-public class SOAPActionProcessorImpl implements SOAPActionProcessor, ErrorHandler {
+public class SOAPActionProcessorImpl extends PooledXmlProcessor implements SOAPActionProcessor, ErrorHandler {
 
     private Logger log = LoggerFactory.getLogger(SOAPActionProcessor.class);
     
-    protected DocumentBuilderFactory createDocumentBuilderFactory() throws FactoryConfigurationError {
-    	return DocumentBuilderFactory.newInstance();
+
+    
+    public SOAPActionProcessorImpl() {
+
     }
+    
 
     public void writeBody(ActionRequestMessage requestMessage, ActionInvocation actionInvocation) throws UnsupportedDataException {
 
         log.trace("Writing body of " + requestMessage + " for: " + actionInvocation);
 
         try {
-
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-            Document d = factory.newDocumentBuilder().newDocument();
+            Document d = newDocument();
             Element body = writeBodyElement(d);
 
             writeBodyRequest(d, body, requestMessage, actionInvocation);
-
+            
             if (log.isTraceEnabled()) {
                 log.trace("===================================== SOAP BODY BEGIN ============================================");
                 log.trace(requestMessage.getBodyString());
@@ -90,10 +85,7 @@ public class SOAPActionProcessorImpl implements SOAPActionProcessor, ErrorHandle
         log.trace("Writing body of " + responseMessage + " for: " + actionInvocation);
 
         try {
-
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-            Document d = factory.newDocumentBuilder().newDocument();
+            Document d = newDocument();
             Element body = writeBodyElement(d);
 
             if (actionInvocation.getFailure() != null) {
@@ -101,7 +93,7 @@ public class SOAPActionProcessorImpl implements SOAPActionProcessor, ErrorHandle
             } else {
                 writeBodyResponse(d, body, responseMessage, actionInvocation);
             }
-
+            
             if (log.isTraceEnabled()) {
                 log.trace("===================================== SOAP BODY BEGIN ============================================");
                 log.trace(responseMessage.getBodyString());
@@ -124,18 +116,10 @@ public class SOAPActionProcessorImpl implements SOAPActionProcessor, ErrorHandle
 
         String body = getMessageBody(requestMessage);
         try {
-
-            DocumentBuilderFactory factory = createDocumentBuilderFactory();
-            factory.setNamespaceAware(true);
-            DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-            documentBuilder.setErrorHandler(this);
-
-            Document d = documentBuilder.parse(new InputSource(new StringReader(body)));
-
+            Document d = readDocument(new InputSource(new StringReader(body)), this);
             Element bodyElement = readBodyElement(d);
 
             readBodyRequest(d, bodyElement, requestMessage, actionInvocation);
-
         } catch (Exception ex) {
             throw new UnsupportedDataException("Can't transform message payload: " + ex, ex, body);
         }
@@ -149,17 +133,11 @@ public class SOAPActionProcessorImpl implements SOAPActionProcessor, ErrorHandle
             log.trace(responseMsg.getBodyString());
             log.trace("-===================================== SOAP BODY END ============================================");
         }
+        
 
         String body = getMessageBody(responseMsg);
         try {
-
-            DocumentBuilderFactory factory = createDocumentBuilderFactory();
-            factory.setNamespaceAware(true);
-            DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-            documentBuilder.setErrorHandler(this);
-
-            Document d = documentBuilder.parse(new InputSource(new StringReader(body)));
-
+            Document d = readDocument(new InputSource(new StringReader(body)), this);
             Element bodyElement = readBodyElement(d);
 
             ActionException failure = readBodyFailure(d, bodyElement);
@@ -169,7 +147,6 @@ public class SOAPActionProcessorImpl implements SOAPActionProcessor, ErrorHandle
             } else {
                 actionInvocation.setFailure(failure);
             }
-
         } catch (Exception ex) {
     		throw new UnsupportedDataException("Can't transform message payload: " + ex, ex, body);
         }
