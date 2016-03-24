@@ -48,13 +48,13 @@ public abstract class RemoteGENASubscription extends GENASubscription<RemoteServ
         super(service, requestedDurationSeconds);
     }
 
-    synchronized public URL getEventSubscriptionURL() {
+    public URL getEventSubscriptionURL() {
         return getService().getDevice().normalizeURI(
                 getService().getEventSubscriptionURI()
         );
     }
 
-    synchronized public List<URL> getEventCallbackURLs(List<NetworkAddress> activeStreamServers, Namespace namespace) {
+    public List<URL> getEventCallbackURLs(List<NetworkAddress> activeStreamServers, Namespace namespace) {
         List<URL> callbackURLs = new ArrayList();
         for (NetworkAddress activeStreamServer : activeStreamServers) {
             callbackURLs.add(

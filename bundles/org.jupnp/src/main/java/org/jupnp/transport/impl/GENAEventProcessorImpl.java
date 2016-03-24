@@ -45,7 +45,7 @@ import org.xml.sax.SAXParseException;
  *
  * @author Christian Bauer
  */
-public class GENAEventProcessorImpl implements GENAEventProcessor, ErrorHandler {
+public class GENAEventProcessorImpl extends PooledXmlProcessor implements GENAEventProcessor, ErrorHandler {
 
     private Logger log = LoggerFactory.getLogger(GENAEventProcessor.class);
 
@@ -58,9 +58,7 @@ public class GENAEventProcessorImpl implements GENAEventProcessor, ErrorHandler 
 
         try {
 
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-            Document d = factory.newDocumentBuilder().newDocument();
+            Document d = newDocument();
             Element propertysetElement = writePropertysetElement(d);
 
             writeProperties(d, propertysetElement, requestMessage);
@@ -89,14 +87,8 @@ public class GENAEventProcessorImpl implements GENAEventProcessor, ErrorHandler 
 
         String body = getMessageBody(requestMessage);
         try {
-
-            DocumentBuilderFactory factory = createDocumentBuilderFactory();
-            factory.setNamespaceAware(true);
-            DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-            documentBuilder.setErrorHandler(this);
-
-            Document d = documentBuilder.parse(
-                new InputSource(new StringReader(body))
+            Document d = readDocument(
+                new InputSource(new StringReader(body)), this
             );
 
             Element propertysetElement = readPropertysetElement(d);
