@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Service<D extends Device, S extends Service> {
 
-	final private Logger log = LoggerFactory.getLogger(Service.class);
+    final private Logger log = LoggerFactory.getLogger(Service.class);
 
     final private ServiceType serviceType;
     final private ServiceId serviceId;
@@ -172,7 +172,7 @@ public abstract class Service<D extends Device, S extends Service> {
                     "Service must have at least one state variable"
             ));
         }
-        */
+         */
         if (hasStateVariables()) {
             for (StateVariable stateVariable : getStateVariables()) {
                 errors.addAll(stateVariable.validate());
@@ -186,13 +186,16 @@ public abstract class Service<D extends Device, S extends Service> {
                 // errors.addAll(action.validate());
 
                 List<ValidationError> actionErrors = action.validate();
-            	if(actionErrors.size() > 0) {
+                if (actionErrors.size() > 0) {
                     actions.remove(action.getName()); // Remove it
                     log.warn("Discarding invalid action of service '" + getServiceId() + "': " + action.getName());
-                    for (ValidationError actionError : actionErrors) {
-                        log.warn("Invalid action '" + action.getName() + "': " + actionError);
+                    // log details only in debug level
+                    if (log.isDebugEnabled()) {
+                        for (ValidationError actionError : actionErrors) {
+                            log.debug("Invalid action '" + action.getName() + "': " + actionError);
+                        }
                     }
-            	}
+                }
             }
         }
 

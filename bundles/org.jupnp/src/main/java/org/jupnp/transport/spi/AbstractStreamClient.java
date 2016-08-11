@@ -65,7 +65,7 @@ public abstract class AbstractStreamClient<C extends StreamClientConfiguration, 
             long elapsed = System.currentTimeMillis() - start;
             log.trace("Got HTTP response in {} ms: {}", elapsed, requestMessage);
             if (getConfiguration().getLogWarningSeconds() > 0
-                && elapsed > getConfiguration().getLogWarningSeconds()*1000) {
+                    && elapsed > getConfiguration().getLogWarningSeconds() * 1000) {
                 log.warn("HTTP request took a long time (" + elapsed + "ms): " + requestMessage);
             }
 
@@ -88,7 +88,15 @@ public abstract class AbstractStreamClient<C extends StreamClientConfiguration, 
         } catch (ExecutionException ex) {
             Throwable cause = ex.getCause();
             if (!logExecutionException(cause)) {
-                log.warn("HTTP request failed: " + requestMessage, Exceptions.unwrap(cause));
+                String message = "HTTP request failed: " + requestMessage;
+
+                if (log.isDebugEnabled()) {
+                    // if debug then the warning will additionally contain the stacktrace of the causing exception
+                    log.warn(message, Exceptions.unwrap(cause));
+                } else {
+                    // compact logging
+                    log.warn(message + " (" + Exceptions.unwrap(cause).getMessage() + ")");
+                }
             }
             return null;
         } finally {
@@ -106,7 +114,7 @@ public abstract class AbstractStreamClient<C extends StreamClientConfiguration, 
      * Create a callable procedure that will execute the request.
      */
     abstract protected Callable<StreamResponseMessage> createCallable(StreamRequestMessage requestMessage,
-                                                                      REQUEST request);
+            REQUEST request);
 
     /**
      * Cancel and abort the request immediately, with the proprietary API.
