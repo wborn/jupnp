@@ -606,8 +606,11 @@ public class QueueingThreadPoolExecutorTest {
 		// queue thread must be active
 		assertTrue(isQueueThreadActive(poolName));
 
-		// after N/10+x sec all should be executed, x=2 for some tolerance
-		Thread.sleep(N / 10 + 2000);
+		// after N/10 sec+x sec all should be executed
+		// N/10 as every runnable runs 100ms, we have a poolsize of 10, so we
+		// execute 10/sec
+		// x=2 sec for some tolerance
+		Thread.sleep(((N / 10) + 2) * 1000); // * 1000 as in ms
 		assertEquals(pool.getCompletedTaskCount(), N);
 		// at the end queue thread is shutdown, wait for additional 3 sec
 		Thread.sleep(3000);
@@ -626,6 +629,8 @@ public class QueueingThreadPoolExecutorTest {
 	 */
 	@Test
 	public void testMonkeyTest() throws InterruptedException {
+		Logger logger = LoggerFactory.getLogger(this.getClass());
+
 		AbstractRunnable.resetRuns();
 		String poolName = "testMonkeyTest";
 		final ThreadPoolExecutor pool = QueueingThreadPoolExecutor.createInstance(poolName, 5);
@@ -678,10 +683,10 @@ public class QueueingThreadPoolExecutorTest {
 
 		// wait until processed
 		while (pool.getCompletedTaskCount() < 100) {
-			System.out.println("getCompletedTaskCount: " + pool.getCompletedTaskCount());
+			logger.info("getCompletedTaskCount: " + pool.getCompletedTaskCount());
 			Thread.sleep(1000);
 		}
-		System.out.println("getCompletedTaskCount: " + pool.getCompletedTaskCount());
+		logger.info("getCompletedTaskCount: " + pool.getCompletedTaskCount());
 		assertEquals(pool.getCompletedTaskCount(), 100, "Completed tasks must match");
 		// check runs too
 		assertEquals(AbstractRunnable.getRuns(), 100, "Number of executors runs must match");
@@ -776,7 +781,8 @@ public class QueueingThreadPoolExecutorTest {
 		sequence = "," + sequence;
 		for (int i = 1; i <= max; i++) {
 			if (!sequence.contains("," + i + ",")) {
-				System.out.println("isSequenceComplete: missed " + i + " in " + sequence);
+				Logger logger = LoggerFactory.getLogger(this.getClass());
+				logger.error("isSequenceComplete: missed " + i + " in " + sequence);
 				return false;
 			}
 		}
@@ -790,7 +796,8 @@ public class QueueingThreadPoolExecutorTest {
 		for (int i = from; i <= to; i++) {
 			String val = tokenizer.nextToken();
 			if (!val.equals(String.valueOf(i))) {
-				System.out.println("isSequenceOrdered: missed " + i + " in " + sequence);
+				Logger logger = LoggerFactory.getLogger(this.getClass());
+				logger.error("isSequenceOrdered: missed " + i + " in " + sequence);
 				return false;
 			}
 		}
