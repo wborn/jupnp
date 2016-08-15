@@ -20,18 +20,17 @@ import static org.testng.Assert.assertTrue;
 
 import java.security.Permission;
 import java.util.Random;
+import java.util.StringTokenizer;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jupnp.QueueingThreadPoolExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeTest;
-import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
-
-import org.jupnp.QueueingThreadPoolExecutor;
 
 /**
  * Test class for the {@link QueueingThreadPoolExecutor} class, abbreviated here
@@ -79,7 +78,7 @@ public class QueueingThreadPoolExecutorTest {
 	/**
 	 * Tests what happens when poolName == null.
 	 */
-    @Test(expectedExceptions = IllegalArgumentException.class)
+	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void testCreateInstanceInvalidArgsPoolNameNull() throws InterruptedException {
 		QueueingThreadPoolExecutor.createInstance(null, 1);
 	}
@@ -147,12 +146,12 @@ public class QueueingThreadPoolExecutorTest {
 		basicTestForPoolName("testPoolWithWellDefinedPoolName");
 	}
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void testPoolWithBlankPoolName() throws InterruptedException {
 		basicTestForPoolName(" ");
 	}
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void testPoolWithEmptyPoolName() throws InterruptedException {
 		basicTestForPoolName("");
 	}
@@ -236,8 +235,8 @@ public class QueueingThreadPoolExecutorTest {
 		// no queue thread
 		assertFalse(isQueueThreadActive(poolName));
 		Thread.sleep(1000);
-		assertEquals(pool.getCompletedTaskCount(), 1000);
-		assertEquals(AbstractRunnable.getRuns(), 1000);
+		assertEquals(pool.getCompletedTaskCount(), 1000, "Completed tasks must match");
+		assertEquals(AbstractRunnable.getRuns(), 1000, "Number of executors runs must match");
 
 		// needs to wait CORE_POOL_TIMEOUT + x until all threads are down again
 		pool.shutdown();
@@ -334,20 +333,20 @@ public class QueueingThreadPoolExecutorTest {
 
 		// pool 2 tasks, threads must exist
 		pool.execute(createRunnable10s());
-		assertEquals(pool.getActiveCount(), 1);
-		assertTrue(isPoolThreadActive(poolName, 1));
+		assertEquals(pool.getActiveCount(), 1, "1 thread must be active");
+		assertTrue(isPoolThreadActive(poolName, 1), "1 thread must be active in pool");
 		Thread t1 = getThread(poolName + "-1");
-		assertEquals(t1.isDaemon(), false);
+		assertEquals(t1.isDaemon(), false, "Thread 1 MUST NOT be a daemon");
 		// thread will be NORM prio or max prio of this thread group, which can
 		// < than NORM
 		int prio1 = Math.min(t1.getThreadGroup().getMaxPriority(), Thread.NORM_PRIORITY);
 		assertEquals(t1.getPriority(), prio1);
 
 		pool.execute(createRunnable10s());
-		assertEquals(pool.getActiveCount(), 2);
-		assertTrue(isPoolThreadActive(poolName, 2));
+		assertEquals(pool.getActiveCount(), 2, "2 threads must be active");
+		assertTrue(isPoolThreadActive(poolName, 2), "2 threads must be active in pool");
 		Thread t2 = getThread(poolName + "-2");
-		assertEquals(t2.isDaemon(), false);
+		assertEquals(t2.isDaemon(), false, "Thread 2 MUST NOT be a daemon");
 		// thread will be NORM prio or max prio of this thread group, which can
 		// < than NORM
 		int prio2 = Math.min(t2.getThreadGroup().getMaxPriority(), Thread.NORM_PRIORITY);
@@ -356,13 +355,13 @@ public class QueueingThreadPoolExecutorTest {
 		// 2 more tasks, will be queued, no threads
 		pool.execute(createRunnable1s());
 		// as pool size is 2, no more active threads, will stay at 2
-		assertEquals(pool.getActiveCount(), 2);
-		assertFalse(isPoolThreadActive(poolName, 3));
+		assertEquals(pool.getActiveCount(), 2, "2 threads must be active");
+		assertFalse(isPoolThreadActive(poolName, 3), "There MUST NOT be a thread 3");
 		assertEquals(pool.getQueue().size(), 1);
 
 		pool.execute(createRunnable1s());
-		assertEquals(pool.getActiveCount(), 2);
-		assertFalse(isPoolThreadActive(poolName, 4));
+		assertEquals(pool.getActiveCount(), 2, "2 threads must be active");
+		assertFalse(isPoolThreadActive(poolName, 4), "There MUST NOT be a thread 4");
 		assertEquals(pool.getQueue().size(), 2);
 
 		// 0 are yet executed
@@ -372,15 +371,15 @@ public class QueueingThreadPoolExecutorTest {
 		// threads are down again
 		pool.shutdown();
 		Thread.sleep(CORE_POOL_TIMEOUT + 3000);
-		assertFalse(areThreadsFromPoolRunning(poolName));
+		assertFalse(areThreadsFromPoolRunning(poolName), "No threads must remain");
 	}
 
 	/**
 	 * Test that no further tasks will be executed when TPE is terminating.
 	 * 
-	 * @TODO the check for
-	 *       "(threadPoolExecutor instanceof QueueingThreadPoolExecutor)" is not
-	 *       necessary. This can never happen
+	 * @TODO the check for "(threadPoolExecutor instanceof
+	 *       QueueingThreadPoolExecutor)" is not necessary. This can never
+	 *       happen
 	 */
 	@Test
 	public void testShutdownNoEntriesIntoQueueAnymore() throws InterruptedException {
@@ -410,13 +409,13 @@ public class QueueingThreadPoolExecutorTest {
 		// threads are down again
 		// pool yet shutdown here
 		Thread.sleep(CORE_POOL_TIMEOUT + 3000);
-		assertFalse(areThreadsFromPoolRunning(poolName));
+		assertFalse(areThreadsFromPoolRunning(poolName), "No threads must remain");
 	}
 
 	/**
 	 * Tests what happens when wrong rejected execution handler will be used.
 	 */
-    @Test(expectedExceptions = UnsupportedOperationException.class)
+	@Test(expectedExceptions = UnsupportedOperationException.class)
 	public void testSetInvalidRejectionHandler() throws InterruptedException {
 		String poolName = "testShutdownNoEntriesIntoQueueAnymore";
 		ThreadPoolExecutor pool = QueueingThreadPoolExecutor.createInstance(poolName, 2);
@@ -497,7 +496,39 @@ public class QueueingThreadPoolExecutorTest {
 		// threads are down again
 		pool.shutdown();
 		Thread.sleep(CORE_POOL_TIMEOUT + 3000);
-		assertFalse(areThreadsFromPoolRunning(poolName));
+		assertFalse(areThreadsFromPoolRunning(poolName), "No threads must remain");
+	}
+
+	/**
+	 * This test checks if entries in queue will be fully processed.
+	 */
+	@Test
+	public void testPoolSize4With1QueueEntry() throws InterruptedException {
+		AbstractRunnable.resetRuns();
+		String poolName = "testPoolSize4With1QueueEntry";
+		final ThreadPoolExecutor pool = QueueingThreadPoolExecutor.createInstance(poolName, 4);
+
+		pool.execute(createRunnable100ms());
+		pool.execute(createRunnable100ms());
+		pool.execute(createRunnable100ms());
+		pool.execute(createRunnable1s());
+		pool.execute(createRunnable1s());
+		assertEquals(pool.getActiveCount(), 4);
+		assertTrue(isQueueThreadActive(poolName));
+		assertEquals(pool.getQueue().size(), 1);
+
+		// wait until all jobs have been processed
+		Thread.sleep(2 * 1000 + 1000);
+
+		// needs to wait CORE_POOL_TIMEOUT + 2sec-queue-thread + x until all
+		// threads are down again
+		pool.shutdown();
+		Thread.sleep(CORE_POOL_TIMEOUT + 1000);
+		assertFalse(areThreadsFromPoolRunning(poolName), "No threads must remain");
+
+		// all 5 jobs have to be executed
+		assertEquals(AbstractRunnable.getRuns(), 5);
+		assertTrue(isSequenceComplete(AbstractRunnable.getRunSequence(), 5));
 	}
 
 	/**
@@ -544,7 +575,7 @@ public class QueueingThreadPoolExecutorTest {
 		// threads are down again
 		pool.shutdown();
 		Thread.sleep(CORE_POOL_TIMEOUT + 1000);
-		assertFalse(areThreadsFromPoolRunning(poolName));
+		assertFalse(areThreadsFromPoolRunning(poolName), "No threads must remain");
 	}
 
 	/**
@@ -555,7 +586,8 @@ public class QueueingThreadPoolExecutorTest {
 		String poolName = "testPoolSize10FillPoolParallel";
 		final ThreadPoolExecutor pool = QueueingThreadPoolExecutor.createInstance(poolName, 10);
 
-		Thread[] fillThreads = new Thread[100];
+		int N = 200;
+		Thread[] fillThreads = new Thread[N];
 		for (int i = 0; i < fillThreads.length; i++) {
 			fillThreads[i] = new Thread() {
 				@Override
@@ -568,14 +600,15 @@ public class QueueingThreadPoolExecutorTest {
 		for (int i = 0; i < fillThreads.length; i++) {
 			fillThreads[i].start();
 		}
-		Thread.sleep(1000); // wait until filled
+		Thread.sleep(2000); // wait until filled
 
 		assertEquals(pool.getActiveCount(), 10);
 		// queue thread must be active
 		assertTrue(isQueueThreadActive(poolName));
-		// after 10+x sec all should be executed
-		Thread.sleep(12000);
-		assertEquals(pool.getCompletedTaskCount(), 100);
+
+		// after N/10+x sec all should be executed, x=2 for some tolerance
+		Thread.sleep(N / 10 + 2000);
+		assertEquals(pool.getCompletedTaskCount(), N);
 		// at the end queue thread is shutdown, wait for additional 3 sec
 		Thread.sleep(3000);
 		assertFalse(isQueueThreadActive(poolName));
@@ -584,11 +617,12 @@ public class QueueingThreadPoolExecutorTest {
 		// threads are down again
 		pool.shutdown();
 		Thread.sleep(CORE_POOL_TIMEOUT + 1000);
-		assertFalse(areThreadsFromPoolRunning(poolName));
+		assertFalse(areThreadsFromPoolRunning(poolName), "No threads must remain");
 	}
 
 	/**
-	 * Monkey test, just adding executors, and check if all have been executed.
+	 * Monkey test, just adding executors in parallel threads, and check if all
+	 * have been executed.
 	 */
 	@Test
 	public void testMonkeyTest() throws InterruptedException {
@@ -597,7 +631,17 @@ public class QueueingThreadPoolExecutorTest {
 		final ThreadPoolExecutor pool = QueueingThreadPoolExecutor.createInstance(poolName, 5);
 
 		Thread[] fillThreads = new Thread[100];
-		for (int i = 0; i < fillThreads.length; i++) {
+		// fill first 5 threads with long running jobs to make sure threads are
+		// blocked
+		for (int i = 0; i < 5; i++) {
+			fillThreads[i] = new Thread() {
+				@Override
+				public void run() {
+					pool.execute(createRunnable10s());
+				}
+			};
+		}
+		for (int i = 5; i < fillThreads.length; i++) {
 			fillThreads[i] = new Thread() {
 				@Override
 				public void run() {
@@ -628,23 +672,25 @@ public class QueueingThreadPoolExecutorTest {
 		}
 		Thread.sleep(1000); // wait until filled
 
-		assertEquals(pool.getActiveCount(), 5);
+		assertEquals(pool.getActiveCount(), 5, "All threads should be busy");
 		// queue thread must be active
 		assertTrue(isQueueThreadActive(poolName));
 
 		// wait until processed
 		while (pool.getCompletedTaskCount() < 100) {
+			System.out.println("getCompletedTaskCount: " + pool.getCompletedTaskCount());
 			Thread.sleep(1000);
 		}
-		assertEquals(pool.getCompletedTaskCount(), 100);
+		System.out.println("getCompletedTaskCount: " + pool.getCompletedTaskCount());
+		assertEquals(pool.getCompletedTaskCount(), 100, "Completed tasks must match");
 		// check runs too
-		assertEquals(AbstractRunnable.getRuns(), 100);
+		assertEquals(AbstractRunnable.getRuns(), 100, "Number of executors runs must match");
 
 		// needs to wait CORE_POOL_TIMEOUT + 2sec-queue-thread + x until all
 		// threads are down again
 		pool.shutdown();
 		Thread.sleep(CORE_POOL_TIMEOUT + 3000);
-		assertFalse(areThreadsFromPoolRunning(poolName));
+		assertFalse(areThreadsFromPoolRunning(poolName), "No threads must remain");
 	}
 
 	// helper methods
@@ -722,6 +768,35 @@ public class QueueingThreadPoolExecutorTest {
 		return foundThreads;
 	}
 
+	/**
+	 * Just searches if all numbers from 1..max are included in sequence,
+	 * delimited by comma. Order does not matter.
+	 */
+	private boolean isSequenceComplete(String sequence, int max) {
+		sequence = "," + sequence;
+		for (int i = 1; i <= max; i++) {
+			if (!sequence.contains("," + i + ",")) {
+				System.out.println("isSequenceComplete: missed " + i + " in " + sequence);
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean isSequenceOrdered(String sequence, int from, int to) {
+		sequence = "," + sequence;
+		int fromPos = sequence.indexOf(String.valueOf(from));
+		StringTokenizer tokenizer = new StringTokenizer(sequence.substring(fromPos), ",");
+		for (int i = from; i <= to; i++) {
+			String val = tokenizer.nextToken();
+			if (!val.equals(String.valueOf(i))) {
+				System.out.println("isSequenceOrdered: missed " + i + " in " + sequence);
+				return false;
+			}
+		}
+		return true;
+	}
+
 	// Runnables for testing
 
 	private Runnable createRunnableFast() {
@@ -746,16 +821,34 @@ public class QueueingThreadPoolExecutorTest {
 
 	private static abstract class AbstractRunnable implements Runnable {
 		private static AtomicInteger runs = new AtomicInteger(0);
+		private static AtomicInteger lastUniqueId = new AtomicInteger(0);
+		/**
+		 * We need a synchronized StringBuffer, StringBuilder is not sifficient
+		 * here.
+		 */
+		private static StringBuffer runSequence = new StringBuffer();
+		private final int uniqueId;
 
 		public static void resetRuns() {
+			LoggerFactory.getLogger(AbstractRunnable.class).info("resetRuns");
 			runs = new AtomicInteger(0);
+			runSequence = new StringBuffer();
+			lastUniqueId = new AtomicInteger(0);
 		}
 
 		public static int getRuns() {
 			return runs.get();
 		}
 
+		public static String getRunSequence() {
+			return runSequence.toString();
+		}
+
 		protected Logger logger = LoggerFactory.getLogger(this.getClass());
+
+		public AbstractRunnable() {
+			uniqueId = lastUniqueId.incrementAndGet();
+		}
 
 		protected void sleep(int milliseconds) {
 			try {
@@ -767,8 +860,14 @@ public class QueueingThreadPoolExecutorTest {
 		}
 
 		public void run() {
-			logger.info("run");
+			logger.info("run job {}", uniqueId);
 			runs.incrementAndGet();
+			runSequence.append(uniqueId);
+			runSequence.append(',');
+		}
+
+		public String toString() {
+			return "job " + uniqueId;
 		}
 	}
 

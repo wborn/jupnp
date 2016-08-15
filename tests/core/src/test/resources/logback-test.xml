@@ -7,7 +7,7 @@
 		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
 			by default -->
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%-20thread] %-5level %-70(%logger{36}.%M:%line) - %msg%n
+			<pattern>%d{HH:mm:ss.SSS} [%-50thread] %-5level %-70(%logger{36}.%M:%line) - %msg%n
 			</pattern>
 		</encoder>
 	</appender>
@@ -17,7 +17,7 @@
 	<!-- set to DEBUG for on the wire logging -->
 	<logger name="org.apache.http.wire" level="WARN" />
 
-	<root level="INFO">
+	<root level="DEBUG">
 		<appender-ref ref="STDOUT" />
 	</root>
 
