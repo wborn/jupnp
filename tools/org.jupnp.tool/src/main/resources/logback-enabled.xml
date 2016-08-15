@@ -10,12 +10,31 @@
 			<pattern>%d{HH:mm:ss.SSS} [%-20thread] %-5level %-70(%logger{36}.%M:%line) - %msg%n
 			</pattern>
 		</encoder>
+		<target>System.out</target>
+	</appender>
+
+	<appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%-20thread] %-5level %-70(%logger{36}.%M:%line) - %msg%n
+			</pattern>
+		</encoder>
+		<target>System.err</target>
 	</appender>
 
 	<appender name="PLAIN_STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>%msg%n</pattern>
 		</encoder>
+		<target>System.out</target>
+	</appender>
+
+	<appender name="PLAIN_STDERR" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+		<target>System.err</target>
 	</appender>
 
 	<logger name="org.apache.http" level="ERROR" />
@@ -28,7 +47,7 @@
 	</logger>
 
 	<root level="DEBUG">
-		<appender-ref ref="STDOUT" />
+		<appender-ref ref="STDERR" />
 	</root>
 
 </configuration>

@@ -58,7 +58,7 @@ public class CommandLineArgs {
 class SearchCommandArgs {
 
 	@Parameter(names = { "--timeout", "-t" }, description = "The timeout when search will be finished")
-	public Integer timeout = 20;
+	public Integer timeout = 10;
 
 	@Parameter(names = { "--sort",
 			"-s" }, description = "Sort using {none|ip|model|serialNumber|manufacturer|udn}", validateWith = SearchCommandSortByValidator.class)
