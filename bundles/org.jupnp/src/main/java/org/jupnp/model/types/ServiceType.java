@@ -18,8 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jupnp.model.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jupnp.util.SpecificationViolationReporter;
 
 /**
  * Represents a service type, for example <code>urn:my-domain-namespace:service:MyService:1</code>.
@@ -29,9 +28,10 @@ import org.slf4j.LoggerFactory;
  * </p>
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - use SpecificationViolationReporter
  */
 public class ServiceType {
-
+	
     public static final Pattern PATTERN =
         Pattern.compile("urn:(" + Constants.REGEX_NAMESPACE + "):service:(" + Constants.REGEX_TYPE + "):([0-9]+).*");
 
@@ -78,9 +78,6 @@ public class ServiceType {
      * @return Either a {@link UDAServiceType} or a more generic {@link ServiceType}.
      */
     public static ServiceType valueOf(String s) throws InvalidValueException {
-
-        final Logger log = LoggerFactory.getLogger(ServiceType.class);
-
         if (s == null)
             throw new InvalidValueException("Can't parse null string");
 
@@ -116,12 +113,8 @@ public class ServiceType {
             matcher = Pattern.compile("urn:(" + Constants.REGEX_NAMESPACE + "):service:(.+?):([0-9]+).*").matcher(s);
             if (matcher.matches() && matcher.groupCount() >= 3) {
                 String cleanToken = matcher.group(2).replaceAll("[^a-zA-Z_0-9\\-]", "-");
-                log.warn(
-                    "UPnP specification violation, replacing invalid service type token '"
-                        + matcher.group(2)
-                        + "' with: "
-                        + cleanToken
-                );
+                SpecificationViolationReporter.report(
+                        "Replacing invalid service type token '{}' with: {}", matcher.group(2), cleanToken);
                 return new ServiceType(matcher.group(1), cleanToken, Integer.valueOf(matcher.group(3)));
             }
 
@@ -130,12 +123,8 @@ public class ServiceType {
             matcher = Pattern.compile("urn:(" + Constants.REGEX_NAMESPACE + "):serviceId:(.+?):([0-9]+).*").matcher(s);
             if (matcher.matches() && matcher.groupCount() >= 3) {
                 String cleanToken = matcher.group(2).replaceAll("[^a-zA-Z_0-9\\-]", "-");
-                log.warn(
-                    "UPnP specification violation, replacing invalid service type token '"
-                    + matcher.group(2)
-                    + "' with: "
-                    + cleanToken
-                );
+                SpecificationViolationReporter.report(
+                        "Replacing invalid service type token '{}' with: {}", matcher.group(2), cleanToken);
                 return new ServiceType(matcher.group(1), cleanToken, Integer.valueOf(matcher.group(3)));
             }
         } catch (RuntimeException e) {

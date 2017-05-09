@@ -130,9 +130,9 @@ public class SAXParser {
     }
 
 
-    public static class Handler<I> extends DefaultHandler {
 
-        final private Logger log = LoggerFactory.getLogger(SAXParser.class);
+    public static class Handler<I> extends DefaultHandler {
+        private final Logger log = LoggerFactory.getLogger(SAXParser.class);
 
         protected SAXParser parser;
         protected I instance;

@@ -31,6 +31,7 @@ import org.jupnp.model.types.DeviceType;
 import org.jupnp.model.types.ServiceId;
 import org.jupnp.model.types.ServiceType;
 import org.jupnp.model.types.UDN;
+import org.jupnp.util.SpecificationViolationReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +39,11 @@ import org.slf4j.LoggerFactory;
  * Describes either a root or embedded device.
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - use SpecificationViolationReporter
  */
 public abstract class Device<DI extends DeviceIdentity, D extends Device, S extends Service> implements Validatable {
 
-    final private Logger log = LoggerFactory.getLogger(Device.class);
+    private final Logger log = LoggerFactory.getLogger(Device.class);
 
     final private DI identity;
 
@@ -89,7 +91,8 @@ public abstract class Device<DI extends DeviceIdentity, D extends Device, S exte
                     if(iconErrors.isEmpty()) {
                         validIcons.add(icon);
                     } else {
-                        log.warn("Discarding invalid '" + icon + "': " + iconErrors);
+                        SpecificationViolationReporter
+                                .report("Discarding invalid '" + icon + "': " + iconErrors, null);
                     }
                 }
             }

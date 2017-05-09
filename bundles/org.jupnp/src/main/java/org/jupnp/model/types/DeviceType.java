@@ -18,8 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jupnp.model.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jupnp.util.SpecificationViolationReporter;
 
 /**
  * Represents a device type, for example <code>urn:my-domain-namespace:device:MyDevice:1</code>.
@@ -29,6 +28,7 @@ import org.slf4j.LoggerFactory;
  * </p>
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - use SpecificationViolationReporter
  */
 public class DeviceType {
 
@@ -75,9 +75,6 @@ public class DeviceType {
      * @return Either a {@link UDADeviceType} or a more generic {@link DeviceType}.
      */
     public static DeviceType valueOf(String s) throws InvalidValueException {
-
-        final Logger log = LoggerFactory.getLogger(DeviceType.class);
-
         DeviceType deviceType = null;
 
         // Sometimes crazy UPnP devices deliver spaces in a URN, don't ask...
@@ -104,7 +101,8 @@ public class DeviceType {
             // urn:schemas-upnp-org:device::1
             matcher = Pattern.compile("urn:(" + Constants.REGEX_NAMESPACE + "):device::([0-9]+).*").matcher(s);
             if (matcher.matches() && matcher.groupCount() >= 2) {
-                log.warn("UPnP specification violation, no device type token, defaulting to " + UNKNOWN + ": " + s);
+                SpecificationViolationReporter
+                        .report("No device type token, defaulting to " + UNKNOWN + ": " + s, null);
                 return new DeviceType(matcher.group(1), UNKNOWN, Integer.valueOf(matcher.group(2)));
             }
 
@@ -113,12 +111,8 @@ public class DeviceType {
             matcher = Pattern.compile("urn:(" + Constants.REGEX_NAMESPACE + "):device:(.+?):([0-9]+).*").matcher(s);
             if (matcher.matches() && matcher.groupCount() >= 3) {
                 String cleanToken = matcher.group(2).replaceAll("[^a-zA-Z_0-9\\-]", "-");
-                log.warn(
-                    "UPnP specification violation, replacing invalid device type token '"
-                        + matcher.group(2)
-                        + "' with: "
-                        + cleanToken
-                );
+                SpecificationViolationReporter.report(
+                        "Replacing invalid device type token '{}' with: {}", matcher.group(2), cleanToken);
                 return new DeviceType(matcher.group(1), cleanToken, Integer.valueOf(matcher.group(3)));
             }
         } catch (RuntimeException e) {

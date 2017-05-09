@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ReceivingSearchResponse extends ReceivingAsync<IncomingSearchResponse> {
 
-    final private Logger log = LoggerFactory.getLogger(ReceivingSearchResponse.class);
+    private final Logger log = LoggerFactory.getLogger(ReceivingSearchResponse.class);
 
     public ReceivingSearchResponse(UpnpService upnpService, IncomingDatagramMessage<UpnpResponse> inputMessage) {
         super(upnpService, new IncomingSearchResponse(inputMessage));

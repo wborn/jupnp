@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Christian Bauer
  * @author Kai Kreuzer - added configurable port for search responses
+ * @author Jochen Hiller - add more diagnostic information in case of an general communication exception
  */
 public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
 
@@ -158,7 +159,18 @@ public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
         } catch (RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
-            log.error("Exception sending datagram to: " + datagram.getAddress() + ": " + ex, ex);
-        }
+			log.error("Exception sending datagram to: " + datagram.getAddress() + ": " + ex, ex);
+			log.error("  Details: datagram.socketAddress={}, length={}, offfset={}, data.bytes={}",
+					datagram.getSocketAddress(), datagram.getLength(), datagram.getOffset(), datagram.getData().length);
+			try {
+				log.error(
+						"  Details: socket={}, closed={}, bound={}, inetAddress={}, "
+								+ "remoteSocketAddress={}, networkInterface=" + socket.toString(),
+						socket.isClosed(), socket.isBound(), socket.getInetAddress(), socket.getRemoteSocketAddress(),
+						socket.getNetworkInterface());
+			} catch (SocketException ex2) {
+				log.error("  Details: could not get network interface due to {}", ex2, ex2);
+			}
+		}
     }
 }

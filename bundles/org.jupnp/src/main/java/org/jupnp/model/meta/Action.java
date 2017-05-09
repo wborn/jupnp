@@ -20,17 +20,15 @@ import java.util.List;
 import org.jupnp.model.ModelUtil;
 import org.jupnp.model.Validatable;
 import org.jupnp.model.ValidationError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jupnp.util.SpecificationViolationReporter;
 
 /**
  * Describes an action and its input/output arguments.
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - use SpecificationViolationReporter
  */
 public class Action<S extends Service> implements Validatable {
-
-    final private Logger log = LoggerFactory.getLogger(Action.class);
 
     final private String name;
     final private ActionArgument[] arguments;
@@ -145,8 +143,8 @@ public class Action<S extends Service> implements Validatable {
                     "Action without name of: " + getService()
             ));
         } else if (!ModelUtil.isValidUDAName(getName())) {
-            log.warn("UPnP specification violation of: " + getService().getDevice());
-            log.warn("Invalid action name: " + this);
+            SpecificationViolationReporter.report(getService().getDevice(),
+                    "Invalid action name: {}", this);
         }
 
         for (ActionArgument actionArgument : getArguments()) {
@@ -168,12 +166,12 @@ public class Action<S extends Service> implements Validatable {
             // Check retval
             if (actionArgument.isReturnValue()) {
                 if (actionArgument.getDirection() == ActionArgument.Direction.IN) {
-                    log.warn("UPnP specification violation of :" + getService().getDevice());
-                    log.warn("Input argument can not have <retval/>");
+					SpecificationViolationReporter.report(getService().getDevice(),
+							"Input argument can not have <retval/>");
                 } else {
                     if (retValueArgument != null) {
-                        log.warn("UPnP specification violation of: " + getService().getDevice());
-                        log.warn("Only one argument of action '" + getName() + "' can be <retval/>");
+						SpecificationViolationReporter.report(getService().getDevice(),
+								"Only one argument of action '{}' can be <retval/>", getName());
                     }
                     retValueArgument = actionArgument;
                     retValueArgumentIndex = i;
@@ -185,8 +183,9 @@ public class Action<S extends Service> implements Validatable {
             for (int j = 0; j < retValueArgumentIndex; j++) {
                 ActionArgument a = getArguments()[j];
                 if (a.getDirection() == ActionArgument.Direction.OUT) {
-                    log.warn("UPnP specification violation of: " + getService().getDevice());
-                    log.warn("Argument '" + retValueArgument.getName() + "' of action '" + getName() + "' is <retval/> but not the first OUT argument");
+					SpecificationViolationReporter.report(getService().getDevice(),
+							"Argument '{}' of action '{}' is <retval/> but not the first OUT argument",
+							retValueArgument.getName(), getName());
                 }
             }
         }

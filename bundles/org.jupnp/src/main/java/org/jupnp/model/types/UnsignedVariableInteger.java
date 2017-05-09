@@ -14,17 +14,15 @@
 
 package org.jupnp.model.types;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jupnp.util.SpecificationViolationReporter;
 
 /**
  * A crude solution for unsigned "non-negative" types in UPnP, not usable for any arithmetic.
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - use SpecificationViolationReporter
  */
 public abstract class UnsignedVariableInteger {
-
-    final private Logger log = LoggerFactory.getLogger(UnsignedVariableInteger.class);
 
     public enum Bits {
         EIGHT(0xffL),
@@ -56,7 +54,8 @@ public abstract class UnsignedVariableInteger {
         if (s.startsWith("-")) {
             // Don't throw exception, just cut it!
             // TODO: UPNP VIOLATION: Twonky Player returns "-1" as the track number
-            log.warn("Invalid negative integer value '" + s + "', assuming value 0!");
+            SpecificationViolationReporter
+                    .report("Invalid negative integer value '" + s + "', assuming value 0!", null);
             s = "0";
         }
         setValue(Long.parseLong(s.trim()));

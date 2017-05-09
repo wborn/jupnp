@@ -31,6 +31,7 @@ import org.jupnp.model.types.ErrorCode;
 import org.jupnp.protocol.ReceivingSync;
 import org.jupnp.transport.RouterException;
 import org.jupnp.util.Exceptions;
+import org.jupnp.util.SpecificationViolationReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,10 +44,11 @@ import org.slf4j.LoggerFactory;
  * </p>
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - use SpecificationViolationReporter
  */
 public class ReceivingAction extends ReceivingSync<StreamRequestMessage, StreamResponseMessage> {
 
-    final private Logger log = LoggerFactory.getLogger(ReceivingAction.class);
+    private final Logger log = LoggerFactory.getLogger(ReceivingAction.class);
 
     public ReceivingAction(UpnpService upnpService, StreamRequestMessage inputMessage) {
         super(upnpService, inputMessage);
@@ -61,12 +63,14 @@ public class ReceivingAction extends ReceivingSync<StreamRequestMessage, StreamR
         // 'If the CONTENT-TYPE header specifies an unsupported value (other then "text/xml") the
         // device must return an HTTP status code "415 Unsupported Media Type".'
         if (contentTypeHeader != null && !contentTypeHeader.isUDACompliantXML()) {
-            log.warn("Received invalid Content-Type '" + contentTypeHeader + "': " + getInputMessage());
+            SpecificationViolationReporter.report(
+                    "Received invalid Content-Type '{}': {}", contentTypeHeader, getInputMessage());
             return new StreamResponseMessage(new UpnpResponse(UpnpResponse.Status.UNSUPPORTED_MEDIA_TYPE));
         }
 
         if (contentTypeHeader == null) {
-            log.warn("Received without Content-Type: " + getInputMessage());
+            SpecificationViolationReporter
+                    .report("Received without Content-Type: {}", getInputMessage());
         }
 
         ServiceControlResource resource =

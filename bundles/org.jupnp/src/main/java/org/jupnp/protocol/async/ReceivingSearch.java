@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ReceivingSearch extends ReceivingAsync<IncomingSearchRequest> {
 
-    final private Logger log = LoggerFactory.getLogger(ReceivingSearch.class);
+    private final Logger log = LoggerFactory.getLogger(ReceivingSearch.class);
 
     private final boolean LOG_ENABLED = log.isTraceEnabled();
 

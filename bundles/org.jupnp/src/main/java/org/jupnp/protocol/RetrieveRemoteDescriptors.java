@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RetrieveRemoteDescriptors implements Runnable {
 
-    final private Logger log = LoggerFactory.getLogger(RetrieveRemoteDescriptors.class);
+    private final Logger log = LoggerFactory.getLogger(RetrieveRemoteDescriptors.class);
 
     private final UpnpService upnpService;
     private RemoteDevice rd;

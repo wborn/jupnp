@@ -28,10 +28,9 @@ import org.jupnp.model.Validatable;
 import org.jupnp.model.ValidationError;
 import org.jupnp.model.types.BinHexDatatype;
 import org.jupnp.util.MimeType;
+import org.jupnp.util.SpecificationViolationReporter;
 import org.jupnp.util.URIUtil;
 import org.jupnp.util.io.IO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The metadata of a device icon, might include the actual image data of a local icon.
@@ -44,10 +43,9 @@ import org.slf4j.LoggerFactory;
  * </p>
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - use SpecificationViolationReporter
  */
 public class Icon implements Validatable {
-
-    final private Logger log = LoggerFactory.getLogger(StateVariable.class);
 
     final private MimeType mimeType;
     final private int width;
@@ -162,20 +160,20 @@ public class Icon implements Validatable {
         List<ValidationError> errors = new ArrayList();
 
         if (getMimeType() == null) {
-            log.warn("UPnP specification violation of: " + getDevice());
-            log.warn("Invalid icon, missing mime type: " + this);
+            SpecificationViolationReporter.report(getDevice(),
+                    "Invalid icon, missing mime type: {}", this);
         }
         if (getWidth() == 0) {
-            log.warn("UPnP specification violation of: " + getDevice());
-            log.warn("Invalid icon, missing width: " + this);
+            SpecificationViolationReporter.report(getDevice(),
+                    "Invalid icon, missing width: {}", this);
         }
         if (getHeight() == 0) {
-            log.warn("UPnP specification violation of: " + getDevice());
-            log.warn("Invalid icon, missing height: " + this);
+            SpecificationViolationReporter.report(getDevice(),
+                   "Invalid icon, missing height: {}", this);
         }
         if (getDepth() == 0) {
-            log.warn("UPnP specification violation of: " + getDevice());
-            log.warn("Invalid icon, missing bitmap depth: " + this);
+            SpecificationViolationReporter.report(getDevice(),
+                   "Invalid icon, missing bitmap depth: {}", this);
         }
 
         if (getUri() == null) {

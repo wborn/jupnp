@@ -19,8 +19,7 @@ import java.util.List;
 
 import org.jupnp.model.Validatable;
 import org.jupnp.model.ValidationError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jupnp.util.SpecificationViolationReporter;
 
 /**
  * Integrity rule for a state variable, restricting its values to a range with steps.
@@ -28,10 +27,9 @@ import org.slf4j.LoggerFactory;
  * TODO: The question here is: Are they crazy enough to use this for !integer (e.g. floating point) numbers?
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - use SpecificationViolationReporter
  */
 public class StateVariableAllowedValueRange implements Validatable {
-
-    final private Logger log = LoggerFactory.getLogger(StateVariableAllowedValueRange.class);
 
     final private long minimum;
     final private long maximum;
@@ -43,8 +41,9 @@ public class StateVariableAllowedValueRange implements Validatable {
 
     public StateVariableAllowedValueRange(long minimum, long maximum, long step) {
         if (minimum > maximum) {
-            log.warn("UPnP specification violation, allowed value range minimum '" + minimum
-                                + "' is greater than maximum '" + maximum + "', switching values.");
+			SpecificationViolationReporter.report(
+					"Allowed value range minimum '{}' is greater than maximum '{}', switching values.", minimum,
+					maximum);
             this.minimum = maximum;
             this.maximum = minimum;
         } else {

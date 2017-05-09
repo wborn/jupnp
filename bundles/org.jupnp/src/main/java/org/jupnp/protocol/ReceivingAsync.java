@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ReceivingAsync<M extends UpnpMessage> implements Runnable {
 
-    final private Logger log = LoggerFactory.getLogger(UpnpService.class);
+    private final Logger log = LoggerFactory.getLogger(UpnpService.class);
 
     private final UpnpService upnpService;
 

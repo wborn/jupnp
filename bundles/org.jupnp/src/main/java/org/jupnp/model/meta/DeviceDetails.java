@@ -23,17 +23,15 @@ import org.jupnp.model.Validatable;
 import org.jupnp.model.ValidationError;
 import org.jupnp.model.types.DLNACaps;
 import org.jupnp.model.types.DLNADoc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jupnp.util.SpecificationViolationReporter;
 
 /**
  * Encapsulates all optional metadata about a device.
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - use SpecificationViolationReporter
  */
 public class DeviceDetails implements Validatable {
-
-    final private Logger log = LoggerFactory.getLogger(DeviceDetails.class);
 
     final private URL baseURL;
     final private String friendlyName;
@@ -203,12 +201,14 @@ public class DeviceDetails implements Validatable {
         if (getUpc() != null) {
             // This is broken in more than half of the devices I've tested, so let's not even bother with a warning
             if (getUpc().length() != 12) {
-                log.trace("UPnP specification violation, UPC must be 12 digits: " + getUpc());
+                SpecificationViolationReporter
+                        .report("UPC must be 12 digits: '" + getUpc() + "' for device '" + getFriendlyName() + "'", null);
             } else {
                 try {
                     Long.parseLong(getUpc());
                 } catch (NumberFormatException ex) {
-                    log.trace("UPnP specification violation, UPC must be 12 digits all-numeric: " + getUpc());
+					SpecificationViolationReporter.report("UPC must be 12 digits all-numeric: '{}' for device '{}'",
+							getUpc(), getFriendlyName());
                 }
             }
         }

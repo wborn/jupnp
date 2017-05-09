@@ -22,17 +22,15 @@ import org.jupnp.model.ModelUtil;
 import org.jupnp.model.Validatable;
 import org.jupnp.model.ValidationError;
 import org.jupnp.model.types.Datatype;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jupnp.util.SpecificationViolationReporter;
 
 /**
  * The metadata of a named state variable.
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - use SpecificationViolationReporter
  */
 public class StateVariable<S extends Service> implements Validatable {
-
-    final private Logger log = LoggerFactory.getLogger(StateVariable.class);
 
     final private String name;
     final private StateVariableTypeDetails type;
@@ -83,8 +81,8 @@ public class StateVariable<S extends Service> implements Validatable {
                     "StateVariable without name of: " + getService()
             ));
         } else if (!ModelUtil.isValidUDAName(getName())) {
-            log.warn("UPnP specification violation of: " + getService().getDevice());
-            log.warn("Invalid state variable name: " + this);
+            SpecificationViolationReporter.report(getService().getDevice(),
+                    "Invalid state variable name: {}", this);
         }
 
         errors.addAll(getTypeDetails().validate());

@@ -21,8 +21,7 @@ import org.jupnp.model.ModelUtil;
 import org.jupnp.model.Validatable;
 import org.jupnp.model.ValidationError;
 import org.jupnp.model.types.Datatype;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jupnp.util.SpecificationViolationReporter;
 
 /**
  * Describes a single action argument, either input or output.
@@ -31,10 +30,9 @@ import org.slf4j.LoggerFactory;
  * </p>
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - use SpecificationViolationReporter
  */
 public class ActionArgument<S extends Service> implements Validatable {
-
-    final private Logger log = LoggerFactory.getLogger(ActionArgument.class);
 
     public enum Direction {
         IN, OUT
@@ -121,11 +119,11 @@ public class ActionArgument<S extends Service> implements Validatable {
                     "Argument without name of: " + getAction()
             ));
         } else if (!ModelUtil.isValidUDAName(getName())) {
-            log.warn("UPnP specification violation of: " + getAction().getService().getDevice());
-            log.warn("Invalid argument name: " + this);
+            SpecificationViolationReporter.report(getAction().getService().getDevice(),
+                    "Invalid argument name: {}", this);
         } else if (getName().length() > 32) {
-            log.warn("UPnP specification violation of: " + getAction().getService().getDevice());
-            log.warn("Argument name should be less than 32 characters: " + this);
+            SpecificationViolationReporter.report(getAction().getService().getDevice(),
+                    "Argument name should be less than 32 characters: {}", this);
         }
 
         if (getDirection() == null) {

@@ -21,11 +21,13 @@ import org.jupnp.UpnpService;
 import org.jupnp.model.message.header.STAllHeader;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.registry.Registry;
+import org.jupnp.util.SpecificationViolationReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Jochen Hiller - Initial contribution
+ * @author Jochen Hiller - set verbose level of SpecificationViolationReporter
  */
 public class InfoCommand {
 
@@ -38,7 +40,13 @@ public class InfoCommand {
 	}
 
 	public int run(List<String> ipAddressOrUdns, boolean verbose) {
-		logger.info("Show information for devices " + flatList(ipAddressOrUdns));
+		logger.info("Show information for devices {}", flatList(ipAddressOrUdns));
+		if (verbose) {
+			SpecificationViolationReporter.enableReporting();
+		} else {
+			logger.debug("Disable UPnP specification violation reportings");
+			SpecificationViolationReporter.disableReporting();
+		}
 
 		UpnpService upnpService = tool.createUpnpService();
 		upnpService.startup();
@@ -55,7 +63,7 @@ public class InfoCommand {
 
 			String ipAddress = device.getIdentity().getDescriptorURL().getHost();
 			String udn = device.getIdentity().getUdn().getIdentifierString();
-			logger.info("ip: " + ipAddress + ", udn=" + udn);
+			logger.info("ip: {}, udn={}", ipAddress, udn);
 
 			for (Iterator<String> searchIiter = ipAddressOrUdns.iterator(); searchIiter.hasNext();) {
 				String ipAddressOrUdn = searchIiter.next();

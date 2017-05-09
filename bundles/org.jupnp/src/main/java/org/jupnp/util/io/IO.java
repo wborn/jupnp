@@ -21,6 +21,7 @@ import java.util.List;
 
 /**
  * @author Christian Bauer
+ * @author Jochen Hiller - Fixed not closed FileInut/OutptutStreams
  */
 public class IO {
 
@@ -88,15 +89,25 @@ public class IO {
             destFile.createNewFile();
         }
 
+        FileInputStream fis = null;
         FileChannel source = null;
+        FileOutputStream fos = null;
         FileChannel destination = null;
         try {
-            source = new FileInputStream(sourceFile).getChannel();
-            destination = new FileOutputStream(destFile).getChannel();
+            fis = new FileInputStream(sourceFile);
+            source = fis.getChannel();
+            fos = new FileOutputStream(destFile);
+            destination = fos.getChannel();
             destination.transferFrom(source, 0, source.size());
         } finally {
+            if (fis != null) {
+                fis.close();
+            }
             if (source != null) {
                 source.close();
+            }
+            if (fos != null) {
+                fos.close();
             }
             if (destination != null) {
                 destination.close();

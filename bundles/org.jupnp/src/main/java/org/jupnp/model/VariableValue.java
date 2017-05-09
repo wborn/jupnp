@@ -16,17 +16,15 @@ package org.jupnp.model;
 
 import org.jupnp.model.types.Datatype;
 import org.jupnp.model.types.InvalidValueException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jupnp.util.SpecificationViolationReporter;
 
 /**
  * Encapsulates a variable or argument value, validates and transforms it from/to a string representaion.
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - use SpecificationViolationReporter
  */
 public class VariableValue {
-
-    final private Logger log = LoggerFactory.getLogger(VariableValue.class);
 
     final private Datatype datatype;
     final private Object value;
@@ -96,7 +94,7 @@ public class VariableValue {
                     (cp >= 0x20 && cp <= 0xD7FF) ||
                     (cp >= 0xE000 && cp <= 0xFFFD) ||
                     (cp >= 0x10000 && cp <= 0x10FFFF))) {
-           		log.warn("Found invalid XML char code: " + cp);
+                SpecificationViolationReporter.report("Found invalid XML char code: {}", cp);
             }
             i += Character.charCount(cp);
         }

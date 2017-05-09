@@ -29,10 +29,11 @@ import org.slf4j.LoggerFactory;
  * Provides UPnP header API in addition to plain multi-map HTTP header access.
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - Made logger non-static
  */
 public class UpnpHeaders extends Headers {
 
-    private static final Logger log = LoggerFactory.getLogger(UpnpHeaders.class);
+    private final Logger log = LoggerFactory.getLogger(UpnpHeaders.class);
 
     protected Map<UpnpHeader.Type, List<UpnpHeader>> parsedHeaders;
 

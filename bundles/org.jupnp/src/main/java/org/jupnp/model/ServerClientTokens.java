@@ -22,6 +22,7 @@ package org.jupnp.model;
  * </p>
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - cache system properties to avoid checks by SecurityManager if enabled
  */
 public class ServerClientTokens {
 
@@ -31,8 +32,14 @@ public class ServerClientTokens {
     private int majorVersion = 1;
     private int minorVersion = 0;
 
-    private String osName  =  System.getProperty("os.name").replaceAll("[^a-zA-Z0-9\\.\\-_]", "");
-    private String osVersion = System.getProperty("os.version").replaceAll("[^a-zA-Z0-9\\.\\-_]", "");
+    // we get these properties static, as they will not change when JVM has been started
+    // on JVM with enabled security System.getProperty needs to be checked by SecurityManager
+    // and this class is used more often. Identified with Java FlightRecorder
+    private static String DEFAULT_OS_NAME = System.getProperty("os.name").replaceAll("[^a-zA-Z0-9\\.\\-_]", "");
+    private static String DEFAULT_OS_VERSION = System.getProperty("os.version").replaceAll("[^a-zA-Z0-9\\.\\-_]", "");
+    
+    private String osName = DEFAULT_OS_NAME;
+    private String osVersion = DEFAULT_OS_VERSION;
     private String productName = UserConstants.PRODUCT_TOKEN_NAME;
     private String productVersion = UserConstants.PRODUCT_TOKEN_VERSION;
 

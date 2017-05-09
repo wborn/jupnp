@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Service<D extends Device, S extends Service> {
 
-    final private Logger log = LoggerFactory.getLogger(Service.class);
+    private final Logger log = LoggerFactory.getLogger(Service.class);
 
     final private ServiceType serviceType;
     final private ServiceId serviceId;

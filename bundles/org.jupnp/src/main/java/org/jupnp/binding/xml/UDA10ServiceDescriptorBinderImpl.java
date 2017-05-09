@@ -43,6 +43,7 @@ import org.jupnp.model.meta.StateVariable;
 import org.jupnp.model.meta.StateVariableEventDetails;
 import org.jupnp.model.types.CustomDatatype;
 import org.jupnp.model.types.Datatype;
+import org.jupnp.util.SpecificationViolationReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -58,10 +59,11 @@ import org.xml.sax.SAXParseException;
  * Implementation based on JAXP DOM.
  *
  * @author Christian Bauer
+ * @author Jochen Hiller - use SpecificationViolationReporter, make logger final
  */
 public class UDA10ServiceDescriptorBinderImpl implements ServiceDescriptorBinder, ErrorHandler {
 
-    private Logger log = LoggerFactory.getLogger(ServiceDescriptorBinder.class);
+    private final Logger log = LoggerFactory.getLogger(ServiceDescriptorBinder.class);
 
     public <S extends Service> S describe(S undescribedService, String descriptorXml) throws DescriptorBindingException, ValidationException {
         if (descriptorXml == null || descriptorXml.length() == 0) {
@@ -247,7 +249,8 @@ public class UDA10ServiceDescriptorBinderImpl implements ServiceDescriptorBinder
                     actionArgument.direction = ActionArgument.Direction.valueOf(directionString.toUpperCase(Locale.ENGLISH));
                 } catch (IllegalArgumentException ex) {
                     // TODO: UPNP VIOLATION: Pelco SpectraIV-IP uses illegal value INOUT
-                    log.warn("UPnP specification violation: Invalid action argument direction, assuming 'IN': " + directionString);
+                    SpecificationViolationReporter.report(
+                            "Invalid action argument direction, assuming 'IN': {}", directionString);
                     actionArgument.direction = ActionArgument.Direction.IN;
                 }
             } else if (ELEMENT.relatedStateVariable.equals(argumentNodeChild)) {
@@ -427,7 +430,8 @@ public class UDA10ServiceDescriptorBinderImpl implements ServiceDescriptorBinder
         appendNewElementIfNotNull(descriptor, actionArgumentElement, ELEMENT.direction, actionArgument.getDirection().toString().toLowerCase(Locale.ENGLISH));
         if (actionArgument.isReturnValue()) {
             // TODO: UPNP VIOLATION: WMP12 will discard RenderingControl service if it contains <retval> tags
-            log.warn("UPnP specification violation: Not producing <retval> element to be compatible with WMP12: " + actionArgument);
+            SpecificationViolationReporter.report(
+                    "Not producing <retval> element to be compatible with WMP12: {}", actionArgument);
             // appendNewElement(descriptor, actionArgumentElement, ELEMENT.retval);
         }
         appendNewElementIfNotNull(descriptor, actionArgumentElement, ELEMENT.relatedStateVariable, actionArgument.getRelatedStateVariableName());

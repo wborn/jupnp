@@ -26,11 +26,13 @@ import org.jupnp.model.meta.LocalDevice;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.registry.Registry;
 import org.jupnp.registry.RegistryListener;
+import org.jupnp.util.SpecificationViolationReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Jochen Hiller - Initial contribution
+ * @author Jochen Hiller - set verbose level of SpecificationViolationReporter
  */
 public class SearchCommand {
 
@@ -44,15 +46,18 @@ public class SearchCommand {
 	public int run(int timeout, String sortBy, String filter, boolean verbose) {
 		// This will create necessary network resources for UPnP right away
 		logger.debug("Starting jUPnP search...");
+		if (verbose) {
+			SpecificationViolationReporter.enableReporting();
+		} else {
+			logger.debug("Disable UPnP specification violation reportings");
+			SpecificationViolationReporter.disableReporting();
+		}
 		UpnpService upnpService = tool.createUpnpService();
 		upnpService.startup();
 
 		SearchResultPrinter printer = new SearchResultPrinter(sortBy, verbose);
 		if (!hasToSort(sortBy)) {
-			upnpService.getRegistry()
-					.addListener(
-							new SearchRegistryListener(printer, sortBy, filter,
-									verbose));
+			upnpService.getRegistry().addListener(new SearchRegistryListener(printer, sortBy, filter, verbose));
 		}
 		printer.printHeader();
 
@@ -62,7 +67,7 @@ public class SearchCommand {
 		upnpService.getControlPoint().search(new STAllHeader());
 
 		// Let's wait "timeout" for them to respond
-		logger.debug("Waiting " + timeout + " seconds before shutting down...");
+		logger.debug("Waiting {} seconds before shutting down...", timeout);
 		try {
 			Thread.sleep(timeout * 1000);
 		} catch (InterruptedException e) {
@@ -72,8 +77,7 @@ public class SearchCommand {
 		logger.debug("Processing results...");
 		Registry registry = upnpService.getRegistry();
 
-		for (Iterator<RemoteDevice> iter = registry.getRemoteDevices()
-				.iterator(); iter.hasNext();) {
+		for (Iterator<RemoteDevice> iter = registry.getRemoteDevices().iterator(); iter.hasNext();) {
 			RemoteDevice device = iter.next();
 			handleRemoteDevice(device, printer, sortBy, filter, verbose);
 		}
@@ -91,16 +95,13 @@ public class SearchCommand {
 		return JUPnPTool.RC_OK;
 	}
 
-	private void handleRemoteDevice(RemoteDevice device,
-			SearchResultPrinter searchResult, String sortBy, String filter,
+	private void handleRemoteDevice(RemoteDevice device, SearchResultPrinter searchResult, String sortBy, String filter,
 			boolean verbose) {
 		if (device.isRoot()) {
 			// logStdout(device.toString());
-			String ipAddress = device.getIdentity().getDescriptorURL()
-					.getHost();
+			String ipAddress = device.getIdentity().getDescriptorURL().getHost();
 			String model = device.getDetails().getModelDetails().getModelName();
-			String manu = device.getDetails().getManufacturerDetails()
-					.getManufacturer();
+			String manu = device.getDetails().getManufacturerDetails().getManufacturer();
 			String udn = device.getIdentity().getUdn().getIdentifierString();
 			String name = device.getDisplayString();
 			String serialNumber = device.getDetails().getSerialNumber();
@@ -110,19 +111,16 @@ public class SearchCommand {
 				serialNumber = "-";
 			}
 
-			String fullDeviceInformationString = ipAddress + "\n" + model
-					+ "\n" + manu + "\n" + udn + "\n" + serialNumber + "\n"
-					+ name;
+			String fullDeviceInformationString = ipAddress + "\n" + model + "\n" + manu + "\n" + udn + "\n"
+					+ serialNumber + "\n" + name;
 			boolean filterOK = false;
 			if (filter.equals("*")) {
 				filterOK = true;
 			} else if (fullDeviceInformationString.contains(filter)) {
-				logger.debug("Filter check: filter '" + filter + "' matched '"
-						+ fullDeviceInformationString + "'");
+				logger.debug("Filter check: filter '{}' matched '{}'", filter, fullDeviceInformationString);
 				filterOK = true;
 			} else {
-				logger.debug("Filter check: filter '" + filter
-						+ "' NOT matched '" + fullDeviceInformationString + "'");
+				logger.debug("Filter check: filter '" + filter + "' NOT matched '" + fullDeviceInformationString + "'");
 			}
 
 			// filter out: very simple: details from above should include
@@ -140,8 +138,7 @@ public class SearchCommand {
 		private final String filter;
 		private final boolean verbose;
 
-		public SearchRegistryListener(SearchResultPrinter printer,
-				String sortBy, String filter, boolean verbose) {
+		public SearchRegistryListener(SearchResultPrinter printer, String sortBy, String filter, boolean verbose) {
 			this.printer = printer;
 			this.sortBy = sortBy;
 			this.filter = filter;
@@ -149,14 +146,12 @@ public class SearchCommand {
 		}
 
 		@Override
-		public void remoteDeviceDiscoveryStarted(Registry registry,
-				RemoteDevice device) {
+		public void remoteDeviceDiscoveryStarted(Registry registry, RemoteDevice device) {
 			// ignore
 		}
 
 		@Override
-		public void remoteDeviceDiscoveryFailed(Registry registry,
-				RemoteDevice device, Exception ex) {
+		public void remoteDeviceDiscoveryFailed(Registry registry, RemoteDevice device, Exception ex) {
 			// ignore
 		}
 
@@ -236,34 +231,27 @@ public class SearchCommand {
 			}
 			String msg;
 			if (verbose) {
-				msg = fixedWidth("IP address", COLUMN_WIDTH[0])
-						+ fixedWidth("Model", COLUMN_WIDTH[1])
-						+ fixedWidth("Manufacturer", COLUMN_WIDTH[2])
-						+ fixedWidth("SerialNumber", COLUMN_WIDTH[3])
+				msg = fixedWidth("IP address", COLUMN_WIDTH[0]) + fixedWidth("Model", COLUMN_WIDTH[1])
+						+ fixedWidth("Manufacturer", COLUMN_WIDTH[2]) + fixedWidth("SerialNumber", COLUMN_WIDTH[3])
 						+ fixedWidth("UDN", COLUMN_WIDTH[4]);
 			} else {
-				msg = fixedWidth("IP address", COLUMN_WIDTH[0])
-						+ fixedWidth("Model", COLUMN_WIDTH[1])
+				msg = fixedWidth("IP address", COLUMN_WIDTH[0]) + fixedWidth("Model", COLUMN_WIDTH[1])
 						+ fixedWidth("SerialNumber", COLUMN_WIDTH[3]);
 			}
 			tool.printStdout(msg);
 		}
 
-		public void add(String ip, String model, String serialNumber,
-				String manu, String udn) {
+		public void add(String ip, String model, String serialNumber, String manu, String udn) {
 			if (!ipAddresses.contains(ip)) {
 				results.add(new Result(ip, model, serialNumber, manu, udn));
 				if (!hasToSort(sortBy)) {
 					String msg;
 					if (verbose) {
-						msg = fixedWidth(ip, COLUMN_WIDTH[0])
-								+ fixedWidth(model, COLUMN_WIDTH[1])
-								+ fixedWidth(manu, COLUMN_WIDTH[2])
-								+ fixedWidth(serialNumber, COLUMN_WIDTH[3])
+						msg = fixedWidth(ip, COLUMN_WIDTH[0]) + fixedWidth(model, COLUMN_WIDTH[1])
+								+ fixedWidth(manu, COLUMN_WIDTH[2]) + fixedWidth(serialNumber, COLUMN_WIDTH[3])
 								+ fixedWidth(udn, COLUMN_WIDTH[4]);
 					} else {
-						msg = fixedWidth(ip, COLUMN_WIDTH[0])
-								+ fixedWidth(model, COLUMN_WIDTH[1])
+						msg = fixedWidth(ip, COLUMN_WIDTH[0]) + fixedWidth(model, COLUMN_WIDTH[1])
 								+ fixedWidth(serialNumber, COLUMN_WIDTH[3]);
 					}
 					tool.printStdout(msg);
@@ -288,20 +276,17 @@ public class SearchCommand {
 			// convert map to table
 			List<String[]> table = new ArrayList<String[]>();
 			if (verbose) {
-				table.add(new String[] { "IP address", "Model", "Manufacturer",
-						"SerialNumber", "UDN" });
+				table.add(new String[] { "IP address", "Model", "Manufacturer", "SerialNumber", "UDN" });
 			} else {
 				table.add(new String[] { "IP address", "Model", "SerialNumber" });
 			}
 			for (Iterator<Result> iter = results.iterator(); iter.hasNext();) {
 				Result result = iter.next();
 				if (verbose) {
-					table.add(new String[] { result.ipAddress, result.model,
-							result.manufacturer, result.serialNumber,
+					table.add(new String[] { result.ipAddress, result.model, result.manufacturer, result.serialNumber,
 							result.udn });
 				} else {
-					table.add(new String[] { result.ipAddress, result.model,
-							result.serialNumber });
+					table.add(new String[] { result.ipAddress, result.model, result.serialNumber });
 				}
 			}
 			String msg = PrintUtils.printTable(table, 4);
@@ -317,8 +302,7 @@ public class SearchCommand {
 				@Override
 				public int compare(Result o1, Result o2) {
 					if ("ip".equals(columnName)) {
-						return IpAddressUtils.compareIpAddress(o1.ipAddress,
-								o2.ipAddress);
+						return IpAddressUtils.compareIpAddress(o1.ipAddress, o2.ipAddress);
 					} else if ("model".equals(columnName)) {
 						return o1.model.compareTo(o2.model);
 					} else if ("serialNumber".equals(columnName)) {
