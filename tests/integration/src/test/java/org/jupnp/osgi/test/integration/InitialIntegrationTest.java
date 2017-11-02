@@ -117,13 +117,13 @@ public class InitialIntegrationTest extends BaseIntegration {
                         .version("1.0-SNAPSHOT")),
 
 				wrappedBundle(mavenBundle()
-						.groupId("org.apache.httpcomponents")
-						.artifactId("httpcore")
-						.version("4.0.1")),
+						.groupId("org.eclipse.jetty")
+						.artifactId("jetty-server")
+						.version("9.3.14")),
 				wrappedBundle(mavenBundle()
-						.groupId("org.apache.httpcomponents")
-						.artifactId("httpclient")
-						.version("4.0.1")),
+						.groupId("org.eclipse.jetty")
+						.artifactId("jetty-client")
+						.version("9.3.14")),
 
 				wrappedBundle(mavenBundle()
 						.groupId("commons-codec")

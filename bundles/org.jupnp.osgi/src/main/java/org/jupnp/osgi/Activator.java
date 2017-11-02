@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Activator implements BundleActivator {
 
-    final private static Logger log = LoggerFactory.getLogger(Activator.class);
+    private final Logger log = LoggerFactory.getLogger(Activator.class);
 
     private static Activator plugin;
     private BundleContext context;
@@ -53,7 +53,7 @@ public class Activator implements BundleActivator {
         Activator.plugin = this;
         this.context = context;
 
-        upnpService = new UpnpServiceImpl(new ApacheUpnpServiceConfiguration());
+        upnpService = new UpnpServiceImpl(new JettyUpnpServiceConfiguration());
         discover = new UPnPDiscover(context, upnpService);
         present = new UPnPPresent(context, upnpService);
         upnpService.getControlPoint().search();

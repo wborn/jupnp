@@ -27,17 +27,10 @@
                 implementation. Note that this implementation does <em>NOT WORK</em> on Android, the
                 <code>URLStreamHandlerFactory</code> can't be patched on Android!
             </dd>
-            <dt><code>org.jupnp.transport.impl.apache.StreamClientImpl</code></dt>
+            <dt><code>org.jupnp.transport.impl.jetty.JettyStreamClientImpl</code></dt>
             <dd>
-                This implementation relies on <em>Apache HTTP Client 4.2</em>, you need the
-                <code>org.apache.httpcomponents:httpclient:4.2</code> artifact on your classpath to use it. Note that
-                this implementation does <em>NOT WORK</em> on Android! The hardcoded version of
-                <code>org.apache.http.*</code> on Android is 4.0 and can't ever be upgraded.
-            </dd>
-            <dt><code>org.jupnp.transport.impl.jetty.StreamClientImpl</code></dt>
-            <dd>
-                This implementation is based on the <em>Jetty 8</em> HTTP client, you need the artifact
-                <code>org.eclipse.jetty:jetty-client:8.1</code> on your classpath to use it. This implementation works
+                This implementation is based on the <em>Jetty 9.3</em> HTTP client, you need the artifact
+                <code>org.eclipse.jetty:jetty-client:9.3.14</code> on your classpath to use it. This implementation works
                 in any environment, including Android. It is the default transport for
                 <code>AndroidUpnpServiceConfiguration</code>.
             </dd>
@@ -54,20 +47,13 @@
                 (<code>com.sun.net.httpserver.HttpServer</code>), hence, it does <em>NOT WORK</em> in an
                 Android environment.
             </dd>
-            <dt><code>org.jupnp.transport.impl.apache.StreamServerImpl</code></dt>
-            <dd>
-                This implementation relies on <em>Apache HTTP Components 4.2</em>, you need the
-                <code>org.apache.httpcomponents:httpcore:4.2</code> artifact on your classpath to use it. Note that
-                this implementation does <em>NOT WORK</em> on Android! The hardcoded version of
-                <code>org.apache.http.*</code> on Android is 4.0 and can't ever be upgraded.
-            </dd>
-            <dt><code>org.jupnp.transport.impl.AsyncServletStreamServerImpl</code></dt>
+            <dt><code>org.jupnp.transport.impl.async.AsyncServletStreamServerImpl</code></dt>
             <dd>
                 This implementation is based on the standard <em>Servlet 3.0</em> API and can be used in any environment
                 with a compatible servlet container. It requires a <code>ServletContainerAdapter</code> to integrate
                 with the servlet container, the bundled <code>JettyServletContainer</code> is such an adapter for a
-                standalone <em>Jetty 8</em> server. You need the artifact
-                <code>org.eclipse.jetty:jetty-servlet:8.1</code> on your classpath to use it. This implementation works
+                standalone <em>Jetty 9</em> server. You need the artifact
+                <code>org.eclipse.jetty:jetty-servlet:9.3</code> on your classpath to use it. This implementation works
                 in any environment, including Android. It is the default transport for
                 <code>AndroidUpnpServiceConfiguration</code>. For other containers, write your own adapter and provide
                 it to the <code>AsyncServletStreamServerConfigurationImpl</code>.
@@ -91,7 +77,7 @@ public class MyUpnpServiceConfiguration extends DefaultUpnpServiceConfiguration 
     @Override
     public StreamClient createStreamClient() {
         return new org.jupnp.transport.impl.jetty.StreamClientImpl(
-            new org.jupnp.transport.impl.jetty.StreamClientConfigurationImpl(
+            new org.jupnp.transport.impl.jetty.JettyStreamClientConfigurationImpl(
                 getSyncProtocolExecutor()
             )
         );

@@ -16,6 +16,7 @@ package org.jupnp.test.transport;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
@@ -116,12 +117,16 @@ abstract public class StreamServerClientTest {
         StreamResponseMessage responseMessage;
 
         responseMessage = client.sendRequest(createRequestMessage(OKEmptyResponse.PATH));
+        assertNotNull(responseMessage, "responseMessage");
+        assertNotNull(responseMessage.getOperation(), "responseMessage.getOperation()");
         assertEquals(responseMessage.getOperation().getStatusCode(), 200);
         assertFalse(responseMessage.hasBody());
         assertTrue(lastExecutedServerProtocol.isComplete);
 
         lastExecutedServerProtocol = null;
         responseMessage = client.sendRequest(createRequestMessage(OKBodyResponse.PATH));
+        assertNotNull(responseMessage, "responseMessage");
+        assertNotNull(responseMessage.getOperation(), "responseMessage.getOperation()");
         assertEquals(responseMessage.getOperation().getStatusCode(), 200);
         assertTrue(responseMessage.hasBody());
         assertEquals(responseMessage.getBodyString(), "foo");
@@ -129,6 +134,8 @@ abstract public class StreamServerClientTest {
 
         lastExecutedServerProtocol = null;
         responseMessage = client.sendRequest(createRequestMessage(NoResponse.PATH));
+        assertNotNull(responseMessage, "responseMessage");
+        assertNotNull(responseMessage.getOperation(), "responseMessage.getOperation()");
         assertEquals(responseMessage.getOperation().getStatusCode(), 404);
         assertFalse(responseMessage.hasBody());
         assertFalse(lastExecutedServerProtocol.isComplete);

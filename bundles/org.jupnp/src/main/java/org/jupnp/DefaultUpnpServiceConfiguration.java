@@ -14,9 +14,7 @@
 
 package org.jupnp;
 
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -44,10 +42,11 @@ import org.jupnp.transport.impl.MulticastReceiverConfigurationImpl;
 import org.jupnp.transport.impl.MulticastReceiverImpl;
 import org.jupnp.transport.impl.NetworkAddressFactoryImpl;
 import org.jupnp.transport.impl.SOAPActionProcessorImpl;
-import org.jupnp.transport.impl.apache.StreamClientConfigurationImpl;
-import org.jupnp.transport.impl.apache.StreamClientImpl;
-import org.jupnp.transport.impl.apache.StreamServerConfigurationImpl;
-import org.jupnp.transport.impl.apache.StreamServerImpl;
+import org.jupnp.transport.impl.ServletStreamServerConfigurationImpl;
+import org.jupnp.transport.impl.ServletStreamServerImpl;
+import org.jupnp.transport.impl.jetty.JettyServletContainer;
+import org.jupnp.transport.impl.jetty.JettyStreamClientImpl;
+import org.jupnp.transport.impl.jetty.StreamClientConfigurationImpl;
 import org.jupnp.transport.spi.DatagramIO;
 import org.jupnp.transport.spi.DatagramProcessor;
 import org.jupnp.transport.spi.GENAEventProcessor;
@@ -93,7 +92,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
     final private static int CORE_THREAD_POOL_SIZE = 1;
     final private static int THREAD_POOL_SIZE = 200;
     final private static int THREAD_QUEUE_SIZE = 1000;
-    
+
     final private int streamListenPort;
     final private int multicastResponsePort;
 
@@ -134,7 +133,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
 
         this.streamListenPort = streamListenPort;
         this.multicastResponsePort = multicastResponsePort;
-        
+
         defaultExecutorService = createDefaultExecutorService();
 
         datagramProcessor = createDatagramProcessor();
@@ -147,26 +146,31 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
         namespace = createNamespace();
     }
 
+    @Override
     public DatagramProcessor getDatagramProcessor() {
         return datagramProcessor;
     }
 
+    @Override
     public SOAPActionProcessor getSoapActionProcessor() {
         return soapActionProcessor;
     }
 
+    @Override
     public GENAEventProcessor getGenaEventProcessor() {
         return genaEventProcessor;
     }
 
+    @Override
     public StreamClient createStreamClient() {
-        return new StreamClientImpl(
+        return new JettyStreamClientImpl(
             new StreamClientConfigurationImpl(
                 getSyncProtocolExecutorService()
             )
         );
     }
 
+    @Override
     public MulticastReceiver createMulticastReceiver(NetworkAddressFactory networkAddressFactory) {
         return new MulticastReceiverImpl(
                 new MulticastReceiverConfigurationImpl(
@@ -176,38 +180,47 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
         );
     }
 
+    @Override
     public DatagramIO createDatagramIO(NetworkAddressFactory networkAddressFactory) {
         return new DatagramIOImpl(new DatagramIOConfigurationImpl());
     }
 
+    @Override
     public StreamServer createStreamServer(NetworkAddressFactory networkAddressFactory) {
-        return new StreamServerImpl(
-                new StreamServerConfigurationImpl(
-                        networkAddressFactory.getStreamListenPort()
+        return new ServletStreamServerImpl(
+                new ServletStreamServerConfigurationImpl(
+                    JettyServletContainer.INSTANCE,
+                    networkAddressFactory.getStreamListenPort()
                 )
-        );
+            );
     }
 
+    @Override
     public ExecutorService getMulticastReceiverExecutor() {
         return getDefaultExecutorService();
     }
 
+    @Override
     public ExecutorService getDatagramIOExecutor() {
         return getDefaultExecutorService();
     }
 
+    @Override
     public ExecutorService getStreamServerExecutorService() {
         return getDefaultExecutorService();
     }
 
+    @Override
     public DeviceDescriptorBinder getDeviceDescriptorBinderUDA10() {
         return deviceDescriptorBinderUDA10;
     }
 
+    @Override
     public ServiceDescriptorBinder getServiceDescriptorBinderUDA10() {
         return serviceDescriptorBinderUDA10;
     }
 
+    @Override
     public ServiceType[] getExclusiveServiceTypes() {
         return new ServiceType[0];
     }
@@ -215,14 +228,17 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
     /**
      * @return Defaults to <code>false</code>.
      */
-	public boolean isReceivedSubscriptionTimeoutIgnored() {
-		return false;
-	}
+    @Override
+    public boolean isReceivedSubscriptionTimeoutIgnored() {
+        return false;
+    }
 
+    @Override
     public UpnpHeaders getDescriptorRetrievalHeaders(RemoteDeviceIdentity identity) {
         return null;
     }
 
+    @Override
     public UpnpHeaders getEventSubscriptionHeaders(RemoteService service) {
         return null;
     }
@@ -230,6 +246,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
     /**
      * @return Defaults to 1000 milliseconds.
      */
+    @Override
     public int getRegistryMaintenanceIntervalMillis() {
         return 1000;
     }
@@ -237,38 +254,47 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
     /**
      * @return Defaults to zero, disabling ALIVE flooding.
      */
+    @Override
     public int getAliveIntervalMillis() {
-    	return 0;
+        return 0;
     }
 
+    @Override
     public Integer getRemoteDeviceMaxAgeSeconds() {
         return null;
     }
 
+    @Override
     public ExecutorService getAsyncProtocolExecutor() {
         return getDefaultExecutorService();
     }
 
+    @Override
     public ExecutorService getSyncProtocolExecutorService() {
         return getDefaultExecutorService();
     }
 
+    @Override
     public Namespace getNamespace() {
         return namespace;
     }
 
+    @Override
     public Executor getRegistryMaintainerExecutor() {
         return getDefaultExecutorService();
     }
 
+    @Override
     public Executor getRegistryListenerExecutor() {
         return getDefaultExecutorService();
     }
 
+    @Override
     public NetworkAddressFactory createNetworkAddressFactory() {
         return createNetworkAddressFactory(streamListenPort, multicastResponsePort);
     }
 
+    @Override
     public void shutdown() {
         log.trace("Shutting down default executor service");
         getDefaultExecutorService().shutdownNow();
@@ -319,7 +345,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
                      @Override
                      public void rejectedExecution(Runnable runnable, ThreadPoolExecutor threadPoolExecutor) {
                          // Log and discard
-                    	 LoggerFactory.getLogger(DefaultUpnpServiceConfiguration.class).warn("Thread pool rejected execution of " + runnable.getClass());
+                         LoggerFactory.getLogger(DefaultUpnpServiceConfiguration.class).warn("Thread pool rejected execution of " + runnable.getClass());
                          super.rejectedExecution(runnable, threadPoolExecutor);
                      }
                  }
@@ -329,7 +355,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
         public JUPnPExecutor(ThreadFactory threadFactory, RejectedExecutionHandler rejectedHandler) {
             // This is the same as Executors.newCachedThreadPool
             super(CORE_THREAD_POOL_SIZE,
-            	  THREAD_POOL_SIZE,
+                  THREAD_POOL_SIZE,
                   10L,
                   TimeUnit.SECONDS,
                   new ArrayBlockingQueue<Runnable>(THREAD_QUEUE_SIZE),
@@ -369,6 +395,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
             group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
         }
 
+        @Override
         public Thread newThread(Runnable r) {
             Thread t = new Thread(
                     group, r,

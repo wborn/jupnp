@@ -38,10 +38,10 @@ import org.jupnp.transport.impl.NetworkAddressFactoryImpl;
 import org.jupnp.transport.impl.SOAPActionProcessorImpl;
 import org.jupnp.transport.impl.ServletStreamServerConfigurationImpl;
 import org.jupnp.transport.impl.ServletStreamServerImpl;
-import org.jupnp.transport.impl.apache.StreamClientConfigurationImpl;
-import org.jupnp.transport.impl.apache.StreamClientImpl;
-import org.jupnp.transport.impl.apache.StreamServerConfigurationImpl;
-import org.jupnp.transport.impl.apache.StreamServerImpl;
+import org.jupnp.transport.impl.jetty.StreamClientConfigurationImpl;
+import org.jupnp.transport.impl.jetty.JettyStreamClientImpl;
+import org.jupnp.transport.impl.StreamServerConfigurationImpl;
+import org.jupnp.transport.impl.StreamServerImpl;
 import org.jupnp.transport.impl.osgi.HttpServiceServletContainerAdapter;
 import org.jupnp.transport.spi.DatagramIO;
 import org.jupnp.transport.spi.DatagramProcessor;
@@ -190,7 +190,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
     @Override
     @SuppressWarnings("rawtypes")
     public StreamClient createStreamClient() {
-        return new StreamClientImpl(new StreamClientConfigurationImpl(getSyncProtocolExecutorService()));
+        return new JettyStreamClientImpl(new StreamClientConfigurationImpl(getSyncProtocolExecutorService()));
     }
 
     @Override

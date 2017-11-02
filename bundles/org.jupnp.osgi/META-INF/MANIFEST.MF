@@ -6,7 +6,7 @@ Bundle-Version: 2.3.0.qualifier
 Bundle-Vendor: jUPnP.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.apache.commons.codec.binary,
- org.apache.http.client,
+ org.eclipse.jetty.client.api,
  org.jupnp,
  org.jupnp.controlpoint,
  org.jupnp.internal.compat.java.beans,
@@ -18,7 +18,8 @@ Import-Package: org.apache.commons.codec.binary,
  org.jupnp.model.state,
  org.jupnp.model.types,
  org.jupnp.registry,
- org.jupnp.transport.impl.apache,
+ org.jupnp.transport.impl,
+ org.jupnp.transport.impl.jetty,
  org.jupnp.transport.spi,
  org.jupnp.util,
  org.jupnp.util.io,

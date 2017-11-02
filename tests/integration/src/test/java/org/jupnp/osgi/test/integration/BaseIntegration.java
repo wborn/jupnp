@@ -39,7 +39,7 @@ public class BaseIntegration {
 	private UpnpService upnpService;
 
 	public void setup() throws Exception {
-		upnpService = new UpnpServiceImpl(new ApacheUpnpServiceConfiguration());
+		upnpService = new UpnpServiceImpl(new JettyUpnpServiceConfiguration());
 		upnpService.getControlPoint().search(new STAllHeader());
 		Thread.sleep(5000);
 	}
@@ -127,7 +127,7 @@ public class BaseIntegration {
 
 		return string;
 	}
-	
+
 	public byte[] toBytes(Byte[] Bytes) {
 		byte[] bytes = new byte[Bytes.length];
 		for (int i = 0; i < Bytes.length; i++) {

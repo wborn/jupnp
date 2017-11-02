@@ -40,3 +40,10 @@ To build jUPnP from the sources, Maven takes care of everything:
 - run `mvn clean install` to compile and package all sources
 
 The build result will be available in the folder `target`.
+
+
+4\. Working with Eclipse
+=======================
+
+When using Eclipse ensure that the JDK is set via the `-vm` option in `eclipse.ini`.
+Otherwise m2e might fail to resolve the system scoped dependency to `tools.jar`.

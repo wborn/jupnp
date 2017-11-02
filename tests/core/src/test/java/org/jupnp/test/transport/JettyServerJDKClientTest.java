@@ -15,24 +15,14 @@
 package org.jupnp.test.transport;
 
 import org.jupnp.UpnpServiceConfiguration;
-import org.jupnp.transport.impl.apache.StreamClientConfigurationImpl;
-import org.jupnp.transport.impl.apache.StreamClientImpl;
-import org.jupnp.transport.impl.apache.StreamServerConfigurationImpl;
-import org.jupnp.transport.impl.apache.StreamServerImpl;
+import org.jupnp.transport.impl.StreamClientConfigurationImpl;
+import org.jupnp.transport.impl.StreamClientImpl;
 import org.jupnp.transport.spi.StreamClient;
-import org.jupnp.transport.spi.StreamServer;
 
 /**
  * @author Christian Bauer
  */
-public class ApacheServerApacheClientTest extends StreamServerClientTest {
-
-    @Override
-    public StreamServer createStreamServer(int port) {
-        return new StreamServerImpl(
-            new StreamServerConfigurationImpl(port)
-        );
-    }
+public class JettyServerJDKClientTest extends JettyServerJettyClientTest {
 
     @Override
     public StreamClient createStreamClient(UpnpServiceConfiguration configuration) {
@@ -42,5 +32,23 @@ public class ApacheServerApacheClientTest extends StreamServerClientTest {
                 3
             )
         );
+    }
+
+    // DISABLED, NOT SUPPORTED
+
+    @Override
+    public void cancelled() throws Exception {
+    }
+
+    @Override
+    public void checkAlive() throws Exception {
+    }
+
+    @Override
+    public void checkAliveExpired() throws Exception {
+    }
+
+    @Override
+    public void checkAliveCancelled() throws Exception {
     }
 }
