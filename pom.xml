@@ -51,6 +51,12 @@
 		<system>github</system>
 		<url>https://github.com/jupnp/jupnp/issues</url>
 	</issueManagement>
+    <distributionManagement>
+        <repository>
+            <id>bintray</id>
+            <url>https://api.bintray.com/maven/jupnp/mvn/jUPnP/;publish=1;override=1</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
