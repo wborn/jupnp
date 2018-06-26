@@ -91,9 +91,15 @@ public class ReceivingSearchResponse extends ReceivingAsync<IncomingSearchRespon
 
         // Unfortunately, we always have to retrieve the descriptor because at this point we
         // have no idea if it's a root or embedded device
-        getUpnpService().getConfiguration().getAsyncProtocolExecutor().execute(
-                new RetrieveRemoteDescriptors(getUpnpService(), rd)
-        );
+
+        if (RetrieveRemoteDescriptors.isRetrievalInProgress(rd)) {
+            log.trace("Skip submitting task, active retrieval for URL already in progress:{}",
+                    rd.getIdentity().getDescriptorURL());
+            return;
+        }
+
+        getUpnpService().getConfiguration().getAsyncProtocolExecutor()
+                .execute(new RetrieveRemoteDescriptors(getUpnpService(), rd));
 
     }
 

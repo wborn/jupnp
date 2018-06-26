@@ -15,6 +15,7 @@
 package org.jupnp;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -56,6 +57,7 @@ public class UpnpServiceImpl implements UpnpService {
 
     protected boolean isConfigured = false;
     protected Boolean isRunning = false;
+    private volatile boolean isInitialSearchEnabled = true;
 
     private final Object lock = new Object();
 
@@ -264,14 +266,24 @@ public class UpnpServiceImpl implements UpnpService {
 
                 isRunning = true;
 
-                controlPoint.search(new STAllHeader());
+                if (isInitialSearchEnabled) {
+                    controlPoint.search(new STAllHeader());
+                }
             }
         }
     }
 
-    protected void activate() {
+    private void setConfigProperties(Map<String, Object> configProperties) {
+        Object prop = configProperties.get("initialSearchEnabled");
+        if (prop instanceof Boolean) {
+            isInitialSearchEnabled = (boolean) prop;
+        }
+    }
+
+    protected void activate(Map<String, Object> configProperties) {
         scheduledFuture = null;
         scheduledExecutorService = createExecutor();
+        setConfigProperties(configProperties);
         startup();
     }
 

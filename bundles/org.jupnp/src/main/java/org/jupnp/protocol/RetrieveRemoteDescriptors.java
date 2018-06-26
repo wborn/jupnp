@@ -18,8 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jupnp.UpnpService;
 import org.jupnp.binding.xml.DescriptorBindingException;
@@ -70,7 +69,7 @@ public class RetrieveRemoteDescriptors implements Runnable {
     private final UpnpService upnpService;
     private RemoteDevice rd;
 
-    private static final Set<URL> activeRetrievals = new CopyOnWriteArraySet();
+    private static final ConcurrentHashMap<URL, Boolean> activeRetrievals = new ConcurrentHashMap();
     protected List<UDN> errorsAlreadyLogged = new ArrayList<UDN>();
 
     public RetrieveRemoteDescriptors(UpnpService upnpService, RemoteDevice rd) {
@@ -86,23 +85,22 @@ public class RetrieveRemoteDescriptors implements Runnable {
 
         URL deviceURL = rd.getIdentity().getDescriptorURL();
 
-        // Performance optimization, try to avoid concurrent GET requests for device descriptor,
-        // if we retrieve it once, we have the hydrated device. There is no different outcome
-        // processing this several times concurrently.
-
-        if (activeRetrievals.contains(deviceURL)) {
-            log.trace("Exiting early, active retrieval for URL already in progress: " + deviceURL);
-            return;
-        }
-
-        // Exit if it has been discovered already, could be we have been waiting in the executor queue too long
+        // Exit if it has been discovered already, most likely because we have been waiting in the executor queue too long
         if (getUpnpService().getRegistry().getRemoteDevice(rd.getIdentity().getUdn(), true) != null) {
             log.trace("Exiting early, already discovered: " + deviceURL);
             return;
         }
 
+        // Performance optimization, try to avoid concurrent GET requests for device descriptor,
+        // if we retrieve it once, we have the hydrated device. There is no different outcome
+        // processing this several times concurrently.
+
+        if (activeRetrievals.putIfAbsent(deviceURL, Boolean.TRUE) != null) {
+            log.trace("Exiting early, active retrieval for URL already in progress: {}", deviceURL);
+            return;
+        }
+
         try {
-            activeRetrievals.add(deviceURL);
             describe();
         } catch (RouterException ex) {
             log.warn("Descriptor retrieval failed: " + deviceURL,
@@ -375,6 +373,22 @@ public class RetrieveRemoteDescriptors implements Runnable {
             }
         }
         return exclusiveServices;
+    }
+
+    /**
+     * Check if the descriptor that is going to be retrieved by this task is already being retrieved by another task.
+     * Can be used for optimization to prevent submitting tasks that are not going to retrieve a new descriptor.
+     * 
+     * @param rd The remote device to check
+     * @return <code>true</code> the descriptor is currently being retrieved, otherwise <code>false</code>
+     * 
+     * @throws IllegalArgumentException if the remote device is {@code null}
+     */
+    public static boolean isRetrievalInProgress(RemoteDevice rd) {
+        if (rd == null) {
+            throw new IllegalArgumentException("RemoteDevice must not be null!");
+        }
+        return activeRetrievals.containsKey(rd.getIdentity().getDescriptorURL());
     }
 
 }

@@ -195,7 +195,7 @@ public class SearchExecuteTest {
     }
 
     protected void assertMessages(MockUpnpService upnpService, UpnpHeader header) throws Exception {
-        assertEquals(upnpService.getRouter().getOutgoingDatagramMessages().size(), 5);
+        assertEquals(upnpService.getRouter().getOutgoingDatagramMessages().size(), 3);
         for (UpnpMessage msg : upnpService.getRouter().getOutgoingDatagramMessages()) {
             assertSearchMessage(msg, header);
         }
