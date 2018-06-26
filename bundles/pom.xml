@@ -109,6 +109,10 @@
               <excludePackageNames>*.internal.*,nl.*</excludePackageNames>
             </configuration>
           </plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>build-helper-maven-plugin</artifactId>
@@ -132,10 +136,6 @@
               </execution>
             </executions>
           </plugin>
-		</plugins>
-
-		<pluginManagement>
-			<plugins>
 				<plugin>
 					<groupId>${tycho-groupid}</groupId>
 					<artifactId>tycho-compiler-plugin</artifactId>
