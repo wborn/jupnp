@@ -57,7 +57,7 @@
         <maven.compiler.source>6</maven.compiler.source>
         <maven.compiler.target>6</maven.compiler.target>
 
-        <tycho-version>0.20.0</tycho-version>
+        <tycho-version>1.2.0</tycho-version>
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>
 
         <testng.version>6.2</testng.version>
@@ -216,6 +216,29 @@
         <javadoc.opts>-Xdoclint:none</javadoc.opts>
       </properties>
     </profile>
+
+        <profile>
+            <id>prepare-release</id>
+            <!-- sample use: mvn -P prepare-release tycho-versions:set-version -DnewVersion=1.0.1-SNAPSHOT -->
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.eclipse.tycho</groupId>
+                        <artifactId>tycho-versions-plugin</artifactId>
+                        <version>${tycho-version}</version>
+                        <executions>
+                            <execution>
+                                <id>update-version</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>set-version</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
   </profiles>
 
 </project>
