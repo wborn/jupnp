@@ -16,7 +16,6 @@ package org.jupnp.transport.impl;
 
 import java.io.StringReader;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 
@@ -28,6 +27,7 @@ import org.jupnp.model.message.gena.IncomingEventRequestMessage;
 import org.jupnp.model.message.gena.OutgoingEventRequestMessage;
 import org.jupnp.model.meta.StateVariable;
 import org.jupnp.model.state.StateVariableValue;
+import org.jupnp.model.types.InvalidValueException;
 import org.jupnp.transport.spi.GENAEventProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class GENAEventProcessorImpl extends PooledXmlProcessor implements GENAEv
     private Logger log = LoggerFactory.getLogger(GENAEventProcessor.class);
 
     protected DocumentBuilderFactory createDocumentBuilderFactory() throws FactoryConfigurationError {
-    	return DocumentBuilderFactory.newInstance();
+        return DocumentBuilderFactory.newInstance();
     }
 
     public void writeBody(OutgoingEventRequestMessage requestMessage) throws UnsupportedDataException {
@@ -158,9 +158,13 @@ public class GENAEventProcessorImpl extends PooledXmlProcessor implements GENAEv
                         if (stateVariable.getName().equals(stateVariableName)) {
                             log.trace("Reading state variable value: " + stateVariableName);
                             String value = XMLUtil.getTextContent(propertyChild);
-                            message.getStateVariableValues().add(
-                                    new StateVariableValue(stateVariable, value)
-                            );
+                            try {
+                                message.getStateVariableValues().add(
+                                        new StateVariableValue(stateVariable, value)
+                                );
+                            } catch (InvalidValueException ex) {
+                                log.debug("Value {} for the state variable {} ignored: {}", value, stateVariableName, ex.getMessage());
+                            }
                             break;
                         }
                     }
@@ -208,4 +212,3 @@ public class GENAEventProcessorImpl extends PooledXmlProcessor implements GENAEv
         throw e;
     }
 }
-
