@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JUPnP Extra Support Library
 Bundle-SymbolicName: org.jupnp.support
-Bundle-Version: 2.5.0.qualifier
+Bundle-Version: 2.5.1
 Bundle-Vendor: jUPnP.org
 Import-Package: org.jupnp,
  org.jupnp.binding.annotations,
