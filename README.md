@@ -1,10 +1,10 @@
-![build status](https://travis-ci.com/jupnp/jupnp.svg?branch=master)
+[![build status](https://travis-ci.com/jupnp/jupnp.svg?branch=master)](https://travis-ci.com/github/jupnp/jupnp)
 [![CDDL-1.0](https://img.shields.io/badge/license-CDDL%201.0-green.svg)](https://opensource.org/licenses/CDDL-1.0)
 
 
 # Introduction
 
-jUPnP is a Java UPnP library and has been forked from the Cling project (https://github.com/4thline/cling).
+jUPnP is a Java UPnP library and has been forked from the no-longer maintained [Cling project](https://github.com/4thline/cling).
 
 # Build Instructions
 
