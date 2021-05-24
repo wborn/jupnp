@@ -28,6 +28,7 @@ public abstract class AbstractStreamClientConfiguration implements StreamClientC
     protected int timeoutSeconds = 10;
     protected int logWarningSeconds = 5;
     protected int retryAfterSeconds = (int) TimeUnit.MINUTES.toSeconds(10);
+    protected int retryIterations = 5;
 
     protected AbstractStreamClientConfiguration(ExecutorService requestExecutorService) {
         this.requestExecutorService = requestExecutorService;
@@ -44,12 +45,16 @@ public abstract class AbstractStreamClientConfiguration implements StreamClientC
         this.logWarningSeconds = logWarningSeconds;
     }
 
-    public ExecutorService getRequestExecutorService() {
-        return requestExecutorService;
+    protected AbstractStreamClientConfiguration(ExecutorService requestExecutorService, int timeoutSeconds, int logWarningSeconds, int retryAfterSeconds, int retryIterations) {
+        this.requestExecutorService = requestExecutorService;
+        this.timeoutSeconds = timeoutSeconds;
+        this.logWarningSeconds = logWarningSeconds;
+        this.retryAfterSeconds = retryAfterSeconds;
+        this.retryIterations = retryIterations;
     }
 
-    public void setRequestExecutorService(ExecutorService requestExecutorService) {
-        this.requestExecutorService = requestExecutorService;
+    public ExecutorService getRequestExecutorService() {
+        return requestExecutorService;
     }
 
     /**
@@ -59,8 +64,11 @@ public abstract class AbstractStreamClientConfiguration implements StreamClientC
         return timeoutSeconds;
     }
 
-    public void setTimeoutSeconds(int timeoutSeconds) {
-        this.timeoutSeconds = timeoutSeconds;
+    /**
+     * @return Configured value or default of 5 retries.
+     */
+    public int getRetryIterations() {
+	return retryIterations;
     }
 
     /**
@@ -70,23 +78,8 @@ public abstract class AbstractStreamClientConfiguration implements StreamClientC
         return logWarningSeconds;
     }
 
-    public void setLogWarningSeconds(int logWarningSeconds) {
-        this.logWarningSeconds = logWarningSeconds;
-    }
-
     public int getRetryAfterSeconds() {
         return retryAfterSeconds;
-    }
-
-    /**
-     * @param retryAfterSeconds
-     *            should a positive integer or 0 (to disable the functionality).
-     */
-    public void setRetryAfterSeconds(int retryAfterSeconds) {
-        if (retryAfterSeconds < 0) {
-            throw new IllegalArgumentException("Retry After Seconds can not be null!");
-        }
-        this.retryAfterSeconds = retryAfterSeconds;
     }
 
     /**

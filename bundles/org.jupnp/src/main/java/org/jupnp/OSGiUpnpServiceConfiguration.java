@@ -17,6 +17,7 @@ package org.jupnp;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.jupnp.binding.xml.DeviceDescriptorBinder;
 import org.jupnp.binding.xml.RecoveringUDA10DeviceDescriptorBinderImpl;
@@ -92,7 +93,6 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
     private int httpProxyPort = -1;
     private int streamListenPort = 8080;
     private Namespace callbackURI = new Namespace("http://localhost/upnpcallback");
-    private StreamClientConfiguration configuration = new StreamClientConfigurationImpl(null);
 
     private ExecutorService mainExecutorService;
     private ExecutorService asyncExecutorService;
@@ -116,6 +116,10 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
     @SuppressWarnings("rawtypes")
     private TransportConfiguration transportConfiguration;
+
+	private Integer timeoutSeconds = 10;
+	private Integer retryIterations = 5;
+	private Integer retryAfterSeconds = (int) TimeUnit.MINUTES.toSeconds(10);
 
     /**
      * Defaults to port '0', ephemeral.
@@ -152,7 +156,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
 
         this.context = context;
 
-        createConfiguration(configProps);
+        setConfigValues(configProps);
 
         createExecutorServices();
 
@@ -196,10 +200,14 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
     @Override
     @SuppressWarnings("rawtypes")
     public StreamClient createStreamClient() {
-        return transportConfiguration.createStreamClient(getSyncProtocolExecutorService(), configuration);
+        return transportConfiguration.createStreamClient(getSyncProtocolExecutorService(), createStreamClientConfiguration());
     }
 
-    @Override
+    private StreamClientConfiguration createStreamClientConfiguration() {
+		return new StreamClientConfigurationImpl(asyncExecutorService, timeoutSeconds, 5, retryAfterSeconds, retryIterations);
+	}
+
+	@Override
     @SuppressWarnings("rawtypes")
     public MulticastReceiver createMulticastReceiver(NetworkAddressFactory networkAddressFactory) {
         return new MulticastReceiverImpl(new MulticastReceiverConfigurationImpl(
@@ -399,7 +407,7 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
         return QueueingThreadPoolExecutor.createInstance("upnp-async", asyncThreadPoolSize);
     }
 
-    private void createConfiguration(Map<String, Object> properties) throws ConfigurationException {
+    private void setConfigValues(Map<String, Object> properties) throws ConfigurationException {
         if (properties == null) {
             return;
         }
@@ -475,6 +483,43 @@ public class OSGiUpnpServiceConfiguration implements UpnpServiceConfiguration {
         } else if (prop instanceof Integer) {
             httpProxyPort = (Integer) prop;
         }
+
+        prop = properties.get("retryAfterSeconds");
+        if (prop instanceof String) {
+            try {
+                retryAfterSeconds = Integer.valueOf((String) prop);
+            } catch (NumberFormatException e) {
+                log.error("Invalid value '{}' for retryAfterSeconds - using default value", prop);
+            }
+        } else if (prop instanceof Integer) {
+            retryAfterSeconds = (Integer) prop;
+        }
+        log.info("OSGiUpnpServiceConfiguration retryAfterSeconds = {}", retryAfterSeconds);
+
+        prop = properties.get("retryIterations");
+        if (prop instanceof String) {
+            try {
+                retryIterations = Integer.valueOf((String) prop);
+            } catch (NumberFormatException e) {
+                log.error("Invalid value '{}' for retryIterations - using default value", prop);
+            }
+        } else if (prop instanceof Integer) {
+            retryIterations = (Integer) prop;
+        }
+        log.info("OSGiUpnpServiceConfiguration retryIterations = {}", retryIterations);
+
+        prop = properties.get("timeoutSeconds");
+        if (prop instanceof String) {
+            try {
+                timeoutSeconds = Integer.valueOf((String) prop);
+            } catch (NumberFormatException e) {
+                log.error("Invalid value '{}' for timeoutSeconds - using default value", prop);
+            }
+        } else if (prop instanceof Integer) {
+        	timeoutSeconds = (Integer) prop;
+        }
+        log.info("OSGiUpnpServiceConfiguration timeoutSeconds = {}", timeoutSeconds);
+
     }
 
 }
