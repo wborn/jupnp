@@ -5,7 +5,7 @@ Bundle-License: http://opensource.org/licenses/CDDL-1.0
 Bundle-SymbolicName: org.jupnp.osgi.upnp.test.device.simple
 Built-By: A11202833
 Bundle-ManifestVersion: 2
-Bnd-LastModified: 1601123198318
+Bnd-LastModified: 1677964487403
 Embed-Dependency: jupnp-osgi-tests-common,commons-codec
 SymbolicName: org.jupnp.osgi.upnp.test.device.simple
 Bundle-DocURL: http://www.jupnp.org
@@ -15,13 +15,13 @@ Import-Package: org.osgi.framework;version="[1.5,2)",org.osgi.service.
  .osgi.service.upnp;version="[1.1,2)",org.osgi.util.tracker;version="[
  1.4,2)",org.slf4j;version="[1.7,2)"
 Tool: Bnd-1.15.0
-Bundle-Version: 2.6.0.SNAPSHOT
+Bundle-Version: 2.7.0
 Bundle-Name: jUPnP OSGi Test Simple Device
-Bundle-ClassPath: .,jupnp-osgi-tests-common-2.6.0-SNAPSHOT.jar,commons
- -codec-1.4.jar
+Bundle-ClassPath: .,jupnp-osgi-tests-common-2.7.0.jar,commons-codec-1.
+ 4.jar
 Bundle-Activator: org.jupnp.osgi.upnp.test.device.simple.Activator
 Embed-Transitive: false
 Created-By: Apache Maven Bundle Plugin
-Build-Jdk: 1.8.0_231
+Build-Jdk: 1.8.0_302
 Bundle-Author: Bruce Green
 
