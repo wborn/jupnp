@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JUPnP Library
 Bundle-SymbolicName: org.jupnp
-Bundle-Version: 2.8.0.qualifier
+Bundle-Version: 2.7.1.OH1
 Bundle-Vendor: jUPnP.org
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Service-Component: OSGI-INF/*.xml
 Import-Package: 
  javax.servlet,
@@ -29,6 +29,7 @@ Import-Package:
  org.eclipse.jetty.util;version="[9.3.14,10)",
  org.eclipse.jetty.util.component;version="[9.3.14,10)",
  org.eclipse.jetty.util.thread;version="[9.3.14,10)",
+ org.openhab.basefixes.util.concurrent;version="[1,2)",
  org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.component,

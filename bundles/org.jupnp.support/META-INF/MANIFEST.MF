@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JUPnP Extra Support Library
 Bundle-SymbolicName: org.jupnp.support
-Bundle-Version: 2.8.0.qualifier
+Bundle-Version: 2.7.1.OH1
 Bundle-Vendor: jUPnP.org
 Import-Package: org.jupnp,
  org.jupnp.binding.annotations,
@@ -50,4 +50,4 @@ Export-Package: org.jupnp.support.avtransport,
  org.jupnp.support.renderingcontrol.lastchange,
  org.jupnp.support.shared,
  org.jupnp.support.xmicrosoft
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-11
