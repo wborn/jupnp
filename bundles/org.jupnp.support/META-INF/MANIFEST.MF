@@ -50,4 +50,4 @@ Export-Package: org.jupnp.support.avtransport,
  org.jupnp.support.renderingcontrol.lastchange,
  org.jupnp.support.shared,
  org.jupnp.support.xmicrosoft
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-11

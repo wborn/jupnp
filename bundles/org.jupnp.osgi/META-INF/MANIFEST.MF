@@ -4,7 +4,7 @@ Bundle-Name: jUPnP OSGi UPnP Service
 Bundle-SymbolicName: org.jupnp.osgi
 Bundle-Version: 2.8.0.qualifier
 Bundle-Vendor: jUPnP.org
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Import-Package: org.apache.commons.codec.binary,
  org.eclipse.jetty.client.api,
  org.jupnp,
