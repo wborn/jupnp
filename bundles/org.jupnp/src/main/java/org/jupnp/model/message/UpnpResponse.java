@@ -21,7 +21,7 @@ package org.jupnp.model.message;
  */
 public class UpnpResponse extends UpnpOperation {
 
-    public static enum Status {
+    public enum Status {
 
         OK(200, "OK"),
         BAD_REQUEST(400, "Bad Request"),
@@ -48,7 +48,7 @@ public class UpnpResponse extends UpnpOperation {
             return statusMsg;
         }
 
-        static public Status getByStatusCode(int statusCode) {
+        public static Status getByStatusCode(int statusCode) {
             for (Status status : values()) {
                 if (status.getStatusCode() == statusCode)
                     return status;
