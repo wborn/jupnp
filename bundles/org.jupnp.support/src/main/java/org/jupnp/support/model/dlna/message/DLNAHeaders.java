@@ -134,13 +134,15 @@ public class DLNAHeaders extends UpnpHeaders {
 
     public void remove(DLNAHeader.Type type) {
         super.remove(type.getHttpName());
-        if (parsedDLNAHeaders != null)
+        if (parsedDLNAHeaders != null) {
             parsedDLNAHeaders.remove(type);
+        }
     }
 
     public UpnpHeader<?>[] getAsArray(DLNAHeader.Type type) {
-        if (parsedDLNAHeaders == null)
+        if (parsedDLNAHeaders == null) {
             parseHeaders();
+        }
         return parsedDLNAHeaders.get(type) != null
                 ? parsedDLNAHeaders.get(type).toArray(new UpnpHeader[parsedDLNAHeaders.get(type).size()])
                 : new UpnpHeader[0];
@@ -153,8 +155,9 @@ public class DLNAHeaders extends UpnpHeaders {
     @SuppressWarnings("unchecked")
     public <H extends UpnpHeader<?>> H getFirstHeader(DLNAHeader.Type type, Class<H> subtype) {
         UpnpHeader<?>[] headers = getAsArray(type);
-        if (headers.length == 0)
+        if (headers.length == 0) {
             return null;
+        }
 
         for (UpnpHeader<?> header : headers) {
             if (subtype.isAssignableFrom(header.getClass())) {

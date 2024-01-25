@@ -58,10 +58,12 @@ public final class HexBin {
             hexNumberTable[i] = (byte) (i - 'a' + 10);
         }
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++) {
             lookUpHexAlphabet[i] = (byte) ('0' + i);
-        for (int i = 10; i <= 15; i++)
+        }
+        for (int i = 10; i <= 15; i++) {
             lookUpHexAlphabet[i] = (byte) ('A' + i - 10);
+        }
     }
 
     /**
@@ -78,8 +80,9 @@ public final class HexBin {
      * Converts bytes to a hex string
      */
     public static String bytesToString(byte[] binaryData) {
-        if (binaryData == null)
+        if (binaryData == null) {
             return null;
+        }
         return new String(encode(binaryData));
     }
 
@@ -87,8 +90,9 @@ public final class HexBin {
      * Converts bytes to a hex string with separator (e.g. colon)
      */
     public static String bytesToString(byte[] binaryData, String separator) {
-        if (binaryData == null)
+        if (binaryData == null) {
             return null;
+        }
         String s = new String(encode(binaryData));
         StringBuilder sb = new StringBuilder();
         int i = 1;
@@ -127,8 +131,9 @@ public final class HexBin {
      * @return return encode binary array
      */
     public static byte[] encode(byte[] binaryData) {
-        if (binaryData == null)
+        if (binaryData == null) {
             return null;
+        }
         int lengthData = binaryData.length;
         int lengthEncode = lengthData * 2;
         byte[] encodedData = new byte[lengthEncode];
@@ -140,11 +145,13 @@ public final class HexBin {
     }
 
     public static byte[] decode(byte[] binaryData) {
-        if (binaryData == null)
+        if (binaryData == null) {
             return null;
+        }
         int lengthData = binaryData.length;
-        if (lengthData % 2 != 0)
+        if (lengthData % 2 != 0) {
             return null;
+        }
 
         int lengthDecode = lengthData / 2;
         byte[] decodedData = new byte[lengthDecode];
@@ -164,8 +171,9 @@ public final class HexBin {
      * @return string containing decoded data.
      */
     public static String decode(String binaryData) {
-        if (binaryData == null)
+        if (binaryData == null) {
             return null;
+        }
 
         byte[] decoded = decode(binaryData.getBytes(StandardCharsets.UTF_8));
         return decoded == null ? null : new String(decoded);
@@ -178,8 +186,9 @@ public final class HexBin {
      * @return string containing decoded data.
      */
     public static String encode(String binaryData) {
-        if (binaryData == null)
+        if (binaryData == null) {
             return null;
+        }
 
         byte[] encoded = encode(binaryData.getBytes(StandardCharsets.UTF_8));
         return encoded == null ? null : new String(encoded);
