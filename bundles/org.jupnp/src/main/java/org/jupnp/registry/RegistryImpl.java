@@ -81,14 +81,17 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public UpnpService getUpnpService() {
         return upnpService;
     }
 
+    @Override
     public UpnpServiceConfiguration getConfiguration() {
         return getUpnpService().getConfiguration();
     }
 
+    @Override
     public ProtocolFactory getProtocolFactory() {
         return getUpnpService().getProtocolFactory();
     }
@@ -112,18 +115,22 @@ public class RegistryImpl implements Registry {
 
     // #################################################################################################
 
+    @Override
     public void addListener(RegistryListener listener) {
         registryListeners.add(listener);
     }
 
+    @Override
     public void removeListener(RegistryListener listener) {
         registryListeners.remove(listener);
     }
 
+    @Override
     public Collection<RegistryListener> getListeners() {
         return Collections.unmodifiableCollection(registryListeners);
     }
 
+    @Override
     public boolean notifyDiscoveryStart(final RemoteDevice device) {
         // Exit if we have it already, this is atomic inside this method, finally
         if (getRemoteDevice(device.getIdentity().getUdn(), true) != null) {
@@ -139,6 +146,7 @@ public class RegistryImpl implements Registry {
         return true;
     }
 
+    @Override
     public void notifyDiscoveryFailure(final RemoteDevice device, final Exception ex) {
         for (final RegistryListener listener : getListeners()) {
             getConfiguration().getRegistryListenerExecutor()
@@ -148,6 +156,7 @@ public class RegistryImpl implements Registry {
 
     // #################################################################################################
 
+    @Override
     public void addDevice(LocalDevice localDevice) {
         remoteItemsLock.readLock().lock();
         try {
@@ -162,6 +171,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public void addDevice(LocalDevice localDevice, DiscoveryOptions options) {
         remoteItemsLock.readLock().lock();
         try {
@@ -176,6 +186,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public void setDiscoveryOptions(UDN udn, DiscoveryOptions options) {
         localItemsLock.writeLock().lock();
         try {
@@ -185,6 +196,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public DiscoveryOptions getDiscoveryOptions(UDN udn) {
         localItemsLock.readLock().lock();
         try {
@@ -194,6 +206,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public void addDevice(RemoteDevice remoteDevice) {
         remoteItemsLock.writeLock().lock();
         try {
@@ -208,6 +221,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public boolean update(RemoteDeviceIdentity rdIdentity) {
         remoteItemsLock.writeLock().lock();
         try {
@@ -222,6 +236,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public boolean removeDevice(LocalDevice localDevice) {
         localItemsLock.writeLock().lock();
         try {
@@ -231,6 +246,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public boolean removeDevice(RemoteDevice remoteDevice) {
         remoteItemsLock.writeLock().lock();
         try {
@@ -240,6 +256,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public void removeAllLocalDevices() {
         localItemsLock.writeLock().lock();
         try {
@@ -249,6 +266,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public void removeAllRemoteDevices() {
         remoteItemsLock.writeLock().lock();
         try {
@@ -258,6 +276,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public boolean removeDevice(UDN udn) {
         Device device = getDevice(udn, true);
         if (device != null && device instanceof LocalDevice) {
@@ -269,6 +288,7 @@ public class RegistryImpl implements Registry {
         return false;
     }
 
+    @Override
     public Device getDevice(UDN udn, boolean rootOnly) {
         Device device;
 
@@ -282,6 +302,7 @@ public class RegistryImpl implements Registry {
         return null;
     }
 
+    @Override
     public LocalDevice getLocalDevice(UDN udn, boolean rootOnly) {
         localItemsLock.readLock().lock();
         try {
@@ -291,6 +312,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public RemoteDevice getRemoteDevice(UDN udn, boolean rootOnly) {
         remoteItemsLock.readLock().lock();
         try {
@@ -300,6 +322,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public Collection<LocalDevice> getLocalDevices() {
         localItemsLock.readLock().lock();
         try {
@@ -309,6 +332,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public Collection<RemoteDevice> getRemoteDevices() {
         remoteItemsLock.readLock().lock();
         try {
@@ -318,6 +342,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public Collection<Device> getDevices() {
         Set<Device> all = new HashSet<>();
 
@@ -338,6 +363,7 @@ public class RegistryImpl implements Registry {
         return Collections.unmodifiableCollection(all);
     }
 
+    @Override
     public Collection<Device> getDevices(DeviceType deviceType) {
         Collection<Device> devices = new HashSet<>();
 
@@ -358,6 +384,7 @@ public class RegistryImpl implements Registry {
         return Collections.unmodifiableCollection(devices);
     }
 
+    @Override
     public Collection<Device> getDevices(ServiceType serviceType) {
         Collection<Device> devices = new HashSet<>();
 
@@ -378,6 +405,7 @@ public class RegistryImpl implements Registry {
         return Collections.unmodifiableCollection(devices);
     }
 
+    @Override
     public Service getService(ServiceReference serviceReference) {
         Device device;
         if ((device = getDevice(serviceReference.getUdn(), false)) != null) {
@@ -388,6 +416,7 @@ public class RegistryImpl implements Registry {
 
     // #################################################################################################
 
+    @Override
     public Resource getResource(URI pathQuery) throws IllegalArgumentException {
         if (pathQuery.isAbsolute()) {
             throw new IllegalArgumentException("Resource URI can not be absolute, only path and query:" + pathQuery);
@@ -420,6 +449,7 @@ public class RegistryImpl implements Registry {
         return null;
     }
 
+    @Override
     public <T extends Resource> T getResource(Class<T> resourceType, URI pathQuery) throws IllegalArgumentException {
         Resource resource = getResource(pathQuery);
         if (resource != null && resourceType.isAssignableFrom(resource.getClass())) {
@@ -428,6 +458,7 @@ public class RegistryImpl implements Registry {
         return null;
     }
 
+    @Override
     public Collection<Resource> getResources() {
         Collection<Resource> s = new HashSet<>(resourceItems.size());
 
@@ -437,6 +468,7 @@ public class RegistryImpl implements Registry {
         return s;
     }
 
+    @Override
     public <T extends Resource> Collection<T> getResources(Class<T> resourceType) {
         Collection<T> s = new HashSet<>(resourceItems.size());
         for (RegistryItem<URI, Resource> resourceItem : resourceItems) {
@@ -447,10 +479,12 @@ public class RegistryImpl implements Registry {
         return s;
     }
 
+    @Override
     public void addResource(Resource resource) {
         addResource(resource, ExpirationDetails.UNLIMITED_AGE);
     }
 
+    @Override
     public void addResource(Resource resource, int maxAgeSeconds) {
         RegistryItem resourceItem = new RegistryItem(resource.getPathQuery(), resource, maxAgeSeconds);
 
@@ -458,12 +492,14 @@ public class RegistryImpl implements Registry {
         resourceItems.add(resourceItem);
     }
 
+    @Override
     public boolean removeResource(Resource resource) {
         return resourceItems.remove(new RegistryItem<>(resource.getPathQuery()));
     }
 
     // #################################################################################################
 
+    @Override
     public void addLocalSubscription(LocalGENASubscription subscription) {
         localItemsLock.writeLock().lock();
         try {
@@ -473,6 +509,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public LocalGENASubscription getLocalSubscription(String subscriptionId) {
         localItemsLock.readLock().lock();
         try {
@@ -482,6 +519,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public boolean updateLocalSubscription(LocalGENASubscription subscription) {
         localItemsLock.writeLock().lock();
         try {
@@ -491,6 +529,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public boolean removeLocalSubscription(LocalGENASubscription subscription) {
         localItemsLock.writeLock().lock();
         try {
@@ -500,6 +539,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public void addRemoteSubscription(RemoteGENASubscription subscription) {
         remoteItemsLock.writeLock().lock();
         try {
@@ -509,6 +549,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public RemoteGENASubscription getRemoteSubscription(String subscriptionId) {
         remoteItemsLock.readLock().lock();
         try {
@@ -518,6 +559,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public void updateRemoteSubscription(RemoteGENASubscription subscription) {
         remoteItemsLock.writeLock().lock();
         try {
@@ -527,6 +569,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public void removeRemoteSubscription(RemoteGENASubscription subscription) {
         remoteItemsLock.writeLock().lock();
         try {
@@ -538,6 +581,7 @@ public class RegistryImpl implements Registry {
 
     /* ############################################################################################################ */
 
+    @Override
     public void advertiseLocalDevices() {
         localItemsLock.readLock().lock();
         try {
@@ -550,6 +594,7 @@ public class RegistryImpl implements Registry {
     /* ############################################################################################################ */
 
     // When you call this, make sure you have the Router lock before this lock is obtained!
+    @Override
     public void shutdown() {
         log.trace("Shutting down registry...");
 
@@ -593,6 +638,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public void pause() {
         synchronized (lock) {
             if (registryMaintainer != null) {
@@ -604,6 +650,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public void resume() {
         synchronized (lock) {
             if (registryMaintainer == null) {
@@ -628,6 +675,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    @Override
     public boolean isPaused() {
         synchronized (lock) {
             return registryMaintainer == null;
