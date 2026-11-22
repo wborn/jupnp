@@ -96,7 +96,8 @@ jobs:
           printf 'The build matrix reported **%s**. [Open the CI run](%s).\n' "$BUILD_RESULT" "$run_url" >> "$GITHUB_STEP_SUMMARY"
 
           if details=$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" --jq '
-            .jobs[]
+            .jobs
+            | sort_by(.name)[]
             | select(.name | startswith("Build ("))
             | select(.conclusion != "success")
             | [.steps[]? | select(.conclusion == "failure" or .conclusion == "cancelled") | .name] as $steps
